@@ -22,7 +22,7 @@ function Box(props: ThreeElements["mesh"]) {
   );
 }
 
-export const ThreeCanvas = () => {
+export const Preview = () => {
   return (
     <Canvas>
       <ambientLight intensity={Math.PI / 2} />

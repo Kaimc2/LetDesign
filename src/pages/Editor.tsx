@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { fabric } from "fabric"; // v5
 
-export const FabricJSCanvas = () => {
+export const Editor = () => {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const options = {};
