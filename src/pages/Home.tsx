@@ -2,6 +2,7 @@ import heroImg from "../assets/images/hero.svg";
 import customization from "../assets/images/customization.svg";
 import imageViewer from "../assets/images/image_viewer.svg";
 import windowShopping from "../assets/images/window_shopping.svg";
+import { Link } from "react-router-dom";
 
 export const Home = () => {
   return (
@@ -17,9 +18,12 @@ export const Home = () => {
               From concept to creation, make your unique fashion statements
               effortlessly.
             </p>
-            <button className="px-[20px] py-[10px] bg-accent hover:bg-accent-80 text-white rounded-md">
+            <Link
+              to={"/design"}
+              className="px-[20px] py-[10px] bg-accent hover:bg-accent-80 text-white rounded-md"
+            >
               Get Started
-            </button>
+            </Link>
             <div
               className="absolute -top-32 md:-top-[100px] -left-[90px] -z-10 w-[794px] h-[620px]
              bg-secondary rounded-md rotate-[-6deg]"
@@ -37,7 +41,7 @@ export const Home = () => {
       {/* Information Section */}
       <div className="flex flex-col px-10 lg:px-[160px] xl:px-[240px] gap-[165px] mt-[320px] lg:mt-[400px] mb-[120px]">
         <div className="flex flex-col lg:flex-row items-center gap-[75px]">
-          <div className="w-[285px] h-[285px] bg-white shadow-inner shadow-secondary/40 rounded-md relative">
+          <div className="w-[285px] h-[285px] bg-white rounded-md relative">
             <img
               className="object-fit w-full h-full"
               src={customization}
@@ -63,7 +67,7 @@ export const Home = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row justify-end items-center gap-[75px]">
-          <div className="order-1 lg:order-2 w-[285px] h-[285px] bg-white shadow-inner shadow-secondary/40 rounded-md relative">
+          <div className="order-1 lg:order-2 w-[285px] h-[285px] bg-white rounded-md relative">
             <img
               className="object-fit w-full h-full"
               src={imageViewer}
@@ -87,7 +91,7 @@ export const Home = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row items-center gap-[75px]">
-          <div className="w-[285px] h-[285px]  bg-white shadow-inner shadow-secondary/40 rounded-md relative">
+          <div className="w-[285px] h-[285px]  bg-white rounded-md relative">
             <img
               className="object-fit w-full h-full"
               src={windowShopping}

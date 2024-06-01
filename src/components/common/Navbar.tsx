@@ -1,5 +1,5 @@
-import { NavLink } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
+import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 
@@ -39,11 +39,7 @@ export const Navbar = () => {
         Sign Up
       </button>
       <button onClick={() => console.log("Hello")} className="flex md:hidden">
-        <FontAwesomeIcon
-          icon={faBars}
-          size="2xl"
-          style={{ color: "#000000" }}
-        />
+        <FontAwesomeIcon icon={faBars} size="2xl" />
       </button>
     </nav>
   );
