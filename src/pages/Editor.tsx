@@ -34,50 +34,6 @@ export const Editor = () => {
       }
     };
 
-    const copyObject = () => {
-      console.log("copy");
-      const canvas = fabricCanvasRef.current;
-
-      if (canvas) {
-        const selectedObj = canvas.getActiveObject();
-        if (selectedObj) {
-          selectedObj.clone((cloned: fabric.Object) => {
-            setClipboard(cloned);
-          });
-        }
-      }
-    };
-
-    const pasteObject = () => {
-      console.log("paste");
-      const canvas = fabricCanvasRef.current;
-      if (canvas && clipboard) {
-        clipboard.clone((clonedObj: fabric.Object) => {
-          canvas.discardActiveObject();
-
-          clonedObj.set({
-            left: clonedObj.left! + 10,
-            top: clonedObj.top! + 10,
-            evented: true,
-          });
-
-          if (clonedObj.type === "activeSelection") {
-            clonedObj.canvas = canvas;
-            clonedObj.forEachObject((obj) => {
-              canvas.add(obj);
-            });
-            clonedObj.setCoords();
-          } else {
-            canvas.add(clonedObj);
-          }
-
-          setClipboard(clonedObj);
-          canvas.setActiveObject(clonedObj);
-          canvas.requestRenderAll();
-        });
-      }
-    };
-
     const handleKeydown = (keyboardEvent: KeyboardEvent) => {
       if (keyboardEvent.key == "Backspace") {
         const canvas = fabricCanvasRef.current;
@@ -99,14 +55,6 @@ export const Editor = () => {
 
       if (keyboardEvent.ctrlKey && keyboardEvent.key == "y") {
         console.log("redo");
-      }
-
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "c") {
-        copyObject();
-      }
-
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "v") {
-        pasteObject();
       }
     };
 
@@ -149,7 +97,6 @@ export const Editor = () => {
 
         const displaySelectedObj = () => {
           const selectedObj = canvas.getActiveObject();
-
           if (selectedObj) {
             console.log("Selected Object:", selectedObj);
             console.log("Type:", selectedObj.type);
@@ -177,6 +124,68 @@ export const Editor = () => {
       window.removeEventListener("keydown", handleKeydown);
     };
   }, []);
+
+  // Handle copy and paste logic
+  useEffect(() => {
+    const copyObject = () => {
+      const canvas = fabricCanvasRef.current;
+
+      if (canvas) {
+        const selectedObj = canvas.getActiveObject();
+        if (selectedObj) {
+          selectedObj.clone((cloned: fabric.Object) => {
+            setClipboard(cloned);
+          });
+        }
+      }
+    };
+
+    const pasteObject = () => {
+      console.log("paste");
+      const canvas = fabricCanvasRef.current;
+      if (canvas && clipboard) {
+        clipboard.clone((clonedObj: fabric.Object) => {
+          canvas.discardActiveObject();
+
+          clonedObj.set({
+            left: clonedObj.left! + 10,
+            top: clonedObj.top! + 10,
+            evented: true,
+          });
+
+          if (clonedObj.type === "activeSelection") {
+            clonedObj.canvas = canvas;
+            (clonedObj as fabric.Group).forEachObject((obj) => {
+              canvas.add(obj);
+            });
+            clonedObj.setCoords();
+          } else {
+            canvas.add(clonedObj);
+          }
+
+          setClipboard(clonedObj);
+          canvas.setActiveObject(clonedObj);
+          canvas.requestRenderAll();
+        });
+      }
+    };
+
+    const handleKeydown = (keyboardEvent: KeyboardEvent) => {
+      if (keyboardEvent.ctrlKey && keyboardEvent.key == "c") {
+        copyObject();
+      }
+
+      if (keyboardEvent.ctrlKey && keyboardEvent.key == "v") {
+        pasteObject();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, [clipboard]);
 
   const addRect = () => {
     if (fabricCanvasRef.current) {
@@ -211,9 +220,8 @@ export const Editor = () => {
           <div className="flex gap-2">
             <button onClick={addRect}>Add Rectangle</button>
             <button onClick={addCircle}>Add Circle</button>
-            <button>Pen</button>
             <button onClick={addText}>Text</button>
-            <button>Move</button>
+            <button>Pen</button>
           </div>
         </div>
 
