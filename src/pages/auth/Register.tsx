@@ -181,23 +181,23 @@ export const Register = () => {
               )}
             </div>
             <div className="pt-2">
-            <button
-              type="submit"
-              className="w-full bg-yellow-400 text-black active:bg-yellow-500 hover:bg-yellow-400 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center"
-            >
-              Create an account
-            </button>
+              <button
+                type="submit"
+                className="w-full bg-yellow-400 text-black active:bg-yellow-500 hover:bg-yellow-400 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center"
+              >
+                Create an account
+              </button>
             </div>
             <div className="">
-            <p className="text-sm font-regular text-center">
-              Already have an account?{" "}
-              <a
-                href="#"
-                className="font-medium text-primary-600 hover:underline dark:text-primary-500 text-yellow-400"
-              >
-                Sign in
-              </a>
-            </p>
+              <p className="text-sm font-regular text-center">
+                Already have an account?{" "}
+                <a
+                  href="#"
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500 text-yellow-400"
+                >
+                  Sign in
+                </a>
+              </p>
             </div>
             <div className="flex items-center mt-2">
               <hr className="w-full h-px bg-gray-200 border-1 dark:bg-gray-500 mr-2" />
@@ -205,17 +205,17 @@ export const Register = () => {
               <hr className="w-full h-px bg-gray-200 border-1 dark:bg-gray-500 ml-2" />
             </div>
             <div className="py-2">
-            <button
-              type="button"
-              className="relative w-full outline-1 justify-center bg-white hover:bg-yellow-300 active:bg-yellow-400 text-gray-700 font-medium rounded-lg shadow py-2 px-4 inline-flex items-center"
-            >
-              <img
-                src="/src/assets/images/GoogleLogo.svg"
-                alt="Google icon"
-                className="absolute left-4 w-5 h-5"
-              />
-              <span className="w-full text-center">Sign up with Google</span>
-            </button>
+              <button
+                type="button"
+                className="relative w-full outline-1 justify-center bg-white hover:bg-yellow-300 active:bg-yellow-400 text-gray-700 font-medium rounded-lg shadow py-2 px-4 inline-flex items-center"
+              >
+                <img
+                  src="/src/assets/images/GoogleLogo.svg"
+                  alt="Google icon"
+                  className="absolute left-4 w-5 h-5"
+                />
+                <span className="w-full text-center">Sign up with Google</span>
+              </button>
             </div>
           </form>
         </div>

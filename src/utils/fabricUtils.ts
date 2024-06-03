@@ -1,63 +1,343 @@
 import { fabric } from "fabric";
+import shirtTemplateFront from "../assets/images/cloth/shirtTemplateFront.png";
+import { SetStateAction } from "react";
+import { SelectedObj } from "../pages/Editor";
 
-// Initialize a Fabric canvas
+const snapZone = 15;
+
+/**
+ * Initialize a Fabric canvas
+ * @param canvasId Reference id to canvas element
+ * @returns Canvas object
+ */
 export const initializeCanvas = (canvasId: string): fabric.Canvas => {
   return new fabric.Canvas(canvasId);
 };
 
-// Limit the canvas to shirt layout
+/**
+ * Initialize the canvas to a shirt shape
+ * @param canvas Reference to a canvas
+ */
 export const initializeShirtCanvas = (canvas: fabric.Canvas) => {
   canvas.controlsAboveOverlay = true;
-  const tshirtPath =
-    "M211.8 0c7.8 0 14.3 5.7 16.7 13.2C240.8 51.9 277.1 80 320 80s79.2-28.1 91.5-66.8C413.9 5.7 420.4 0 428.2 0h12.6c22.5 0 44.2 7.9 61.5 22.3L628.5 127.4c6.6 5.5 10.7 13.5 11.4 22.1s-2.1 17.1-7.8 23.6l-56 64c-11.4 13.1-31.2 14.6-44.6 3.5L480 197.7V448c0 35.3-28.7 64-64 64H224c-35.3 0-64-28.7-64-64V197.7l-51.5 42.9c-13.3 11.1-33.1 9.6-44.6-3.5l-56-64c-5.7-6.5-8.5-15-7.8-23.6s4.8-16.6 11.4-22.1L137.7 22.3C155 7.9 176.7 0 199.2 0h12.6z";
 
-  const tshirt = new fabric.Path(tshirtPath, {
-    selectable: false,
-    evented: false,
-    lockMovementX: true,
-    lockMovementY: true,
-    fill: "white",
-    stroke: "black",
+  fabric.Image.fromURL(shirtTemplateFront, (img) => {
+    img.scaleToWidth(700);
+    img.set({
+      selectable: false,
+      evented: false,
+    });
+
+    canvas.add(img);
+    canvas.centerObject(img);
+    canvas.sendToBack(img);
+
+    canvas.clipPath = img;
   });
-
-  canvas.add(tshirt);
-  canvas.centerObject(tshirt);
-
-  canvas.clipPath = tshirt;
 };
 
-// Add a rectangle to the canvas
+/**
+ * Create a horizontal line in the middle of the canvas
+ * @param canvas Reference to a canvas
+ * @returns Line object
+ */
+export const initializeHorizontalLine = (canvas: fabric.Canvas) => {
+  return new fabric.Line(
+    [(canvas.width ?? 0) / 2, 0, (canvas.width ?? 0) / 2, canvas.width ?? 0],
+    {
+      stroke: "red",
+      evented: false,
+      selectable: false,
+    }
+  );
+};
+
+/**
+ * Create a vertical line in the middle of the canvas
+ * @param canvas Reference to a canvas
+ * @returns Line object
+ */
+export const initializeVerticalLine = (canvas: fabric.Canvas) => {
+  return new fabric.Line(
+    [0, (canvas.height ?? 0) / 2, canvas.width ?? 0, (canvas.height ?? 0) / 2],
+    {
+      stroke: "red",
+      evented: false,
+      selectable: false,
+    }
+  );
+};
+
+/**
+ * Add a rectangle to the canvas
+ * @param canvas Reference to a canvas
+ * @param options Rectangle options
+ */
 export const addRectangle = (
   canvas: fabric.Canvas,
-  options: fabric.IRectOptions
+  options?: fabric.IRectOptions
 ) => {
-  const rect = new fabric.Rect({ ...options, selectable: true, evented: true });
+  let rect: fabric.Rect;
+
+  if (options) {
+    rect = new fabric.Rect({
+      ...options,
+    });
+  } else {
+    rect = new fabric.Rect({
+      width: 100,
+      height: 50,
+      fill: "red",
+    });
+  }
+
   canvas.add(rect);
   canvas.centerObject(rect);
 };
 
-// Add a circle to the canvas
+/**
+ * Add a circle to the canvas
+ * @param canvas Reference to a canvas
+ * @param options Circle options
+ */
 export const addCircle = (
   canvas: fabric.Canvas,
-  options: fabric.ICircleOptions
+  options?: fabric.ICircleOptions
 ) => {
-  const circle = new fabric.Circle(options);
+  let circle: fabric.Circle;
+
+  if (options) {
+    circle = new fabric.Circle(options);
+  } else {
+    circle = new fabric.Circle({
+      fill: "blue",
+      radius: 30,
+    });
+  }
+
   canvas.add(circle);
   canvas.centerObject(circle);
 };
 
-// Add a custom text to the canvas
+/**
+ * Add a custom text to the canvas
+ * @param canvas Reference to a canvas
+ * @param text String text
+ * @param options Text options
+ */
 export const addText = (
   canvas: fabric.Canvas,
-  text: string,
-  options: fabric.ITextOptions
+  text?: string,
+  options?: fabric.ITextOptions
 ) => {
-  const fabricText = new fabric.IText(text, options);
+  let fabricText: fabric.IText;
+
+  if (text || options) {
+    fabricText = new fabric.IText(text ?? "Text", options);
+  } else {
+    fabricText = new fabric.IText("Text", {});
+  }
   canvas.add(fabricText);
   canvas.centerObject(fabricText);
 };
 
-// Clear the canvas
+/**
+ * Toggle into draw mode in the canvas
+ * @param canvas Reference to a canvas
+ */
+export const toggleDrawMode = (canvas: fabric.Canvas) => {
+  canvas.isDrawingMode = !canvas.isDrawingMode;
+};
+
+export const displaySelectedObj = (
+  canvas: fabric.Canvas,
+  setShowProperty: (value: SetStateAction<boolean>) => void,
+  setSelectedObj: (value: SetStateAction<SelectedObj>) => void
+) => {
+  const selectedObj = canvas.getActiveObject();
+  if (selectedObj) {
+    const actualWidth = (selectedObj.width! * selectedObj.scaleX!).toFixed(2);
+    const actualHeight = (selectedObj.height! * selectedObj.scaleY!).toFixed(2);
+    const left = selectedObj.left!.toFixed(2);
+    const top = selectedObj.top!.toFixed(2);
+    const angle = selectedObj.angle!.toFixed(2);
+
+    setShowProperty(true);
+    setSelectedObj({
+      x: parseFloat(left),
+      y: parseFloat(top),
+      width: parseFloat(actualWidth),
+      height: parseFloat(actualHeight),
+      angle: parseFloat(angle),
+    });
+  }
+};
+
+export const updateSelectedObj = (
+  canvas: fabric.Canvas,
+  setSelectedObj: (value: SetStateAction<SelectedObj>) => void
+) => {
+  const selectedObj = canvas.getActiveObject();
+  if (selectedObj) {
+    const actualWidth = (selectedObj.width! * selectedObj.scaleX!).toFixed(2);
+    const actualHeight = (selectedObj.height! * selectedObj.scaleY!).toFixed(2);
+    const left = selectedObj.left!.toFixed(2);
+    const top = selectedObj.top!.toFixed(2);
+    const angle = selectedObj.angle!.toFixed(2);
+
+    setSelectedObj(() => {
+      return {
+        x: parseFloat(left),
+        y: parseFloat(top),
+        width: parseFloat(actualWidth),
+        height: parseFloat(actualHeight),
+        angle: parseFloat(angle),
+      };
+    });
+  }
+};
+
+export const handleObjectMove = (
+  options: fabric.IEvent<MouseEvent>,
+  canvas: fabric.Canvas,
+  setSelectedObj: (value: SetStateAction<SelectedObj>) => void,
+  horizontalLine: fabric.Line,
+  verticalLine: fabric.Line
+) => {
+  updateSelectedObj(canvas, setSelectedObj);
+
+  const objectMiddleHorizontal =
+    (options.target?.left ?? 0) +
+    ((options.target?.width ?? 0) * (options.target?.scaleX ?? 1)) / 2;
+
+  if (
+    objectMiddleHorizontal > (canvas.width ?? 0) / 2 - snapZone &&
+    objectMiddleHorizontal < (canvas.width ?? 0) / 2 + snapZone
+  ) {
+    options.target
+      ?.set({
+        left:
+          (canvas.width ?? 0) / 2 -
+          ((options.target.width ?? 0) * (options.target.scaleX ?? 0)) / 2,
+      })
+      .setCoords();
+
+    canvas.add(horizontalLine);
+
+    document.addEventListener("mouseup", () => {
+      canvas.remove(horizontalLine);
+    });
+  } else {
+    canvas.remove(horizontalLine);
+  }
+
+  const objectMiddleVertical =
+    (options.target?.top ?? 0) +
+    ((options.target?.height ?? 0) * (options.target?.scaleY ?? 1)) / 2;
+
+  if (
+    objectMiddleVertical > (canvas.height ?? 0) / 2 - snapZone &&
+    objectMiddleVertical < (canvas.height ?? 0) / 2 + snapZone
+  ) {
+    options.target
+      ?.set({
+        top:
+          (canvas.height ?? 0) / 2 -
+          ((options.target.height ?? 0) * (options.target.scaleY ?? 0)) / 2,
+      })
+      .setCoords();
+
+    canvas.add(verticalLine);
+
+    document.addEventListener("mouseup", () => {
+      canvas.remove(verticalLine);
+    });
+  } else {
+    canvas.remove(verticalLine);
+  }
+};
+
+/**
+ * Remove the current selected object from the canvas
+ * @param canvas reference to a canvas
+ * @returns
+ */
+export const removeObject = (canvas: fabric.Canvas | null): void => {
+  const activeObject = canvas?.getActiveObject();
+
+  if (!canvas || !activeObject) return;
+
+  // If text object is editing don't delete
+  if (activeObject.type == "i-text") {
+    const textObj = activeObject as fabric.IText;
+    if (textObj.isEditing) {
+      return;
+    }
+  }
+
+  // Handle object group delete
+  if (activeObject.type == "activeSelection") {
+    const objGroup = activeObject as fabric.Group;
+    objGroup.forEachObject((obj) => {
+      canvas.remove(obj);
+    });
+    canvas.discardActiveObject();
+  } else {
+    // Handle single object delete
+    canvas.remove(activeObject);
+  }
+};
+
+export const copyObject = (
+  canvas: fabric.Canvas,
+  setClipboard: (value: SetStateAction<fabric.Object | null>) => void
+) => {
+  if (canvas) {
+    const selectedObj = canvas.getActiveObject();
+    if (selectedObj) {
+      selectedObj.clone((cloned: fabric.Object) => {
+        setClipboard(cloned);
+      });
+    }
+  }
+};
+
+export const pasteObject = (
+  canvas: fabric.Canvas,
+  clipboard: fabric.Object | null,
+  setClipboard: (value: SetStateAction<fabric.Object | null>) => void
+) => {
+  if (canvas && clipboard) {
+    clipboard.clone((clonedObj: fabric.Object) => {
+      canvas.discardActiveObject();
+
+      clonedObj.set({
+        left: clonedObj.left! + 10,
+        top: clonedObj.top! + 10,
+        evented: true,
+      });
+
+      if (clonedObj.type === "activeSelection") {
+        clonedObj.canvas = canvas;
+        (clonedObj as fabric.Group).forEachObject((obj) => {
+          canvas.add(obj);
+        });
+        clonedObj.setCoords();
+      } else {
+        canvas.add(clonedObj);
+      }
+
+      setClipboard(clonedObj);
+      canvas.setActiveObject(clonedObj);
+      canvas.requestRenderAll();
+    });
+  }
+};
+
+/**
+ * Clear out the entire canvas
+ * @param canvas reference to a canvas
+ */
 export const clearCanvas = (canvas: fabric.Canvas): void => {
   canvas.clear();
 };
