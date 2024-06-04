@@ -2,7 +2,13 @@ import { fabric } from "fabric";
 import shirtTemplateFront from "../assets/images/canvas/shirtTemplateFront.png";
 import shirtTemplateBack from "../assets/images/canvas/shirtTemplateBack.png";
 import { SetStateAction } from "react";
-import { SelectedObj } from "../pages/Editor";
+import {
+  CircleProperty,
+  ObjectProperty,
+  RectangleProperty,
+  SelectedObjectProperty,
+  TextProperty,
+} from "../types/editor.types";
 
 const snapZone = 15;
 
@@ -181,24 +187,54 @@ export const toggleDrawMode = (canvas: fabric.Canvas) => {
 export const displaySelectedObj = (
   canvas: fabric.Canvas,
   setShowProperty: (value: SetStateAction<boolean>) => void,
-  setSelectedObj: (value: SetStateAction<SelectedObj>) => void
+  setSelectedObj: (value: SetStateAction<SelectedObjectProperty>) => void
 ) => {
   const selectedObj = canvas.getActiveObject();
   if (selectedObj) {
+    setShowProperty(true);
     const actualWidth = (selectedObj.width! * selectedObj.scaleX!).toFixed(2);
     const actualHeight = (selectedObj.height! * selectedObj.scaleY!).toFixed(2);
     const left = selectedObj.left!.toFixed(2);
     const top = selectedObj.top!.toFixed(2);
     const angle = selectedObj.angle!.toFixed(2);
 
-    setShowProperty(true);
-    setSelectedObj({
-      x: parseFloat(left),
-      y: parseFloat(top),
+    const commonProp: ObjectProperty = {
       width: parseFloat(actualWidth),
       height: parseFloat(actualHeight),
+      x: parseFloat(left),
+      y: parseFloat(top),
       angle: parseFloat(angle),
-    });
+      fill: selectedObj.fill,
+    };
+
+    if (selectedObj.type === "rect") {
+      setSelectedObj({
+        ...commonProp,
+        cornerRadius: (selectedObj as fabric.Rect).rx,
+      } as RectangleProperty);
+    } else if (selectedObj.type === "circle") {
+      setSelectedObj({
+        ...commonProp,
+        radius: (selectedObj as fabric.Circle).radius,
+      } as CircleProperty);
+    } else if (selectedObj.type === "i-text") {
+      setSelectedObj({
+        ...commonProp,
+        fontFamily: (selectedObj as fabric.IText).fontFamily,
+        fontWeight: (selectedObj as fabric.IText).fontWeight,
+        fontSize: (selectedObj as fabric.IText).fontSize,
+        textDecoration: {
+          underline: (selectedObj as fabric.IText).underline,
+          strikethrough: (selectedObj as fabric.IText).linethrough,
+          overline: (selectedObj as fabric.IText).overline,
+        },
+        fontStyle: (selectedObj as fabric.IText).fontStyle,
+        stroke: (selectedObj as fabric.IText).stroke,
+        strokeWidth: (selectedObj as fabric.IText).strokeWidth,
+        textAlign: (selectedObj as fabric.IText).textAlign,
+        lineHeight: (selectedObj as fabric.IText).lineHeight,
+      } as TextProperty);
+    }
   }
 };
 
@@ -209,7 +245,7 @@ export const displaySelectedObj = (
  */
 export const updateSelectedObj = (
   canvas: fabric.Canvas,
-  setSelectedObj: (value: SetStateAction<SelectedObj>) => void
+  setSelectedObj: (value: SetStateAction<SelectedObjectProperty>) => void
 ) => {
   const selectedObj = canvas.getActiveObject();
   if (selectedObj) {
@@ -219,15 +255,43 @@ export const updateSelectedObj = (
     const top = selectedObj.top!.toFixed(2);
     const angle = selectedObj.angle!.toFixed(2);
 
-    setSelectedObj(() => {
-      return {
-        x: parseFloat(left),
-        y: parseFloat(top),
-        width: parseFloat(actualWidth),
-        height: parseFloat(actualHeight),
-        angle: parseFloat(angle),
-      };
-    });
+    const commonProp: ObjectProperty = {
+      width: parseFloat(actualWidth),
+      height: parseFloat(actualHeight),
+      x: parseFloat(left),
+      y: parseFloat(top),
+      angle: parseFloat(angle),
+      fill: selectedObj.fill,
+    };
+
+    if (selectedObj.type === "rect") {
+      setSelectedObj({
+        ...commonProp,
+        cornerRadius: (selectedObj as fabric.Rect).rx,
+      } as RectangleProperty);
+    } else if (selectedObj.type === "circle") {
+      setSelectedObj({
+        ...commonProp,
+        radius: (selectedObj as fabric.Circle).radius,
+      } as CircleProperty);
+    } else if (selectedObj.type === "i-text") {
+      setSelectedObj({
+        ...commonProp,
+        fontFamily: (selectedObj as fabric.IText).fontFamily,
+        fontWeight: (selectedObj as fabric.IText).fontWeight,
+        fontSize: (selectedObj as fabric.IText).fontSize,
+        textDecoration: {
+          underline: (selectedObj as fabric.IText).underline,
+          strikethrough: (selectedObj as fabric.IText).linethrough,
+          overline: (selectedObj as fabric.IText).overline,
+        },
+        fontStyle: (selectedObj as fabric.IText).fontStyle,
+        stroke: (selectedObj as fabric.IText).stroke,
+        strokeWidth: (selectedObj as fabric.IText).strokeWidth,
+        textAlign: (selectedObj as fabric.IText).textAlign,
+        lineHeight: (selectedObj as fabric.IText).lineHeight,
+      } as TextProperty);
+    }
   }
 };
 
@@ -242,7 +306,7 @@ export const updateSelectedObj = (
 export const handleObjectSnap = (
   options: fabric.IEvent<MouseEvent>,
   canvas: fabric.Canvas,
-  setSelectedObj: (value: SetStateAction<SelectedObj>) => void,
+  setSelectedObj: (value: SetStateAction<SelectedObjectProperty>) => void,
   horizontalLine: fabric.Line,
   verticalLine: fabric.Line
 ) => {

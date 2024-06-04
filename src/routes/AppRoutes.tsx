@@ -4,7 +4,7 @@ import { Home } from "../pages/Home";
 import { About } from "../pages/About";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
-import { Editor } from "../pages/Editor";
+import { Editor } from "../pages/editor/Editor";
 import { EditorLayout } from "../components/layout/EditorLayout";
 import { DashboardLayout } from "../components/layout/DashboardLayout";
 
