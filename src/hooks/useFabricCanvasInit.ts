@@ -82,10 +82,6 @@ const useFabricCanvasInit = (
           }
         };
 
-        const handleObjectRemoved = () => {
-          updateCanvasObjects();
-        };
-
         const updateCanvasObjects = () => {
           const canvasObjects: fabric.Object[] = [];
           canvas.getObjects().forEach((obj) => {
@@ -109,7 +105,7 @@ const useFabricCanvasInit = (
         };
 
         canvas.on("object:added", handleObjectAdded);
-        canvas.on("object:removed", handleObjectRemoved);
+        canvas.on("object:removed", updateCanvasObjects);
         canvas.on("object:modified", handleObjectModified);
       }
     }

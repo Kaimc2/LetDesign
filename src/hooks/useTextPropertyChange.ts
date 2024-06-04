@@ -3,7 +3,7 @@ import { SelectedObjectProperty, TextProperty } from "../types/editor.types";
 
 const useTextPropertyChange = (
   canvas: fabric.Canvas | null,
-  selectedObj: SelectedObjectProperty
+  selectedObj: SelectedObjectProperty | null
 ) => {
   // Handle the text property change
   useEffect(() => {

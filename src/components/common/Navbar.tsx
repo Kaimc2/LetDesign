@@ -41,6 +41,7 @@ export const Navbar = () => {
       >
         Sign Up
       </Link>
+
       <button onClick={() => console.log("Hello")} className="flex md:hidden">
         <FontAwesomeIcon icon={faBars} size="2xl" />
       </button>

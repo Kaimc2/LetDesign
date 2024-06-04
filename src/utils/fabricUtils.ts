@@ -187,7 +187,7 @@ export const toggleDrawMode = (canvas: fabric.Canvas) => {
 export const displaySelectedObj = (
   canvas: fabric.Canvas,
   setShowProperty: (value: SetStateAction<boolean>) => void,
-  setSelectedObj: (value: SetStateAction<SelectedObjectProperty>) => void
+  setSelectedObj: (value: SetStateAction<SelectedObjectProperty | null>) => void
 ) => {
   const selectedObj = canvas.getActiveObject();
   if (selectedObj) {
@@ -245,7 +245,7 @@ export const displaySelectedObj = (
  */
 export const updateSelectedObj = (
   canvas: fabric.Canvas,
-  setSelectedObj: (value: SetStateAction<SelectedObjectProperty>) => void
+  setSelectedObj: (value: SetStateAction<SelectedObjectProperty | null>) => void
 ) => {
   const selectedObj = canvas.getActiveObject();
   if (selectedObj) {
@@ -306,7 +306,9 @@ export const updateSelectedObj = (
 export const handleObjectSnap = (
   options: fabric.IEvent<MouseEvent>,
   canvas: fabric.Canvas,
-  setSelectedObj: (value: SetStateAction<SelectedObjectProperty>) => void,
+  setSelectedObj: (
+    value: SetStateAction<SelectedObjectProperty | null>
+  ) => void,
   horizontalLine: fabric.Line,
   verticalLine: fabric.Line
 ) => {
