@@ -11,11 +11,9 @@ import useTextPropertyChange from "../../hooks/useTextPropertyChange";
 import useFabricCanvasInit from "../../hooks/useFabricCanvasInit";
 import { Property } from "./Property";
 
-// TODO: add display property support for text should have fontFamily, fontSize, and more (High Priority)
-// TODO: add display property support for circle should have radius (High Priority)
-// TODO: add support for image upload (High Priority)
 // TODO: display layers object in the sidebar (High Priority)
 // TODO: manage layers by drag and drop object (High Priority)
+// TODO: add support for image upload (High Priority)
 // TODO: create canvas for back view and handle the switch between (High Priority)
 // TODO: convert the file into 3D texture for use on 3D mesh (Mid Priority)
 // TODO: Style the editor page
@@ -36,8 +34,9 @@ export const Editor = () => {
     angle: 0,
     fill: "",
   });
+  const [objects, setObjects] = useState<fabric.Object[]>([]);
 
-  useFabricCanvasInit(canvasRef, fabricCanvasRef);
+  useFabricCanvasInit(canvasRef, fabricCanvasRef, setObjects);
 
   // Handle canvas event logic
   useEffect(() => {
@@ -230,6 +229,13 @@ export const Editor = () => {
       <div className="flex">
         <div className="w-[314px] border border-r-gray-300 shadow-md ">
           Sidebar
+          <ul>
+            {objects.map((obj, index) => (
+              <li key={index}>
+                {obj.type} - {obj.name}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="flex-grow relative h-[calc(100vh-4rem)]">
