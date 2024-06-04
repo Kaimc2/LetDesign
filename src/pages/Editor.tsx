@@ -2,6 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
 import * as fb from "../utils/fabricUtils";
 
+// TODO: add display property support for text should have fontFamily, fontSize, and more (High Priority)
+// TODO: add display property support for circle should have radius (High Priority)
+// TODO: add support for image upload (High Priority)
+// TODO: display layers object in the sidebar (High Priority)
+// TODO: manage layers by drag and drop object (High Priority)
+// TODO: create canvas for back view and handle the switch between (High Priority)
+// TODO: convert the file into 3D texture for use on 3D mesh (Mid Priority)
+// TODO: Fixed the x postion property when move just y also change the x value slightly (Low Priority)
+
 export interface SelectedObj {
   id?: null;
   width?: number;
@@ -15,6 +24,7 @@ export interface SelectedObj {
 export const Editor = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  // const [isFront, setIsFront] = useState<boolean>(false);
   const [clipboard, setClipboard] = useState<fabric.Object | null>(null);
   const [showProperty, setShowProperty] = useState(false);
   const [selectedObj, setSelectedObj] = useState<SelectedObj>({
@@ -77,7 +87,7 @@ export const Editor = () => {
 
         fabricCanvasRef.current = fb.initializeCanvas(canvasElement.id);
         const canvas = fabricCanvasRef.current;
-        fb.initializeShirtCanvas(canvas);
+        fb.initializeFrontShirtCanvas(canvas);
 
         const horizontalLine = fb.initializeHorizontalLine(canvas);
         const verticalLine = fb.initializeVerticalLine(canvas);
@@ -107,7 +117,7 @@ export const Editor = () => {
           fb.updateSelectedObj(canvas, setSelectedObj)
         );
         canvas.on("object:moving", (e) =>
-          fb.handleObjectMove(
+          fb.handleObjectSnap(
             e,
             canvas,
             setSelectedObj,

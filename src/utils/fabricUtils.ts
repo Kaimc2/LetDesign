@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
-import shirtTemplateFront from "../assets/images/cloth/shirtTemplateFront.png";
+import shirtTemplateFront from "../assets/images/canvas/shirtTemplateFront.png";
+import shirtTemplateBack from "../assets/images/canvas/shirtTemplateBack.png";
 import { SetStateAction } from "react";
 import { SelectedObj } from "../pages/Editor";
 
@@ -15,13 +16,35 @@ export const initializeCanvas = (canvasId: string): fabric.Canvas => {
 };
 
 /**
- * Initialize the canvas to a shirt shape
+ * Initialize the canvas to a shirt shape for front side
  * @param canvas Reference to a canvas
  */
-export const initializeShirtCanvas = (canvas: fabric.Canvas) => {
+export const initializeFrontShirtCanvas = (canvas: fabric.Canvas) => {
   canvas.controlsAboveOverlay = true;
 
   fabric.Image.fromURL(shirtTemplateFront, (img) => {
+    img.scaleToWidth(700);
+    img.set({
+      selectable: false,
+      evented: false,
+    });
+
+    canvas.add(img);
+    canvas.centerObject(img);
+    canvas.sendToBack(img);
+
+    canvas.clipPath = img;
+  });
+};
+
+/**
+ * Initialize the canvas to a shirt shape for back side
+ * @param canvas Reference to a canvas
+ */
+export const initializeBackShirtCanvas = (canvas: fabric.Canvas) => {
+  canvas.controlsAboveOverlay = true;
+
+  fabric.Image.fromURL(shirtTemplateBack, (img) => {
     img.scaleToWidth(700);
     img.set({
       selectable: false,
@@ -149,6 +172,12 @@ export const toggleDrawMode = (canvas: fabric.Canvas) => {
   canvas.isDrawingMode = !canvas.isDrawingMode;
 };
 
+/**
+ * Display the active object properties
+ * @param canvas Reference to a canvas
+ * @param setShowProperty A setter function for showProperty state
+ * @param setSelectedObj A setter function for selectedObject
+ */
 export const displaySelectedObj = (
   canvas: fabric.Canvas,
   setShowProperty: (value: SetStateAction<boolean>) => void,
@@ -173,6 +202,11 @@ export const displaySelectedObj = (
   }
 };
 
+/**
+ * Update the display of an active object properties
+ * @param canvas Reference to a canvas
+ * @param setSelectedObj A setter function for selectedObject
+ */
 export const updateSelectedObj = (
   canvas: fabric.Canvas,
   setSelectedObj: (value: SetStateAction<SelectedObj>) => void
@@ -197,7 +231,15 @@ export const updateSelectedObj = (
   }
 };
 
-export const handleObjectMove = (
+/**
+ * Function to enable snapping to middle point for both horizontally and vertically
+ * @param options Reference to the selected object
+ * @param canvas Reference to a canvas
+ * @param setSelectedObj A setter for selected object
+ * @param horizontalLine A horizontal line object
+ * @param verticalLine A vertical line object
+ */
+export const handleObjectSnap = (
   options: fabric.IEvent<MouseEvent>,
   canvas: fabric.Canvas,
   setSelectedObj: (value: SetStateAction<SelectedObj>) => void,
@@ -288,6 +330,11 @@ export const removeObject = (canvas: fabric.Canvas | null): void => {
   }
 };
 
+/**
+ * Function to enable the ability to copy object
+ * @param canvas Reference to a canvas
+ * @param setClipboard A setter function for clipboard object
+ */
 export const copyObject = (
   canvas: fabric.Canvas,
   setClipboard: (value: SetStateAction<fabric.Object | null>) => void
@@ -302,6 +349,12 @@ export const copyObject = (
   }
 };
 
+/**
+ * Function to enable the ability to paste object
+ * @param canvas Reference to a canvas
+ * @param clipboard A clipboard object to keep track of copy object
+ * @param setClipboard A setter function for clipboard object
+ */
 export const pasteObject = (
   canvas: fabric.Canvas,
   clipboard: fabric.Object | null,
@@ -332,6 +385,15 @@ export const pasteObject = (
       canvas.requestRenderAll();
     });
   }
+};
+
+/**
+ * Save the canvas objects into a JSON format for storing
+ * @param canvas Reference to a canvas
+ * @returns An JSON object of canvas data
+ */
+export const saveCanvas = (canvas: fabric.Canvas) => {
+  return canvas.toJSON();
 };
 
 /**
