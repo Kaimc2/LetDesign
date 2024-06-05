@@ -8,15 +8,18 @@ import {
   TextProperty,
 } from "../../types/editor.types";
 import useTextPropertyChange from "../../hooks/useTextPropertyChange";
-import useFabricCanvasInit from "../../hooks/useFabricCanvasInit";
 import shirtFrontView from "../../assets/images/canvas/shirtTemplateFront.png";
 import shirtBackView from "../../assets/images/canvas/shirtTemplateBack.png";
 import { Property } from "./Property";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
+import { faT } from "@fortawesome/free-solid-svg-icons";
+import { FrontCanvas } from "./FrontCanvas";
+import { BackCanvas } from "./BackCanvas";
 
-// TODO: manage layers by drag and drop object (High Priority)
-// TODO: add support for image upload (High Priority)
-// TODO: create canvas for back view and handle the switch between (High Priority)
-// TODO: convert the file into 3D texture for use on 3D mesh (Mid Priority)
+// TODO: Add support for image upload (High Priority)
+// TODO: Convert the file into 3D texture for use on 3D mesh (Mid Priority)
 // TODO: Style the editor page
 // TODO: Display property for multiple objects selection (Low Priority)
 // TODO: Update the radius when resizing the circle object (Low Priority)
@@ -24,8 +27,10 @@ import { Property } from "./Property";
 // TODO: Fixed the object rotation (Low Priority)
 
 export const Editor = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const frontCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const backCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fabricFrontCanvasRef = useRef<fabric.Canvas | null>(null);
+  const fabricBackCanvasRef = useRef<fabric.Canvas | null>(null);
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isEdit, setIsEdit] = useState<boolean>(true);
   const [clipboard, setClipboard] = useState<fabric.Object | null>(null);
@@ -34,84 +39,66 @@ export const Editor = () => {
     null
   );
   const [objects, setObjects] = useState<fabric.Object[]>([]);
-  const [activeObject, setAciveObject] = useState<fabric.Object | null>(null);
+  const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
 
-  useFabricCanvasInit(canvasRef, fabricCanvasRef, setObjects);
-
-  // Handle canvas event logic
+  // Apply styles to canvas wrappers
   useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) throw new Error("Canvas not initialize");
+    const frontCanvas = fabricFrontCanvasRef.current;
+    const backCanvas = fabricBackCanvasRef.current;
 
-    const horizontalLine = fb.initializeHorizontalLine(canvas);
-    const verticalLine = fb.initializeVerticalLine(canvas);
+    applyCanvasWrapperStyle(frontCanvas, isFront);
+    applyCanvasWrapperStyle(backCanvas, !isFront);
+  }, [isFront]);
 
-    const handleKeydown = (keyboardEvent: KeyboardEvent) => {
-      // Check if the active element is an input, textarea, or other focusable element
-      const activeElement = document.activeElement;
-      const isInputActive =
-        activeElement &&
-        (activeElement.tagName === "INPUT" ||
-          activeElement.tagName === "TEXTAREA");
-
-      if (!isInputActive) {
-        if (keyboardEvent.key == "Backspace") {
-          fb.removeObject(fabricCanvasRef.current);
-        }
+  const applyCanvasWrapperStyle = (
+    canvas: fabric.Canvas | null,
+    isVisible: boolean
+  ) => {
+    if (canvas) {
+      const wrapper = canvas.getElement().parentNode as HTMLElement;
+      if (wrapper && wrapper.className === "canvas-container") {
+        wrapper.style.display = isVisible ? "block" : "none";
       }
+    }
+  };
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "z") {
-        console.log("undo");
+  const handleSwitchView = (state: boolean) => {
+    if (state) {
+      const canvas = fabricFrontCanvasRef.current;
+
+      if (canvas) {
+        const canvasObjects: fabric.Object[] = [];
+        canvas.getObjects().forEach((obj) => {
+          if (
+            obj.type === "rect" ||
+            obj.type === "circle" ||
+            obj.type === "i-text"
+          ) {
+            canvasObjects.push(obj);
+          }
+        });
+        setObjects(canvasObjects);
       }
+    } else {
+      const canvas = fabricBackCanvasRef.current;
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "y") {
-        console.log("redo");
+      if (canvas) {
+        const canvasObjects: fabric.Object[] = [];
+        canvas.getObjects().forEach((obj) => {
+          if (
+            obj.type === "rect" ||
+            obj.type === "circle" ||
+            obj.type === "i-text"
+          ) {
+            canvasObjects.push(obj);
+          }
+        });
+        setObjects(canvasObjects);
       }
+    }
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "c") {
-        fb.copyObject(canvas, setClipboard);
-      }
-
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "v") {
-        fb.pasteObject(canvas, clipboard, setClipboard);
-      }
-    };
-
-    canvas.on("selection:created", () => {
-      fb.displaySelectedObj(canvas, setShowProperty, setSelectedObj);
-      setAciveObject(canvas.getActiveObject());
-    });
-    canvas.on("selection:updated", () => {
-      fb.updateSelectedObj(canvas, setSelectedObj);
-      setAciveObject(canvas.getActiveObject());
-    });
-    canvas.on("selection:cleared", () => {
-      // setShowProperty(false);
-      setSelectedObj(null);
-      setAciveObject(null);
-    });
-    canvas.on("object:moving", (e) =>
-      fb.handleObjectSnap(
-        e,
-        canvas,
-        setSelectedObj,
-        horizontalLine,
-        verticalLine
-      )
-    );
-    canvas.on("object:rotating", () =>
-      fb.updateSelectedObj(canvas, setSelectedObj)
-    );
-    canvas.on("object:scaling", () =>
-      fb.updateSelectedObj(canvas, setSelectedObj)
-    );
-
-    window.addEventListener("keydown", handleKeydown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeydown);
-    };
-  }, [clipboard]);
+    setIsFront(state);
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -137,8 +124,12 @@ export const Editor = () => {
   };
 
   const handleInputBlur = () => {
-    if (fabricCanvasRef.current && selectedObj) {
-      const activeObject = fabricCanvasRef.current.getActiveObject();
+    const canvas = isFront
+      ? fabricFrontCanvasRef.current
+      : fabricBackCanvasRef.current;
+
+    if (canvas && selectedObj) {
+      const activeObject = canvas.getActiveObject();
 
       const commonProp = {
         left: selectedObj.x,
@@ -179,45 +170,67 @@ export const Editor = () => {
         });
       }
 
-      fabricCanvasRef.current.renderAll();
+      canvas.requestRenderAll();
     }
   };
 
-  const setActiveObject = (obj: fabric.Object) => {
-    if (fabricCanvasRef.current) {
-      fabricCanvasRef.current.setActiveObject(obj);
-      fabricCanvasRef.current.requestRenderAll();
+  const setActive = (obj: fabric.Object) => {
+    const canvas = isFront
+      ? fabricFrontCanvasRef.current
+      : fabricBackCanvasRef.current;
+
+    if (canvas) {
+      canvas.setActiveObject(obj);
+      canvas.requestRenderAll();
     }
   };
 
-  useTextPropertyChange(fabricCanvasRef.current, selectedObj);
+  useTextPropertyChange(
+    isFront ? fabricFrontCanvasRef.current : fabricBackCanvasRef.current,
+    selectedObj
+  );
 
   const addRect = () => {
-    if (fabricCanvasRef.current) fb.addRectangle(fabricCanvasRef.current);
+    const canvas = isFront
+      ? fabricFrontCanvasRef.current
+      : fabricBackCanvasRef.current;
+
+    if (canvas) fb.addRectangle(canvas);
   };
 
   const addCircle = () => {
-    if (fabricCanvasRef.current) fb.addCircle(fabricCanvasRef.current);
+    const canvas = isFront
+      ? fabricFrontCanvasRef.current
+      : fabricBackCanvasRef.current;
+
+    if (canvas) fb.addCircle(canvas);
   };
 
   const addText = () => {
-    if (fabricCanvasRef.current) fb.addText(fabricCanvasRef.current);
-  };
+    const canvas = isFront
+      ? fabricFrontCanvasRef.current
+      : fabricBackCanvasRef.current;
 
-  const enterPenMode = () => {
-    if (fabricCanvasRef.current) fb.toggleDrawMode(fabricCanvasRef.current);
+    if (canvas) fb.addText(canvas);
   };
 
   return (
     <section className="w-screen overflow-x-hidden flex flex-col">
       <div className="flex justify-between h-16 px-8 items-center bg-secondary">
-        <div className="flex items-center gap-2">
-          <img src="" alt="Logo" />
-          <div className="flex gap-2">
-            <button onClick={addRect}>Add Rectangle</button>
-            <button onClick={addCircle}>Add Circle</button>
-            <button onClick={addText}>Text</button>
-            <button onClick={enterPenMode}>Pen</button>
+        <div className="flex items-center gap-6">
+          <Link to={"/"}>
+            <img src="" alt="Logo" />
+          </Link>
+          <div className="flex gap-8">
+            <button title="Add Rectangle" onClick={addRect}>
+              <FontAwesomeIcon icon={faSquare} size="xl" />
+            </button>
+            <button title="Add Circle" onClick={addCircle}>
+              <FontAwesomeIcon icon={faCircle} size="xl" />
+            </button>
+            <button title="Add Text" onClick={addText}>
+              <FontAwesomeIcon icon={faT} size="xl" />
+            </button>
           </div>
         </div>
 
@@ -238,7 +251,7 @@ export const Editor = () => {
           <ul className="h-[517px] overflow-y-auto">
             {objects.map((obj, index) => (
               <li
-                onClick={() => setActiveObject(obj)}
+                onClick={() => setActive(obj)}
                 className={`py-4 px-9 border border-b-brand-gray hover:bg-[#DADADA]/80 hover:cursor-pointer ${
                   activeObject === obj && "bg-[#DADADA]/80"
                 }`}
@@ -253,7 +266,7 @@ export const Editor = () => {
             <h1 className="py-4 font-bold">View</h1>
             <div className="flex pb-4 justify-evenly gap-9">
               <div
-                onClick={() => setIsFront(true)}
+                onClick={() => handleSwitchView(true)}
                 className="group flex flex-col gap-4 items-center hover:cursor-pointer"
               >
                 <div
@@ -281,7 +294,7 @@ export const Editor = () => {
               </div>
 
               <div
-                onClick={() => setIsFront(false)}
+                onClick={() => handleSwitchView(false)}
                 className="group flex flex-col gap-4 items-center hover:cursor-pointer"
               >
                 <div
@@ -321,11 +334,36 @@ export const Editor = () => {
         </div>
 
         <div className="flex-grow relative h-[calc(100vh-4rem)]">
-          <canvas
-            ref={canvasRef}
+          <FrontCanvas
+            frontCanvasRef={frontCanvasRef}
+            fabricFrontCanvasRef={fabricFrontCanvasRef}
+            clipboard={clipboard}
+            setClipboard={setClipboard}
+            setObjects={setObjects}
+            setActiveObject={setActiveObject}
+            setSelectedObj={setSelectedObj}
+            setShowProperty={setShowProperty}
+          />
+          <BackCanvas
+            backCanvasRef={backCanvasRef}
+            fabricBackCanvasRef={fabricBackCanvasRef}
+            clipboard={clipboard}
+            setClipboard={setClipboard}
+            setObjects={setObjects}
+            setActiveObject={setActiveObject}
+            setSelectedObj={setSelectedObj}
+            setShowProperty={setShowProperty}
+          />
+          {/* <canvas
+            ref={frontCanvasRef}
             className="absolute top-0 left-0 w-full h-full"
-            id="myCanvas"
+            id="frontCanvas"
           ></canvas>
+          <canvas
+            ref={backCanvasRef}
+            className="absolute top-0 left-0 w-full h-full"
+            id="backCanvas"
+          ></canvas> */}
 
           <div className="absolute flex top-8 right-8">
             <div

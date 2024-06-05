@@ -11,12 +11,16 @@ import { IEvent, IText } from "fabric/fabric-impl";
 const useFabricCanvasInit = (
   canvasRef: MutableRefObject<HTMLCanvasElement | null>,
   fabricCanvasRef: MutableRefObject<fabric.Canvas | null>,
-  setObjects: Dispatch<SetStateAction<fabric.Object[]>>
+  setObjects: Dispatch<SetStateAction<fabric.Object[]>>,
+  isFrontCanvas: boolean
 ) => {
   const rectCounter = useRef(0);
   const circleCounter = useRef(0);
 
   useEffect(() => {
+    rectCounter.current = 0;
+    circleCounter.current = 0;
+
     const handleResize = () => {
       if (!canvasRef.current || !fabricCanvasRef.current) return;
 
@@ -44,7 +48,12 @@ const useFabricCanvasInit = (
 
         fabricCanvasRef.current = fb.initializeCanvas(canvasElement.id);
         const canvas = fabricCanvasRef.current;
-        fb.initializeFrontShirtCanvas(canvas);
+
+        if (isFrontCanvas) {
+          fb.initializeFrontShirtCanvas(canvas);
+        } else {
+          fb.initializeBackShirtCanvas(canvas);
+        }
 
         canvas.setWidth(container.clientWidth);
         canvas.setHeight(container.clientHeight);
@@ -119,7 +128,7 @@ const useFabricCanvasInit = (
       // Unmount event listener to avoid duplicate
       window.removeEventListener("resize", handleResize);
     };
-  }, [canvasRef, fabricCanvasRef, setObjects]);
+  }, [canvasRef, fabricCanvasRef, isFrontCanvas, setObjects]);
 };
 
 export default useFabricCanvasInit;
