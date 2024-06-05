@@ -34,6 +34,7 @@ export const Editor = () => {
     null
   );
   const [objects, setObjects] = useState<fabric.Object[]>([]);
+  const [activeObject, setAciveObject] = useState<fabric.Object | null>(null);
 
   useFabricCanvasInit(canvasRef, fabricCanvasRef, setObjects);
 
@@ -76,15 +77,18 @@ export const Editor = () => {
       }
     };
 
-    canvas.on("selection:created", () =>
-      fb.displaySelectedObj(canvas, setShowProperty, setSelectedObj)
-    );
-    canvas.on("selection:updated", () =>
-      fb.updateSelectedObj(canvas, setSelectedObj)
-    );
+    canvas.on("selection:created", () => {
+      fb.displaySelectedObj(canvas, setShowProperty, setSelectedObj);
+      setAciveObject(canvas.getActiveObject());
+    });
+    canvas.on("selection:updated", () => {
+      fb.updateSelectedObj(canvas, setSelectedObj);
+      setAciveObject(canvas.getActiveObject());
+    });
     canvas.on("selection:cleared", () => {
       // setShowProperty(false);
       setSelectedObj(null);
+      setAciveObject(null);
     });
     canvas.on("object:moving", (e) =>
       fb.handleObjectSnap(
@@ -235,7 +239,9 @@ export const Editor = () => {
             {objects.map((obj, index) => (
               <li
                 onClick={() => setActiveObject(obj)}
-                className="py-4 px-9 border border-b-brand-gray hover:bg-[#DADADA]/80 hover:cursor-pointer"
+                className={`py-4 px-9 border border-b-brand-gray hover:bg-[#DADADA]/80 hover:cursor-pointer ${
+                  activeObject === obj && "bg-[#DADADA]/80"
+                }`}
                 key={index}
               >
                 {obj.name}
