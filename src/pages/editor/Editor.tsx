@@ -17,14 +17,16 @@ import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import { faT } from "@fortawesome/free-solid-svg-icons";
 import { FrontCanvas } from "./FrontCanvas";
 import { BackCanvas } from "./BackCanvas";
+import CanvasViewer from "./CanvasViewer";
 
-// TODO: Add support for image upload (High Priority)
 // TODO: Convert the file into 3D texture for use on 3D mesh (Mid Priority)
-// TODO: Style the editor page
+// TODO: Add support for image upload (High Priority)
+// TODO: Fix the copy and paste for back canvas (Mid Priority)
 // TODO: Display property for multiple objects selection (Low Priority)
 // TODO: Update the radius when resizing the circle object (Low Priority)
 // TODO: Fixed the x postion property when move just y also change the x value slightly (Low Priority)
 // TODO: Fixed the object rotation (Low Priority)
+// TODO: Style the editor page
 
 export const Editor = () => {
   const frontCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -354,20 +356,19 @@ export const Editor = () => {
             setSelectedObj={setSelectedObj}
             setShowProperty={setShowProperty}
           />
-          {/* <canvas
-            ref={frontCanvasRef}
-            className="absolute top-0 left-0 w-full h-full"
-            id="frontCanvas"
-          ></canvas>
-          <canvas
-            ref={backCanvasRef}
-            className="absolute top-0 left-0 w-full h-full"
-            id="backCanvas"
-          ></canvas> */}
+
+          {/* Preview */}
+          {isFront && frontCanvasRef.current && fabricFrontCanvasRef.current ? (
+            <CanvasViewer canvas={frontCanvasRef.current} />
+          ) : (
+            <CanvasViewer canvas={backCanvasRef.current} />
+          )}
 
           <div className="absolute flex top-8 right-8">
             <div
-              onClick={() => setIsEdit(true)}
+              onClick={() => {
+                setIsEdit(true);
+              }}
               className={`border ${
                 isEdit && "bg-[#DADADA]/80"
               } border-black hover:bg-[#DADADA]/80 hover:cursor-pointer px-4 py-2 rounded-tl-md rounded-bl-md`}
