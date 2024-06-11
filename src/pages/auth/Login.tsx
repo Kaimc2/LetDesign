@@ -1,12 +1,13 @@
+// LoginForm.tsx
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faKey } from "@fortawesome/free-solid-svg-icons";
 
 interface LoginFormProps {
-  onSubmit: (email: string, password: string) => void;
+  onSubmit?: (email: string, password: string) => void; // Make onSubmit optional
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit = () => {} }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
 
@@ -115,7 +116,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
             <p>Don't have an account? <a href="#" className="text-yellow-400 hover:underline">
               Sign Up
             </a> </p>
-            
           </div>
           <div className="py-2">
             <button

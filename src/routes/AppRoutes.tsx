@@ -8,6 +8,7 @@ import { Editor } from "../pages/Editor";
 import { EditorLayout } from "../components/layout/EditorLayout";
 import { DashboardLayout } from "../components/layout/DashboardLayout";
 import { VerificationMessage } from "../pages/auth/VerificationMessage";
+import { Setting } from "../pages/dashboard_components/setting";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <DashboardLayout />,
-    children: [],
+    children: [{ path:"setting", element: <Setting/>}],
   },
   {
     path: "/emailverify",  
