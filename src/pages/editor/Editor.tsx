@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import logo from "../../assets/images/logo_white.png";
+import logo from "../../assets/images/brands/logo_white.png";
 import { fabric } from "fabric";
 import * as fb from "../../utils/fabricUtils";
 import {
