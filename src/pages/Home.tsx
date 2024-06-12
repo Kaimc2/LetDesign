@@ -1,7 +1,7 @@
-import heroImg from "../assets/images/hero.svg";
-import customization from "../assets/images/customization.svg";
-import imageViewer from "../assets/images/image_viewer.svg";
-import windowShopping from "../assets/images/window_shopping.svg";
+import heroImg from "../assets/images/graphics/hero.svg";
+import customization from "../assets/images/graphics/customization.svg";
+import imageViewer from "../assets/images/graphics/image_viewer.svg";
+import windowShopping from "../assets/images/graphics/window_shopping.svg";
 import { Link } from "react-router-dom";
 
 export const Home = () => {
