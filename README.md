@@ -1,30 +1,47 @@
-# React + TypeScript + Vite
+<div align="center">
+  <img src="src/assets/images/brands/logo_bg.png" width="250">
+</div>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Let Design
 
-Currently, two official plugins are available:
+Let Design is a custom clothing design platform that empowers users to create, customize, and visualize their own clothing designs. Users can design clothing items using an intuitive drag-and-drop canvas, visualize their creations in 3D, and place orders that are fulfilled by partnered tailors.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Interactive Design Canvas**: Create designs using Fabric.js with features like drag-and-drop, drawing, and importing images.
+- **3D Visualization**: View your designs in a 3D space using Three.js to see how they will look in real life.
+- **Order Options**: Choose between individual orders and bulk orders for teams or events.
+- **Customization Options**: Select different design elements like collar type, sleeve type, and fit.
+- **Partner Integration**: Connect with tailors and vendors to bring your designs to life.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Getting Started
 
-- Configure the top-level `parserOptions` property like this:
+### Prerequisites
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+- Node.js and npm
+- Composer
+- PHP and Laravel
+- MySQL or another database
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### Installation
+
+1. **Clone the repository:**
+
+   HTTPS
+   ```bash
+   git clone https://github.com/Kaimc2/LetDesign.git
+   cd LetDesign
+   ```
+
+   SSH
+   ```bash
+   git clone git@github.com:Kaimc2/LetDesign.git
+   cd LetDesign
+   ```
+   
+2. **Setup**
+
+   ```
+   npm install
+   npm run dev
+   ```
