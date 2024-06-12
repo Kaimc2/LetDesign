@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 
 export const Home = () => {
   return (
-    <div>
+    <div className="pt-[115px]">
+      <div className="absolute top-0 w-screen h-screen bg-background -z-10"></div>
       {/* Hero Section */}
       <div className="w-full lg:w-[1440px] mx-auto flex relative">
         <div className="ml-0 px-10 lg:ml-[80px] w-full lg:w-[40%]">
