@@ -72,8 +72,8 @@ export const BackCanvas: FC<Props> = ({
         canvas.setWidth(container.clientWidth);
         canvas.setHeight(container.clientHeight);
 
-        fb.addText(canvas, "My T-shirt Design", {
-          name: "My T-shirt Design",
+        fb.addText(canvas, "My Back Design", {
+          name: "My Back Design",
           fontSize: 30,
           top: 500,
           left: 400,

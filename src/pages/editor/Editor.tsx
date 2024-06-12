@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import logo from "../../assets/images/logo_white.png";
 import { fabric } from "fabric";
 import * as fb from "../../utils/fabricUtils";
 import {
@@ -48,18 +49,19 @@ export const Editor = () => {
     const frontCanvas = fabricFrontCanvasRef.current;
     const backCanvas = fabricBackCanvasRef.current;
 
-    applyCanvasWrapperStyle(frontCanvas, isFront);
-    applyCanvasWrapperStyle(backCanvas, !isFront);
-  }, [isFront]);
+    applyCanvasWrapperStyle(frontCanvas, isFront, isEdit);
+    applyCanvasWrapperStyle(backCanvas, !isFront, isEdit);
+  }, [isEdit, isFront]);
 
   const applyCanvasWrapperStyle = (
     canvas: fabric.Canvas | null,
-    isVisible: boolean
+    isVisible: boolean,
+    isEdit: boolean
   ) => {
     if (canvas) {
       const wrapper = canvas.getElement().parentNode as HTMLElement;
       if (wrapper && wrapper.className === "canvas-container") {
-        wrapper.style.display = isVisible ? "block" : "none";
+        wrapper.style.display = isVisible && isEdit ? "block" : "none";
       }
     }
   };
@@ -218,11 +220,12 @@ export const Editor = () => {
 
   return (
     <section className="w-screen overflow-x-hidden flex flex-col">
-      <div className="flex justify-between h-16 px-8 items-center bg-secondary">
+      <div className="flex justify-between h-16 px-8 items-center bg-secondary shadow-sm">
         <div className="flex items-center gap-6">
           <Link to={"/"}>
-            <img src="" alt="Logo" />
+            <img className="w-12 h-12 rounded-md" src={logo} alt="Logo" />
           </Link>
+
           <div className="flex gap-8">
             <button title="Add Rectangle" onClick={addRect}>
               <FontAwesomeIcon icon={faSquare} size="xl" />
@@ -240,7 +243,11 @@ export const Editor = () => {
 
         <div className="flex items-center gap-2">
           <p>Name</p>
-          <img src="" alt="Profile Picture" />
+          <img
+            className="w-10 h-10 rounded-full"
+            src="/placeholder/pf.png"
+            alt="Profile Picture"
+          />
         </div>
       </div>
 
@@ -358,10 +365,18 @@ export const Editor = () => {
           />
 
           {/* Preview */}
-          {isFront && frontCanvasRef.current && fabricFrontCanvasRef.current ? (
+          {/* {!isEdit && isFront ? (
             <CanvasViewer canvas={frontCanvasRef.current} />
           ) : (
-            <CanvasViewer canvas={backCanvasRef.current} />
+            !isEdit &&
+            !isFront && <CanvasViewer canvas={backCanvasRef.current} />
+          )} */}
+
+          {!isEdit && (
+            <CanvasViewer
+              frontCanvas={frontCanvasRef.current}
+              backCanvas={backCanvasRef.current}
+            />
           )}
 
           <div className="absolute flex top-8 right-8">
