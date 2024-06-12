@@ -17,25 +17,25 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Home /> },
       { path: "about", element: <About /> },
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      { path: "/account-verify", element: <VerificationMessage /> },
     ],
   },
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
   {
     path: "/design",
     element: <EditorLayout />,
     children: [{ path: "", element: <Editor /> }],
-  
   },
   {
     path: "/dashboard",
     element: <DashboardLayout />,
-    children: [{ path:"setting", element: <Setting/>}],
+    children: [{ path: "setting", element: <Setting /> }],
   },
   {
-    path: "/emailverify",  
-    element: <VerificationMessage/>,
-  }
+    path: "/emailverify",
+    element: <VerificationMessage />,
+  },
 ]);
 
 const AppRoutes = () => {
