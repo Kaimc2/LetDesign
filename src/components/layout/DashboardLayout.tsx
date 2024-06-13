@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import logo from "../../assets/images/brands/logo_white.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,30 +32,63 @@ export const DashboardLayout = () => {
       <div className="flex h-[calc(100vh-64px)]">
         <div className="flex flex-col justify-between w-[314px] px-8 py-[26px] border border-r-gray-300 shadow-md">
           <ul className="flex flex-col gap-[26px]">
-            <li className="flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer">
+            <NavLink
+              to={"/dashboard"}
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+              }
+              end
+            >
               <FontAwesomeIcon icon={faHome} size="lg" />
               <p>Overview</p>
-            </li>
-            <li className="flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer">
+            </NavLink>
+            <NavLink
+              to={"/dashboard/designs"}
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+              }
+            >
               <FontAwesomeIcon icon={faPenRuler} size="lg" />
-              <p>My Design</p>
-            </li>
-            <li className="flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer">
+              <p>My Designs</p>
+            </NavLink>
+            <NavLink
+              to={"/dashboard/commisions"}
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+              }
+            >
               <FontAwesomeIcon icon={faHome} size="lg" />
-              <p>Commission</p>
-            </li>
-            <li className="flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer">
+              <p>Commissions</p>
+            </NavLink>
+            <NavLink
+              to={"/dashboard/settings"}
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+              }
+            >
               <FontAwesomeIcon icon={faGear} size="lg" />
               <p>Settings</p>
-            </li>
+            </NavLink>
           </ul>
 
           <div className="flex flex-col gap-6">
             <Link
-              to={"/profile"}
+              to={"/dashboard/settings"}
               className="flex p-2 gap-2 items-center hover:shadow-md border hover:border-gray-300 hover:cursor-pointer rounded-md"
             >
-              <img className="w-10 h-10 rounded-full" src="" alt="Profile" />
+              <img
+                className="w-10 h-10 rounded-full"
+                src="/placeholder/pf.png"
+                alt="Profile"
+              />
               <div>
                 <p>PPC</p>
                 <p>p1ch3ypr4k@gmail.com</p>

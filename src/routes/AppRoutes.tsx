@@ -8,7 +8,8 @@ import { Editor } from "../pages/editor/Editor";
 import { EditorLayout } from "../components/layout/EditorLayout";
 import { DashboardLayout } from "../components/layout/DashboardLayout";
 import { VerificationMessage } from "../pages/auth/VerificationMessage";
-import { Setting } from "../pages/dashboard_components/setting";
+import { Settings } from "../pages/dashboard/Settings";
+import { Dashboard } from "../pages/dashboard/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <DashboardLayout />,
-    children: [{ path: "setting", element: <Setting /> }],
+    children: [
+      { path: "", element: <Dashboard /> },
+      { path: "settings", element: <Settings /> },
+    ],
   },
   {
     path: "/emailverify",

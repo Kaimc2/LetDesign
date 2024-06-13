@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from "react";
 
 const Profile = () => (
   <div>
@@ -12,7 +12,9 @@ const Profile = () => (
           <p className="text-lg">PPC</p>
           <p className="text-sm text-gray-600">p1ch3ypr4k@gmail.com</p>
         </div>
-        <button className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Edit</button>
+        <button className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">
+          Edit
+        </button>
       </div>
     </div>
     <h2 className="text-xl mb-4">Phone Number</h2>
@@ -23,9 +25,13 @@ const Profile = () => (
         </div>
         <div>
           <p className="text-lg">+855 xxx xxx x12</p>
-          <p className="text-sm text-gray-600">Keep your primary phone number up-to-date</p>
+          <p className="text-sm text-gray-600">
+            Keep your primary phone number up-to-date
+          </p>
         </div>
-        <button className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Manage</button>
+        <button className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">
+          Manage
+        </button>
       </div>
     </div>
   </div>
@@ -38,8 +44,8 @@ const Security = () => (
   </div>
 );
 
-export const Setting = () => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
+export const Settings = () => {
+  const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
 
   return (
     <div className="p-2 pl-8 font-regular text-gray-700">
@@ -47,33 +53,38 @@ export const Setting = () => {
       <div>
         <hr className="border-1 border-gray-500 mb-3" /> {/* Divider line */}
       </div>
-      <div className="border rounded-md shadow shadow-zinc-300 border-gray-300"> {/* Elevated container */}
-        <div className="flex px-3 pt-2"> {/* Tab container */}
+      <div className="border rounded-md shadow shadow-zinc-300 border-gray-300">
+        {/* Elevated container */}
+        <div className="flex px-3 pt-2">
+          {/* Tab container */}
           <button
             className={`px-4 py-2 mr-2 rounded-t-md ${
-              activeTab === 'profile' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-500'
+              activeTab === "profile"
+                ? "border-b-2 border-purple-500 text-purple-700"
+                : "text-gray-500"
             }`}
-            onClick={() => setActiveTab('profile')}
+            onClick={() => setActiveTab("profile")}
           >
             Profile
           </button>
           <button
             className={`px-4 py-2 rounded-t-md ${
-              activeTab === 'security' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-500'
+              activeTab === "security"
+                ? "border-b-2 border-purple-500 text-purple-700"
+                : "text-gray-500"
             }`}
-            onClick={() => setActiveTab('security')}
+            onClick={() => setActiveTab("security")}
           >
             Security
           </button>
         </div>
-        <hr className="border-1 border-gray-500 opacity-50" /> {/* Faded bottom border */}
+        <hr className="border-1 border-gray-500 opacity-50" />{" "}
+        {/* Faded bottom border */}
         <div className="p-3">
-          {activeTab === 'profile' && <Profile />}
-          {activeTab === 'security' && <Security />}
+          {activeTab === "profile" && <Profile />}
+          {activeTab === "security" && <Security />}
         </div>
       </div>
     </div>
   );
 };
-
-export default Setting;
