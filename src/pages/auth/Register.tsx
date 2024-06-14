@@ -9,6 +9,9 @@ import {
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
+import api from "../../utils/api";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   username: string;
@@ -28,6 +31,7 @@ interface Errors {
 
 export const Register = () => {
   const [hide, setHide] = useState(true);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
     username: "",
@@ -59,11 +63,33 @@ export const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Form data:", formData);
       // Submit the form
+      await api
+        .post("/auth/register", {
+          name: formData.username,
+          email: formData.email,
+          phone_number: formData.number,
+          password: formData.password,
+          password_confirmation: formData.confirmPassword,
+        })
+        .then(() => {
+          toast.success("Account created successfully");
+          navigate("/login");
+        })
+        .catch((err) => {
+          const errMessages = err.response.data.message;
+
+          const newErrors: Errors = {};
+          if (errMessages[0].includes("name")) {
+            newErrors.username = errMessages[0];
+          } else if (errMessages[0].includes("email")) {
+            newErrors.email = errMessages[0];
+          }
+          setErrors(newErrors);
+        });
     }
   };
 

@@ -15,7 +15,7 @@ import { Property } from "./Property";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
-import { faT } from "@fortawesome/free-solid-svg-icons";
+import { faT, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FrontCanvas } from "./FrontCanvas";
 import { BackCanvas } from "./BackCanvas";
 import CanvasViewer from "./CanvasViewer";
@@ -43,6 +43,8 @@ export const Editor = () => {
   );
   const [objects, setObjects] = useState<fabric.Object[]>([]);
   const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
+  const [designName, setDesignName] = useState<string>("My Design");
+  const fileUpload = useRef<HTMLInputElement>(null);
 
   // Apply styles to canvas wrappers
   useEffect(() => {
@@ -218,6 +220,14 @@ export const Editor = () => {
     if (canvas) fb.addText(canvas);
   };
 
+  const handleUpload = () => {
+    const files = fileUpload.current?.files;
+
+    if (files) {
+      console.log(files[0]);
+    }
+  };
+
   return (
     <section className="w-screen overflow-x-hidden flex flex-col">
       <div className="flex justify-between h-16 px-8 items-center bg-secondary shadow-sm">
@@ -236,10 +246,30 @@ export const Editor = () => {
             <button title="Add Text" onClick={addText}>
               <FontAwesomeIcon icon={faT} size="xl" />
             </button>
+            <button
+              onClick={() => fileUpload.current?.click()}
+              title="Upload Picture"
+            >
+              <input
+                className="hidden"
+                type="file"
+                accept="image/*"
+                ref={fileUpload}
+                onInput={handleUpload}
+                name="upload"
+                id="upload"
+              />
+              <FontAwesomeIcon icon={faUpload} size="xl" />
+            </button>
           </div>
         </div>
 
-        <p>Design Name</p>
+        <input
+          className="bg-transparent text-center focus:bg-white py-1"
+          value={designName}
+          onChange={(e) => setDesignName(e.target.value)}
+          type="text"
+        />
 
         <div className="flex items-center gap-2">
           <p>Name</p>
