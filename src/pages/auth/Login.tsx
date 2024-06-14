@@ -1,5 +1,5 @@
 // LoginForm.tsx
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEnvelope,
@@ -8,15 +8,19 @@ import {
   faKey,
 } from "@fortawesome/free-solid-svg-icons";
 import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
   onSubmit?: (email: string, password: string) => void; // Make onSubmit optional
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit = () => {} }) => {
+const LoginForm: React.FC<LoginFormProps> = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [hide, setHide] = useState(true);
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const validateForm = () => {
     let isValid = true;
@@ -46,10 +50,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit = () => {} }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData.email, formData.password);
+      const status = await login(formData.email, formData.password);
+      if (status) navigate("/");
     }
   };
 
