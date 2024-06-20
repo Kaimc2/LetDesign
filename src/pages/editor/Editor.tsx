@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import logo from "../../assets/images/brands/logo_white.png";
 import { fabric } from "fabric";
 import * as fb from "../../utils/fabricUtils";
@@ -12,22 +12,16 @@ import useTextPropertyChange from "../../hooks/useTextPropertyChange";
 import shirtFrontView from "../../assets/images/canvas/shirtTemplateFront.png";
 import shirtBackView from "../../assets/images/canvas/shirtTemplateBack.png";
 import { Property } from "./Property";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import { faT, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FrontCanvas } from "./FrontCanvas";
 import { BackCanvas } from "./BackCanvas";
 import CanvasViewer from "./CanvasViewer";
-
-// TODO: Convert the file into 3D texture for use on 3D mesh (Mid Priority)
-// TODO: Add support for image upload (High Priority)
-// TODO: Fix the copy and paste for back canvas (Mid Priority)
-// TODO: Display property for multiple objects selection (Low Priority)
-// TODO: Update the radius when resizing the circle object (Low Priority)
-// TODO: Fixed the x postion property when move just y also change the x value slightly (Low Priority)
-// TODO: Fixed the object rotation (Low Priority)
-// TODO: Style the editor page
+import { AuthContext } from "../../context/AuthContext";
+import { Design } from "../../types/design.types";
+import { NavbarDropdown } from "../../components/common/NavbarDropdown";
 
 export const Editor = () => {
   const frontCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -36,7 +30,6 @@ export const Editor = () => {
   const fabricBackCanvasRef = useRef<fabric.Canvas | null>(null);
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isEdit, setIsEdit] = useState<boolean>(true);
-  const [clipboard, setClipboard] = useState<fabric.Object | null>(null);
   const [showProperty, setShowProperty] = useState(true);
   const [selectedObj, setSelectedObj] = useState<SelectedObjectProperty | null>(
     null
@@ -45,6 +38,16 @@ export const Editor = () => {
   const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
   const [designName, setDesignName] = useState<string>("My Design");
   const fileUpload = useRef<HTMLInputElement>(null);
+  const { isAuthenticated } = useContext(AuthContext);
+  const [toggleDropdown, setToggleDropdown] = useState(false);
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      console.log(id);
+      // Call an api post to get the design data
+    }
+  }, [id]);
 
   // Apply styles to canvas wrappers
   useEffect(() => {
@@ -221,11 +224,33 @@ export const Editor = () => {
   };
 
   const handleUpload = () => {
+    const canvas = isFront
+      ? fabricFrontCanvasRef.current
+      : fabricBackCanvasRef.current;
     const files = fileUpload.current?.files;
 
-    if (files) {
-      console.log(files[0]);
+    if (files && canvas) {
+      const uploadedImg = URL.createObjectURL(files[0]);
+      fabric.Image.fromURL(uploadedImg, (oImg) => {
+        oImg.scale(0.2);
+        oImg.name = files[0].name;
+        canvas.add(oImg);
+        canvas.centerObject(oImg);
+      });
     }
+  };
+
+  const handleSave = () => {
+    const designData: Design = {
+      name: designName,
+      front_content: JSON.stringify(
+        fb.saveCanvas(fabricFrontCanvasRef.current)
+      ),
+      back_content: JSON.stringify(fb.saveCanvas(fabricBackCanvasRef.current)),
+    };
+
+    // send it to backend api to store design
+    console.log(designData);
   };
 
   return (
@@ -271,14 +296,28 @@ export const Editor = () => {
           type="text"
         />
 
-        <div className="flex items-center gap-2">
-          <p>Name</p>
-          <img
-            className="w-10 h-10 rounded-full"
-            src="/placeholder/pf.png"
-            alt="Profile Picture"
-          />
-        </div>
+        {isAuthenticated ? (
+          <div
+            onClick={() => setToggleDropdown(!toggleDropdown)}
+            className="hidden md:flex relative items-center gap-4 hover:cursor-pointer"
+          >
+            <img
+              className="w-10 h-10 rounded-full"
+              src="/placeholder/pf.png"
+              alt="profile picture"
+            />
+
+            {/* Dropdown Menu */}
+            {toggleDropdown && <NavbarDropdown />}
+          </div>
+        ) : (
+          <Link
+            to={"/register"}
+            className="hidden md:block px-[20px] py-[10px] text-lg bg-accent hover:bg-accent-80 text-white rounded-md "
+          >
+            Sign Up
+          </Link>
+        )}
       </div>
 
       <div className="flex">
@@ -363,7 +402,10 @@ export const Editor = () => {
           </div>
 
           <div className="flex px-8 gap-[10px] mt-[18px]">
-            <button className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80">
+            <button
+              onClick={handleSave}
+              className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80"
+            >
               Save Design
             </button>
             <button className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80">
@@ -376,8 +418,6 @@ export const Editor = () => {
           <FrontCanvas
             frontCanvasRef={frontCanvasRef}
             fabricFrontCanvasRef={fabricFrontCanvasRef}
-            clipboard={clipboard}
-            setClipboard={setClipboard}
             setObjects={setObjects}
             setActiveObject={setActiveObject}
             setSelectedObj={setSelectedObj}
@@ -386,21 +426,11 @@ export const Editor = () => {
           <BackCanvas
             backCanvasRef={backCanvasRef}
             fabricBackCanvasRef={fabricBackCanvasRef}
-            clipboard={clipboard}
-            setClipboard={setClipboard}
             setObjects={setObjects}
             setActiveObject={setActiveObject}
             setSelectedObj={setSelectedObj}
             setShowProperty={setShowProperty}
           />
-
-          {/* Preview */}
-          {/* {!isEdit && isFront ? (
-            <CanvasViewer canvas={frontCanvasRef.current} />
-          ) : (
-            !isEdit &&
-            !isFront && <CanvasViewer canvas={backCanvasRef.current} />
-          )} */}
 
           {!isEdit && (
             <CanvasViewer

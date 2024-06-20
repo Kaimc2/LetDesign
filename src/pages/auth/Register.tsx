@@ -12,24 +12,11 @@ import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import api from "../../utils/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
-interface FormData {
-  username: string;
-  email: string;
-  number: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface Errors {
-  username?: string;
-  email?: string;
-  number?: string;
-  password?: string;
-  confirmPassword?: string;
-}
+import useAuthRedirect from "../../hooks/useAuthRedirect";
+import { Errors, FormData } from "../../types/common.types";
 
 export const Register = () => {
+  useAuthRedirect();
   const [hide, setHide] = useState(true);
   const navigate = useNavigate();
 
@@ -77,7 +64,7 @@ export const Register = () => {
         })
         .then(() => {
           toast.success("Account created successfully");
-          navigate("/login");
+          navigate("/account-verify");
         })
         .catch((err) => {
           const errMessages = err.response.data.message;

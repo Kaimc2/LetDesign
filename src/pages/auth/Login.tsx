@@ -10,12 +10,14 @@ import {
 import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 interface LoginFormProps {
   onSubmit?: (email: string, password: string) => void; // Make onSubmit optional
 }
 
 const LoginForm: React.FC<LoginFormProps> = () => {
+  useAuthRedirect();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [hide, setHide] = useState(true);

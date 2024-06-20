@@ -5,6 +5,7 @@ import {
   SetStateAction,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import * as fb from "../../utils/fabricUtils";
 import { SelectedObjectProperty } from "../../types/editor.types";
@@ -13,8 +14,6 @@ import { IEvent, IText } from "fabric/fabric-impl";
 interface Props {
   frontCanvasRef: MutableRefObject<HTMLCanvasElement | null>;
   fabricFrontCanvasRef: MutableRefObject<fabric.Canvas | null>;
-  clipboard: fabric.Object | null;
-  setClipboard: Dispatch<SetStateAction<fabric.Object | null>>;
   setObjects: Dispatch<SetStateAction<fabric.Object[]>>;
   setSelectedObj: Dispatch<SetStateAction<SelectedObjectProperty | null>>;
   setActiveObject: Dispatch<SetStateAction<fabric.Object | null>>;
@@ -24,13 +23,12 @@ interface Props {
 export const FrontCanvas: FC<Props> = ({
   frontCanvasRef,
   fabricFrontCanvasRef,
-  clipboard,
-  setClipboard,
   setObjects,
   setSelectedObj,
   setActiveObject,
   setShowProperty,
 }) => {
+  const [clipboard, setClipboard] = useState<fabric.Object | null>(null);
   const rectCounter = useRef(0);
   const circleCounter = useRef(0);
 
@@ -111,7 +109,8 @@ export const FrontCanvas: FC<Props> = ({
             if (
               obj.type === "rect" ||
               obj.type === "circle" ||
-              obj.type === "i-text"
+              obj.type === "i-text" ||
+              (obj.type === "image" && obj.name !== "canvasTemplate")
             ) {
               canvasObjects.push(obj);
             }

@@ -2,6 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons";
 
 export const VerificationMessage: React.FC = () => {
+  const email = "KimjungUn168@gmail.com";
+
   return (
     <div className="flex flex-col items-center px-5 mt-16 lg:py-0">
       <div className="w-full bg-white rounded-lg border border-gray-300 dark:border md:mt-0 sm:max-w-xl p-6">
@@ -15,9 +17,9 @@ export const VerificationMessage: React.FC = () => {
             </p>
             <div className="flex-col p-3 px-6">
               <p>
-                We have sent email to <b>KimjungUn168@gmail.com</b> to confirm
-                the validity of our email address. After receiving the email
-                follow the link provided to complete your registration.
+                We have sent email to <b>{email}</b> to confirm the validity of
+                our email address. After receiving the email follow the link
+                provided to complete your registration.
               </p>
             </div>
 

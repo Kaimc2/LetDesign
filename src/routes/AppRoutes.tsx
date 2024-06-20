@@ -8,8 +8,11 @@ import { Editor } from "../pages/editor/Editor";
 import { EditorLayout } from "../components/layout/EditorLayout";
 import { DashboardLayout } from "../components/layout/DashboardLayout";
 import { VerificationMessage } from "../pages/auth/VerificationMessage";
-import { Settings } from "../pages/dashboard/Settings";
+import { Settings } from "../pages/dashboard/settings/Settings";
 import { Dashboard } from "../pages/dashboard/Dashboard";
+import { Design } from "../pages/dashboard/designs/Design";
+import { DeletedDesign } from "../pages/dashboard/designs/DeletedDesign";
+import { Commission } from "../pages/dashboard/commission/Commission";
 
 const router = createBrowserRouter([
   {
@@ -26,13 +29,19 @@ const router = createBrowserRouter([
   {
     path: "/design",
     element: <EditorLayout />,
-    children: [{ path: "", element: <Editor /> }],
+    children: [
+      { path: "", element: <Editor /> },
+      { path: "edit/:id", element: <Editor /> },
+    ],
   },
   {
     path: "/dashboard",
     element: <DashboardLayout />,
     children: [
       { path: "", element: <Dashboard /> },
+      { path: "designs", element: <Design /> },
+      { path: "designs/removed", element: <DeletedDesign /> },
+      { path: "commissions", element: <Commission /> },
       { path: "settings", element: <Settings /> },
     ],
   },
