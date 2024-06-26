@@ -1,8 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons";
+import { useLocation } from "react-router-dom";
 
 export const VerificationMessage: React.FC = () => {
-  const email = "KimjungUn168@gmail.com";
+  const { state } = useLocation();
+  const { email } = state;
+
+  const resendEmail = () => {
+    console.log("Resend Email");
+  };
 
   return (
     <div className="flex flex-col items-center px-5 mt-16 lg:py-0">
@@ -30,7 +36,7 @@ export const VerificationMessage: React.FC = () => {
           </div>
           <div>
             <button
-              type="submit"
+              onClick={resendEmail}
               className="w-full bg-secondary text-white hover:bg-secondary-80 focus:outline-none font-medium rounded-md
                text-bold px-5 py-2.5 text-center"
             >

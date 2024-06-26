@@ -64,7 +64,7 @@ export const Register = () => {
         })
         .then(() => {
           toast.success("Account created successfully");
-          navigate("/account-verify");
+          navigate("/account/verify", { state: { email: formData.email } });
         })
         .catch((err) => {
           const errMessages = err.response.data.message;
