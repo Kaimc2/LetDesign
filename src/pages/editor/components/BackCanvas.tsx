@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import * as fb from "../../utils/fabricUtils";
-import { SelectedObjectProperty } from "../../types/editor.types";
+import * as fb from "../../../utils/fabricUtils";
+import { SelectedObjectProperty } from "../../../types/editor.types";
 import { IEvent, IText } from "fabric/fabric-impl";
 
 interface Props {

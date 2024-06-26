@@ -1,15 +1,16 @@
 import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect } from "react";
-import toast from "react-hot-toast";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../../utils/api";
 import { AuthContext } from "../../../context/AuthContext";
+import { ConfirmDialog } from "../../../core/common/ConfirmDialog";
 // import { Design } from "../../../types/design.types";
 
 export const Design = () => {
   const { user } = useContext(AuthContext);
   // const [designs, setDesigns] = useState<Design[]>();
+  const [dialogState, setDialogState] = useState(false);
 
   useEffect(() => {
     const fetchDesigns = async () => {
@@ -21,6 +22,10 @@ export const Design = () => {
 
     fetchDesigns();
   }, [user?.accessToken]);
+
+  const deleteDesign = () => {
+    console.log("delete");
+  };
 
   return (
     <div className="ml-4">
@@ -63,7 +68,7 @@ export const Design = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                toast("Hello");
+                setDialogState(true);
               }}
               className="absolute hidden group-hover:block top-2 right-2 hover:text-error"
               title="Delete"
@@ -75,6 +80,15 @@ export const Design = () => {
           <p className="text-xs text-brand-gray">Edited 1 day ago</p>
         </div>
       </div>
+
+      {dialogState && (
+        <ConfirmDialog
+          name="Design Name"
+          blurFn={() => setDialogState(false)}
+          confirmFn={deleteDesign}
+          cancelFn={() => setDialogState(false)}
+        />
+      )}
     </div>
   );
 };

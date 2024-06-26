@@ -11,17 +11,17 @@ import {
 import useTextPropertyChange from "../../hooks/useTextPropertyChange";
 import shirtFrontView from "../../assets/images/canvas/shirtTemplateFront.png";
 import shirtBackView from "../../assets/images/canvas/shirtTemplateBack.png";
-import { Property } from "./Property";
-import { Link, useParams } from "react-router-dom";
+import { Property } from "./components/Property";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import { faT, faUpload } from "@fortawesome/free-solid-svg-icons";
-import { FrontCanvas } from "./FrontCanvas";
-import { BackCanvas } from "./BackCanvas";
-import CanvasViewer from "./CanvasViewer";
+import { FrontCanvas } from "./components/FrontCanvas";
+import { BackCanvas } from "./components/BackCanvas";
+import CanvasViewer from "./components/CanvasViewer";
 import { AuthContext } from "../../context/AuthContext";
 import { Design } from "../../types/design.types";
-import { NavbarDropdown } from "../../components/common/NavbarDropdown";
+import { NavbarDropdown } from "../../core/common/NavbarDropdown";
 
 export const Editor = () => {
   const frontCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -41,6 +41,7 @@ export const Editor = () => {
   const { isAuthenticated } = useContext(AuthContext);
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
@@ -253,6 +254,22 @@ export const Editor = () => {
     console.log(designData);
   };
 
+  const handleSend = () => {
+    const frontCanvas = JSON.stringify(
+      fb.saveCanvas(fabricFrontCanvasRef.current)
+    );
+    const backCanvas = JSON.stringify(
+      fb.saveCanvas(fabricBackCanvasRef.current)
+    );
+
+    navigate("/design/commission/create", {
+      state: {
+        frontCanvas: frontCanvas,
+        backCanvas: backCanvas,
+      },
+    });
+  };
+
   return (
     <section className="w-screen overflow-x-hidden flex flex-col">
       <div className="flex justify-between h-16 px-8 items-center bg-secondary shadow-sm">
@@ -408,7 +425,10 @@ export const Editor = () => {
             >
               Save Design
             </button>
-            <button className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80">
+            <button
+              onClick={handleSend}
+              className="p-[10px] w-[128px] text-center rounded-md text-white bg-accent hover:bg-accent-80"
+            >
               Send Design
             </button>
           </div>

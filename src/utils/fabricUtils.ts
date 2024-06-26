@@ -476,6 +476,19 @@ export const saveCanvas = (canvas: fabric.Canvas | null) => {
 };
 
 /**
+ * Load the canvas objects from a JSON format
+ * @param canvas Reference to a canvas
+ * @param canvasData Reference to canvas json data
+ */
+export const loadCanvas = (
+  canvas: fabric.Canvas | null,
+  canvasData: string
+) => {
+  if (!canvas) return;
+  canvas.loadFromJSON(JSON.parse(canvasData), canvas.renderAll.bind(canvas));
+};
+
+/**
  * Clear out the entire canvas
  * @param canvas reference to a canvas
  */
