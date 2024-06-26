@@ -1,9 +1,9 @@
 export const About = () => {
   return (
     <div className="px-16 md:px-[106px]">
-      <div className="h-full lg:h-[calc(100vh-165px)] mt-[88px]">
+      <div className="h-full mt-[88px]">
         <h1 className="text-[46px] font-bold">About Us</h1>
-        <div className="flex flex-col lg:flex-row items-center gap-[75px]">
+        <div className="flex flex-col 2xl:flex-row items-center gap-0 2xl:gap-[75px]">
           <div className="flex flex-col gap-4">
             <h2 className="text-[32px] font-bold">Our Mission</h2>
             <p className="text-2xl">
@@ -17,7 +17,7 @@ export const About = () => {
             </p>
           </div>
           <img
-            className="rounded-md"
+            className="rounded-md my-[75px]"
             src="/placeholder/placeholder.jpg"
             alt="photo"
           />
