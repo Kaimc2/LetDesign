@@ -9,8 +9,12 @@ import { NavbarDropdown } from "../../core/common/NavbarDropdown";
 import CanvasViewer from "./components/CanvasViewer";
 import { loadCanvas } from "../../utils/fabricUtils";
 import { ReadOnlyBackCanvas } from "./components/ReadOnlyBackCanvas";
+import { FirstStep } from "./commission/FirstStep";
+import { SecondStep } from "./commission/SecondStep";
+// import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 export const CreateCommission = () => {
+  // useAuthRedirect();
   const { isAuthenticated } = useContext(AuthContext);
   const { state } = useLocation();
   const {
@@ -24,6 +28,7 @@ export const CreateCommission = () => {
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [is2D, setIs2D] = useState(true);
   const [isFront, setIsFront] = useState(true);
+  const [step, setStep] = useState(1);
 
   useEffect(() => {
     if (frontCanvas && backCanvas) {
@@ -94,10 +99,15 @@ export const CreateCommission = () => {
       <div className="flex">
         <div className="w-[314px] border border-r-gray-300 shadow-md">
           <h1 className="py-4 px-8 font-bold border border-b-brand-gray">
-            Commission
+            Create a commission
           </h1>
 
-          <div className="h-[517px] overflow-y-auto">something</div>
+          <div className="h-[517px] overflow-y-auto">
+            <div className="flex flex-col gap-6 p-6">
+              {step == 1 && <FirstStep />}
+              {step == 2 && <SecondStep />}
+            </div>
+          </div>
 
           <div className="px-8 border border-y-brand-gray">
             <h1 className="py-4 font-bold">View</h1>
@@ -161,19 +171,35 @@ export const CreateCommission = () => {
           </div>
 
           <div className="flex px-8 gap-[10px] mt-[18px]">
-            <button className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80">
-              Save Design
-            </button>
-            <Link
-              to={"/design/commission/create"}
-              className="p-[10px] w-[128px] text-center rounded-md text-white bg-accent hover:bg-accent-80"
-            >
-              Send Design
-            </Link>
+            {step == 1 ? (
+              <>
+                <button className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80">
+                  Save Design
+                </button>
+                <button
+                  onClick={() => setStep(2)}
+                  className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80"
+                >
+                  Next
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setStep(1)}
+                  className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80"
+                >
+                  Go Back
+                </button>
+                <button className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80">
+                  Confirm
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        <div className="flex-grow relative h-[calc(100vh-4rem)]">
+        <div className="flex-grow flex items-center justify-center relative h-[calc(100vh-4rem)]">
           <ReadOnlyFrontCanvas
             frontCanvasRef={frontCanvasRef}
             fabricFrontCanvasRef={fabricFrontCanvasRef}
@@ -212,7 +238,7 @@ export const CreateCommission = () => {
           </div>
         </div>
 
-        <div className="w-[314px]">a</div>
+        {/* <div className="w-[314px]"></div> */}
       </div>
     </section>
   );
