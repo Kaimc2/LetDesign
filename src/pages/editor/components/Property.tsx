@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SelectedObjectProperty } from "../../types/editor.types";
+import { SelectedObjectProperty } from "../../../types/editor.types";
 
 interface Props {
   selectedObj: SelectedObjectProperty | null;

@@ -31,6 +31,7 @@ export const initializeFrontShirtCanvas = (canvas: fabric.Canvas) => {
   fabric.Image.fromURL(shirtTemplateFront, (img) => {
     img.scaleToWidth(700);
     img.set({
+      name: "canvasTemplate",
       selectable: false,
       evented: false,
     });
@@ -53,8 +54,10 @@ export const initializeBackShirtCanvas = (canvas: fabric.Canvas) => {
   fabric.Image.fromURL(shirtTemplateBack, (img) => {
     img.scaleToWidth(700);
     img.set({
+      name: "canvasTemplate",
       selectable: false,
       evented: false,
+      hoverCursor: "default",
     });
 
     canvas.add(img);
@@ -234,6 +237,11 @@ export const displaySelectedObj = (
         textAlign: (selectedObj as fabric.IText).textAlign,
         lineHeight: (selectedObj as fabric.IText).lineHeight,
       } as TextProperty);
+    } else if (
+      selectedObj.type === "image" &&
+      selectedObj.name !== "canvasTemplate"
+    ) {
+      setSelectedObj({ ...commonProp });
     }
   }
 };
@@ -291,6 +299,11 @@ export const updateSelectedObj = (
         textAlign: (selectedObj as fabric.IText).textAlign,
         lineHeight: (selectedObj as fabric.IText).lineHeight,
       } as TextProperty);
+    } else if (
+      selectedObj.type === "image" &&
+      selectedObj.name !== "canvasTemplate"
+    ) {
+      setSelectedObj({ ...commonProp });
     }
   }
 };
@@ -458,8 +471,22 @@ export const pasteObject = (
  * @param canvas Reference to a canvas
  * @returns An JSON object of canvas data
  */
-export const saveCanvas = (canvas: fabric.Canvas) => {
-  return canvas.toJSON();
+export const saveCanvas = (canvas: fabric.Canvas | null) => {
+  if (!canvas) return;
+  return canvas.toJSON(["selectable"]);
+};
+
+/**
+ * Load the canvas objects from a JSON format
+ * @param canvas Reference to a canvas
+ * @param canvasData Reference to canvas json data
+ */
+export const loadCanvas = (
+  canvas: fabric.Canvas | null,
+  canvasData: string
+) => {
+  if (!canvas) return;
+  canvas.loadFromJSON(JSON.parse(canvasData), canvas.renderAll.bind(canvas));
 };
 
 /**

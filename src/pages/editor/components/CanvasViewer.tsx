@@ -49,18 +49,18 @@ const CanvasViewer: FC<Props> = ({ frontCanvas, backCanvas }) => {
     frontTexture.flipY = false;
     frontTexture.wrapS = THREE.RepeatWrapping;
     frontTexture.wrapT = THREE.RepeatWrapping;
-    frontTexture.repeat.set(0.58, 0.58);
-    frontTexture.offset.x = 0.215;
-    frontTexture.offset.y = 0.162;
+    // frontTexture.repeat.set(0.58, 0.58);
+    // frontTexture.offset.x = 0.215;
+    // frontTexture.offset.y = 0.162;
     frontTexture.needsUpdate = true;
 
     const backTexture = new THREE.CanvasTexture(backCanvas);
     backTexture.flipY = false;
     backTexture.wrapS = THREE.RepeatWrapping;
     backTexture.wrapT = THREE.RepeatWrapping;
-    backTexture.repeat.set(0.56, 0.56);
-    backTexture.offset.x = 0.225;
-    backTexture.offset.y = 0.172;
+    // backTexture.repeat.set(0.58, 0.58);
+    // backTexture.offset.x = 0.225;
+    // backTexture.offset.y = 0.172;
     backTexture.needsUpdate = true;
 
     // Load the shirt model

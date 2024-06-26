@@ -1,14 +1,21 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomeLayout from "../components/layout/HomeLayout";
+import HomeLayout from "../core/layout/HomeLayout";
 import { Home } from "../pages/Home";
 import { About } from "../pages/About";
 import Login from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
 import { Editor } from "../pages/editor/Editor";
-import { EditorLayout } from "../components/layout/EditorLayout";
-import { DashboardLayout } from "../components/layout/DashboardLayout";
+import { EditorLayout } from "../core/layout/EditorLayout";
+import { DashboardLayout } from "../core/layout/DashboardLayout";
 import { VerificationMessage } from "../pages/auth/VerificationMessage";
-import { Settings } from "../pages/dashboard/Settings";
+import { Settings } from "../pages/dashboard/settings/Settings";
+import { Dashboard } from "../pages/dashboard/Dashboard";
+import { Design } from "../pages/dashboard/designs/Design";
+import { DeletedDesign } from "../pages/dashboard/designs/DeletedDesign";
+import { Commission } from "../pages/dashboard/commission/Commission";
+import { CreateCommission } from "../pages/editor/CreateCommission";
+import { Page404 } from "../core/error/Page404";
+import { Page403 } from "../core/error/Page403";
 
 const router = createBrowserRouter([
   {
@@ -17,20 +24,35 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Home /> },
       { path: "about", element: <About /> },
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
-      { path: "/account-verify", element: <VerificationMessage /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
+      { path: "account/verify", element: <VerificationMessage /> },
+      { path: "unauthorized", element: <Page403 /> },
+      { path: "*", element: <Page404 /> },
     ],
   },
   {
     path: "/design",
     element: <EditorLayout />,
-    children: [{ path: "", element: <Editor /> }],
+    children: [
+      { path: "", element: <Editor /> },
+      { path: "edit/:id", element: <Editor /> },
+      {
+        path: "commission/create",
+        element: <CreateCommission />,
+      },
+    ],
   },
   {
     path: "/dashboard",
     element: <DashboardLayout />,
-    children: [{ path: "settings", element: <Settings /> }],
+    children: [
+      { path: "", element: <Dashboard /> },
+      { path: "designs", element: <Design /> },
+      { path: "designs/removed", element: <DeletedDesign /> },
+      { path: "commissions", element: <Commission /> },
+      { path: "settings", element: <Settings /> },
+    ],
   },
 ]);
 

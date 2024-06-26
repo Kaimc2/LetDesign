@@ -1,16 +1,11 @@
 import logo from "../../assets/images/brands/logo.png";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBars,
-  faGrip,
-  faRightFromBracket,
-  faShirt,
-  faUserPen,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Drawer } from "./Drawer";
+import { NavbarDropdown } from "./NavbarDropdown";
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useContext(AuthContext);
@@ -55,7 +50,6 @@ export const Navbar = () => {
           onClick={() => setToggleDropdown(!toggleDropdown)}
           className="hidden md:flex relative items-center gap-4 hover:cursor-pointer"
         >
-          <p>{user?.name}</p>
           <img
             className="w-16 h-16 rounded-full"
             src="/placeholder/pf.png"
@@ -63,44 +57,7 @@ export const Navbar = () => {
           />
 
           {/* Dropdown Menu */}
-          {toggleDropdown && (
-            <div
-              className="flex flex-col absolute right-0 top-[72px] w-[206px] border border-gray-200 bg-white 
-              rounded-md shadow-md z-20"
-            >
-              <Link
-                className="flex items-center gap-4 p-4 hover:bg-accent hover:text-white"
-                to={"/dashboard"}
-              >
-                <FontAwesomeIcon icon={faGrip} size="lg"></FontAwesomeIcon>
-                Dashboard
-              </Link>
-              <Link
-                className="flex items-center gap-4 p-4 hover:bg-accent hover:text-white"
-                to={"/design"}
-              >
-                <FontAwesomeIcon icon={faShirt}></FontAwesomeIcon>
-                My Designs
-              </Link>
-              <Link
-                className="flex items-center gap-4 p-4 hover:bg-accent hover:text-white"
-                to="/dashboard/settings"
-              >
-                <FontAwesomeIcon icon={faUserPen} size="lg"></FontAwesomeIcon>
-                Profile
-              </Link>
-              <button
-                onClick={logout}
-                className="border flex items-center gap-4 border-t-brand-gray p-4 hover:bg-accent hover:text-white"
-              >
-                <FontAwesomeIcon
-                  icon={faRightFromBracket}
-                  size="lg"
-                ></FontAwesomeIcon>
-                Sign Out
-              </button>
-            </div>
-          )}
+          {toggleDropdown && <NavbarDropdown />}
         </div>
       ) : (
         <Link

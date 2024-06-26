@@ -29,7 +29,16 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const storeUser = localStorage.getItem("user");
     if (storeUser) {
-      setUser(JSON.parse(storeUser));
+      const parseData = JSON.parse(storeUser);
+      setUser({
+        id: parseData.id,
+        name: parseData.name,
+        email: parseData.email,
+        profilePicture: parseData?.profile_picture,
+        role: parseData.role ?? "user",
+        phoneNumber: parseData.phone_number,
+        accessToken: parseData.accessToken,
+      } as User);
       setIsAuthenticated(true);
     }
   }, []);
@@ -38,7 +47,14 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const res = await api.post("/auth/login", { email, password });
       const userData = res.data.data;
-      setUser(userData);
+      setUser({
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        profilePicture: userData?.profile_picture,
+        phoneNumber: userData.phone_number,
+        accessToken: userData.accessToken,
+      } as User);
       localStorage.setItem("user", JSON.stringify(userData));
       setIsAuthenticated(true);
       toast.success(res.data.message);
