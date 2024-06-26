@@ -10,6 +10,7 @@ import {
 import * as fb from "../../../utils/fabricUtils";
 import { SelectedObjectProperty } from "../../../types/editor.types";
 import { IEvent, IText } from "fabric/fabric-impl";
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from "../../../types/common.types";
 
 interface Props {
   backCanvasRef: MutableRefObject<HTMLCanvasElement | null>;
@@ -37,38 +38,21 @@ export const BackCanvas: FC<Props> = ({
     rectCounter.current = 0;
     circleCounter.current = 0;
 
-    const handleResize = () => {
-      if (!backCanvasRef.current || !fabricBackCanvasRef.current) return;
-
-      const canvasElement = backCanvasRef.current;
-      const container = canvasElement.parentElement;
-
-      if (container) {
-        canvasElement.width = container.clientWidth;
-        canvasElement.height = container.clientHeight;
-
-        fabricBackCanvasRef.current.setWidth(container.clientWidth);
-        fabricBackCanvasRef.current.setHeight(container.clientHeight);
-
-        fabricBackCanvasRef.current.renderAll();
-      }
-    };
-
     if (backCanvasRef.current) {
       const canvasElement = backCanvasRef.current;
       const container = canvasElement.parentElement;
 
       if (container) {
-        canvasElement.width = container.clientWidth;
-        canvasElement.height = container.clientHeight;
+        canvasElement.width = CANVAS_WIDTH;
+        canvasElement.height = CANVAS_HEIGHT;
 
         fabricBackCanvasRef.current = fb.initializeCanvas(canvasElement.id);
         const canvas = fabricBackCanvasRef.current;
 
         fb.initializeBackShirtCanvas(canvas);
 
-        canvas.setWidth(container.clientWidth);
-        canvas.setHeight(container.clientHeight);
+        canvas.setWidth(CANVAS_WIDTH);
+        canvas.setHeight(CANVAS_HEIGHT);
 
         fb.addText(canvas, "My Back Design", {
           name: "My Back Design",
@@ -132,14 +116,9 @@ export const BackCanvas: FC<Props> = ({
       }
     }
 
-    window.addEventListener("resize", handleResize);
-
     return () => {
       // Dispose the existing canvas instance
       fabricBackCanvasRef.current?.dispose();
-
-      // Unmount event listener to avoid duplicate
-      window.removeEventListener("resize", handleResize);
     };
   }, [backCanvasRef, fabricBackCanvasRef, setObjects]);
 

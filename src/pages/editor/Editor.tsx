@@ -434,7 +434,7 @@ export const Editor = () => {
           </div>
         </div>
 
-        <div className="flex-grow relative h-[calc(100vh-4rem)]">
+        <div className="flex-grow flex justify-center items-center relative h-[calc(100vh-4rem)]">
           <FrontCanvas
             frontCanvasRef={frontCanvasRef}
             fabricFrontCanvasRef={fabricFrontCanvasRef}

@@ -1,3 +1,6 @@
+export const CANVAS_WIDTH = 675;
+export const CANVAS_HEIGHT = 670;
+
 export interface FormData {
   username: string;
   email: string;

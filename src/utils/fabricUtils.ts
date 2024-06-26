@@ -57,6 +57,7 @@ export const initializeBackShirtCanvas = (canvas: fabric.Canvas) => {
       name: "canvasTemplate",
       selectable: false,
       evented: false,
+      hoverCursor: "default",
     });
 
     canvas.add(img);
@@ -472,7 +473,7 @@ export const pasteObject = (
  */
 export const saveCanvas = (canvas: fabric.Canvas | null) => {
   if (!canvas) return;
-  return canvas.toJSON();
+  return canvas.toJSON(["selectable"]);
 };
 
 /**
