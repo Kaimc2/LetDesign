@@ -72,49 +72,6 @@ export const BackCanvas: FC<Props> = ({
           rx: 5,
           ry: 5,
         });
-
-        const handleObjectAdded = (e: IEvent<MouseEvent>) => {
-          const obj = e.target;
-          if (obj) {
-            if (obj.type === "rect") {
-              rectCounter.current += 1;
-              obj.set("name", `Rect ${rectCounter.current}`);
-            } else if (obj.type === "circle") {
-              circleCounter.current += 1;
-              obj.set("name", `Circle ${circleCounter.current}`);
-            } else if (obj.type === "i-text") {
-              obj.set("name", (obj as IText).text);
-            }
-            updateCanvasObjects();
-          }
-        };
-
-        const updateCanvasObjects = () => {
-          const canvasObjects: fabric.Object[] = [];
-          canvas.getObjects().forEach((obj) => {
-            if (
-              obj.type === "rect" ||
-              obj.type === "circle" ||
-              obj.type === "i-text" ||
-              (obj.type === "image" && obj.name !== "canvasTemplate")
-            ) {
-              canvasObjects.push(obj);
-            }
-          });
-          setObjects(canvasObjects);
-        };
-
-        const handleObjectModified = (e: fabric.IEvent<MouseEvent>) => {
-          const obj = e.target;
-          if (obj && obj.type === "i-text") {
-            obj.set("name", (obj as fabric.IText).text);
-          }
-          updateCanvasObjects();
-        };
-
-        canvas.on("object:added", handleObjectAdded);
-        canvas.on("object:removed", updateCanvasObjects);
-        canvas.on("object:modified", handleObjectModified);
       }
     }
 
@@ -123,6 +80,55 @@ export const BackCanvas: FC<Props> = ({
       fabricBackCanvasRef.current?.dispose();
     };
   }, [backCanvasRef, fabricBackCanvasRef, setObjects]);
+
+  // Handle object event logic
+  useEffect(() => {
+    const canvas = fabricBackCanvasRef.current;
+    if (!canvas) return;
+
+    const handleObjectAdded = (e: IEvent<MouseEvent>) => {
+      const obj = e.target;
+      if (obj) {
+        if (obj.type === "rect") {
+          rectCounter.current += 1;
+          obj.set("name", `Rect ${rectCounter.current}`);
+        } else if (obj.type === "circle") {
+          circleCounter.current += 1;
+          obj.set("name", `Circle ${circleCounter.current}`);
+        } else if (obj.type === "i-text") {
+          obj.set("name", (obj as IText).text);
+        }
+        updateCanvasObjects();
+      }
+    };
+
+    const updateCanvasObjects = () => {
+      const canvasObjects: fabric.Object[] = [];
+      canvas.getObjects().forEach((obj) => {
+        if (
+          obj.type === "rect" ||
+          obj.type === "circle" ||
+          obj.type === "i-text" ||
+          (obj.type === "image" && obj.name !== "canvasTemplate")
+        ) {
+          canvasObjects.push(obj);
+        }
+      });
+      if (!isFront) setObjects(canvasObjects);
+    };
+
+    const handleObjectModified = (e: fabric.IEvent<MouseEvent>) => {
+      const obj = e.target;
+      if (obj && obj.type === "i-text") {
+        obj.set("name", (obj as fabric.IText).text);
+      }
+      updateCanvasObjects();
+    };
+
+    canvas.on("object:added", handleObjectAdded);
+    canvas.on("object:removed", updateCanvasObjects);
+    canvas.on("object:modified", handleObjectModified);
+  }, [fabricBackCanvasRef, isFront, setObjects]);
 
   // Handle canvas event logic
   useEffect(() => {
