@@ -11,9 +11,8 @@ const useRoleGuard = (requiredRole: string) => {
       // Redirect to login if not authenticated
       navigate("/login");
     } else if (user?.role !== requiredRole) {
-      // Redirect to home or an unauthorized page if the role doesn't match
-      navigate("/");
-      // navigate("/unauthorized");
+      // Redirect to an unauthorized page if the role doesn't match
+      navigate("/unauthorized");
     }
   }, [isAuthenticated, user, requiredRole, navigate]);
 };

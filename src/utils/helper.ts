@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 /**
  * Convert phone number string into hidden format.
  * Example: "012345678" -> "+855 xxx xxx x78"
@@ -19,4 +21,26 @@ export function hidePhoneNumber(
 
   const visiblePart = phoneNumber.slice(-2); // Extract last two digits
   return `${countryCode} ${hiddenPattern}${visiblePart}`;
+}
+
+/**
+ * Display a notification based on it status
+ * 
+ * @param message - The message you want to display
+ * @param status - The status of the notification
+ */
+export function displayNotification(message: string, status: string) {
+  switch (status) {
+    case "success":
+      toast.success(message);
+      break;
+    case "error":
+      toast.error(message);
+      break;
+    case "normal":
+      toast(message);
+      break;
+    default:
+      break;
+  }
 }

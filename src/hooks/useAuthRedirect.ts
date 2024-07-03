@@ -1,18 +1,17 @@
 import { useContext, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-const useAuthRedirect = () => {
+const useAuthRedirect = (redirectUrl?: string) => {
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     if (isAuthenticated) {
       // Redirect to the previous page or home page if authenticated
-      navigate(location.state?.from || "/", { replace: true });
+      navigate(redirectUrl || "/", { replace: true });
     }
-  }, [isAuthenticated, navigate, location.state?.from]);
+  }, [isAuthenticated, navigate, redirectUrl]);
 };
 
 export default useAuthRedirect;

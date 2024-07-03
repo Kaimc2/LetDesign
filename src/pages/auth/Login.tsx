@@ -56,7 +56,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     e.preventDefault();
     if (validateForm()) {
       const status = await login(formData.email, formData.password);
-      if (status) navigate("/");
+      status ? navigate("/") : setFormData({ email: "", password: "" });
     }
   };
 

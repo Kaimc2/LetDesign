@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -10,14 +10,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import api from "../../utils/api";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { Errors, FormData } from "../../types/common.types";
+import { ClipLoader } from "react-spinners";
+import { displayNotification } from "../../utils/helper";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
+import { AuthContext } from "../../context/AuthContext";
 
 export const Register = () => {
   useAuthRedirect();
+  const { initializeUser } = useContext(AuthContext);
   const [hide, setHide] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
@@ -33,6 +38,18 @@ export const Register = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    if (name === "password") {
+      setPasswordStrength(evaluatePasswordStrength(value));
+    }
+  };
+
+  const evaluatePasswordStrength = (password: string) => {
+    let strength = 0;
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    return strength;
   };
 
   const validate = () => {
@@ -54,6 +71,7 @@ export const Register = () => {
     e.preventDefault();
     if (validate()) {
       // Submit the form
+      setLoading(true);
       await api
         .post("/auth/register", {
           name: formData.username,
@@ -62,11 +80,17 @@ export const Register = () => {
           password: formData.password,
           password_confirmation: formData.confirmPassword,
         })
-        .then(() => {
-          toast.success("Account created successfully");
-          navigate("/account/verify", { state: { email: formData.email } });
+        .then((res) => {
+          setLoading(false);
+          const userData = res.data.data;
+          initializeUser(userData);
+          displayNotification("Account created sucessfully", "success");
+          navigate("/account/verify", {
+            state: { email: formData.email, id: userData.id },
+          });
         })
         .catch((err) => {
+          setLoading(false);
           const errMessages = err.response.data.message;
 
           const newErrors: Errors = {};
@@ -110,6 +134,7 @@ export const Register = () => {
                 </p>
               )}
             </div>
+
             <div className="relative">
               <input
                 type="email"
@@ -132,6 +157,7 @@ export const Register = () => {
                 </p>
               )}
             </div>
+
             <div className="relative">
               <input
                 type="text"
@@ -154,6 +180,7 @@ export const Register = () => {
                 </p>
               )}
             </div>
+
             <div className="relative">
               <input
                 type={hide ? "password" : "text"}
@@ -189,6 +216,40 @@ export const Register = () => {
                 </p>
               )}
             </div>
+            {formData.password && (
+              <div className="mt-2">
+                <div className="h-2 relative max-w-xl rounded-full overflow-hidden">
+                  <div className="w-full h-full bg-gray-200 absolute"></div>
+                  <div
+                    className={`h-full ${
+                      passwordStrength === 0
+                        ? "bg-red-500"
+                        : passwordStrength === 1
+                        ? "bg-yellow-500"
+                        : passwordStrength === 2
+                        ? "bg-yellow-500"
+                        : passwordStrength === 3
+                        ? "bg-green-500"
+                        : "bg-green-700"
+                    } absolute`}
+                    style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm mt-2">
+                  Password strength:
+                  {passwordStrength === 0
+                    ? " Very Weak"
+                    : passwordStrength === 1
+                    ? " Weak"
+                    : passwordStrength === 2
+                    ? " Moderate"
+                    : passwordStrength === 3
+                    ? " Strong"
+                    : " Very Strong"}
+                </p>
+              </div>
+            )}
+
             <div className="relative">
               <input
                 type={hide ? "password" : "text"}
@@ -211,13 +272,18 @@ export const Register = () => {
                 </p>
               )}
             </div>
+
             <div className="pt-2">
               <button
                 type="submit"
                 className="w-full text-white bg-secondary active:bg-secondary hover:bg-secondary-80 focus:outline-none 
                 font-medium rounded-md text-base px-5 py-2.5 text-center"
               >
-                Sign Up
+                {loading ? (
+                  <ClipLoader loading={loading} size={18} color="white" />
+                ) : (
+                  "Sign Up"
+                )}
               </button>
             </div>
             <div>

@@ -60,12 +60,15 @@ export const Navbar = () => {
           {toggleDropdown && <NavbarDropdown />}
         </div>
       ) : (
-        <Link
-          to={"/register"}
-          className="hidden md:block px-[20px] py-[10px] text-2xl bg-secondary hover:bg-secondary-80 text-white rounded-md "
-        >
-          Sign Up
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link to={"/login"} className="hidden md:block text-2xl hover:text-secondary-80">Sign In</Link>
+          <Link
+            to={"/register"}
+            className="hidden md:block px-[20px] py-[10px] text-2xl bg-secondary hover:bg-secondary-80 text-white rounded-md "
+          >
+            Sign Up
+          </Link>
+        </div>
       )}
 
       <button
