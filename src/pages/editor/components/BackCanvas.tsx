@@ -19,6 +19,7 @@ interface Props {
   setSelectedObj: Dispatch<SetStateAction<SelectedObjectProperty | null>>;
   setActiveObject: Dispatch<SetStateAction<fabric.Object | null>>;
   setShowProperty: Dispatch<SetStateAction<boolean>>;
+  isFront: boolean;
 }
 
 export const BackCanvas: FC<Props> = ({
@@ -28,6 +29,7 @@ export const BackCanvas: FC<Props> = ({
   setSelectedObj,
   setActiveObject,
   setShowProperty,
+  isFront,
 }) => {
   const [clipboard, setClipboard] = useState<fabric.Object | null>(null);
   const rectCounter = useRef(0);
@@ -144,19 +146,19 @@ export const BackCanvas: FC<Props> = ({
         }
       }
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "z") {
+      if (keyboardEvent.ctrlKey && keyboardEvent.key == "z" && !isFront) {
         console.log("undo");
       }
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "y") {
+      if (keyboardEvent.ctrlKey && keyboardEvent.key == "y" && !isFront) {
         console.log("redo");
       }
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "c") {
+      if (keyboardEvent.ctrlKey && keyboardEvent.key == "c" && !isFront) {
         fb.copyObject(canvas, setClipboard);
       }
 
-      if (keyboardEvent.ctrlKey && keyboardEvent.key == "v") {
+      if (keyboardEvent.ctrlKey && keyboardEvent.key == "v" && !isFront) {
         fb.pasteObject(canvas, clipboard, setClipboard);
       }
     };
@@ -205,6 +207,7 @@ export const BackCanvas: FC<Props> = ({
   }, [
     clipboard,
     fabricBackCanvasRef,
+    isFront,
     setActiveObject,
     setClipboard,
     setSelectedObj,
