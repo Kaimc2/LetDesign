@@ -442,6 +442,7 @@ export const Editor = () => {
             setActiveObject={setActiveObject}
             setSelectedObj={setSelectedObj}
             setShowProperty={setShowProperty}
+            isFront={isFront}
           />
           <BackCanvas
             backCanvasRef={backCanvasRef}
@@ -450,6 +451,7 @@ export const Editor = () => {
             setActiveObject={setActiveObject}
             setSelectedObj={setSelectedObj}
             setShowProperty={setShowProperty}
+            isFront={isFront}
           />
 
           {!isEdit && (
