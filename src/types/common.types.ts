@@ -16,3 +16,8 @@ export interface Errors {
   password?: string;
   confirmPassword?: string;
 }
+
+export interface StatusNotificationResponse {
+  message: string;
+  status: string;
+}

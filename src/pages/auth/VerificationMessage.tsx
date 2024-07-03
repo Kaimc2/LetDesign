@@ -1,13 +1,27 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
+import api from "../../utils/api";
+import { useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
+import { displayNotification } from "../../utils/helper";
 
 export const VerificationMessage: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const { state } = useLocation();
-  const { email } = state;
+  const { id, email } = state;
 
   const resendEmail = () => {
-    console.log("Resend Email");
+    setLoading(true);
+    api
+      .post(`/auth/email/verification-notice/${id}`)
+      .then((res) => {
+        displayNotification(res.data.message, "success");
+      })
+      .catch((err) => {
+        const errMessages = err.response.data.message;
+        displayNotification(errMessages, "error");
+      });
   };
 
   return (
@@ -40,7 +54,11 @@ export const VerificationMessage: React.FC = () => {
               className="w-full bg-secondary text-white hover:bg-secondary-80 focus:outline-none font-medium rounded-md
                text-bold px-5 py-2.5 text-center"
             >
-              Resend Email Confirmation
+              {loading ? (
+                <ClipLoader loading={loading} size={18} color="white" />
+              ) : (
+                "Resend Email Confirmation"
+              )}
             </button>
           </div>
         </div>

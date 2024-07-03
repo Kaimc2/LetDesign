@@ -10,7 +10,7 @@ import { DashboardLayout } from "../core/layout/DashboardLayout";
 import { VerificationMessage } from "../pages/auth/VerificationMessage";
 import { Settings } from "../pages/dashboard/settings/Settings";
 import { Dashboard } from "../pages/dashboard/Dashboard";
-import { Design } from "../pages/dashboard/designs/Design";
+import { DesignPage } from "../pages/dashboard/designs/Design";
 import { DeletedDesign } from "../pages/dashboard/designs/DeletedDesign";
 import { Commission } from "../pages/dashboard/commission/Commission";
 import { CreateCommission } from "../pages/editor/CreateCommission";
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
     element: <DashboardLayout />,
     children: [
       { path: "", element: <Dashboard /> },
-      { path: "designs", element: <Design /> },
+      { path: "designs", element: <DesignPage /> },
       { path: "designs/removed", element: <DeletedDesign /> },
       { path: "commissions", element: <Commission /> },
       { path: "settings", element: <Settings /> },

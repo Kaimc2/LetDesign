@@ -11,10 +11,10 @@ import { loadCanvas } from "../../utils/fabricUtils";
 import { ReadOnlyBackCanvas } from "./components/ReadOnlyBackCanvas";
 import { FirstStep } from "./commission/FirstStep";
 import { SecondStep } from "./commission/SecondStep";
-// import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useIsAuthenticated from "../../hooks/useIsAuthenticated";
 
 export const CreateCommission = () => {
-  // useAuthRedirect();
+  useIsAuthenticated();
   const { isAuthenticated } = useContext(AuthContext);
   const { state } = useLocation();
   const {

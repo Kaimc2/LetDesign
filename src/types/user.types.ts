@@ -3,8 +3,8 @@ interface User {
   name: string;
   email: string;
   profilePicture?: string;
-  role: string;
   phoneNumber: string;
+  isVerified: boolean;
   accessToken: string;
 }
 

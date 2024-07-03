@@ -1,4 +1,10 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import logo from "../../assets/images/brands/logo_white.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -11,23 +17,20 @@ import {
   faSwatchbook,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import useIsAuthenticated from "../../hooks/useIsAuthenticated";
+import { Loader } from "../common/Loader";
 
 export const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     navigate("/login");
-  //   }
-  // }, [isAuthenticated, navigate]);
+  const loading = useIsAuthenticated(location.pathname);
 
-  // if (!isAuthenticated) {
-  //   return null;
-  // }
+  if (loading) return <Loader />;
 
   return (
     <section className="w-screen h-screen overflow-hidden">
