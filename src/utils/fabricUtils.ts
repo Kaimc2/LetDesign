@@ -119,7 +119,7 @@ export const addRectangle = (
     rect = new fabric.Rect({
       width: 100,
       height: 50,
-      fill: "red",
+      fill: "#000000",
     });
   }
 
@@ -142,7 +142,7 @@ export const addCircle = (
     circle = new fabric.Circle(options);
   } else {
     circle = new fabric.Circle({
-      fill: "blue",
+      fill: "#000000",
       radius: 30,
     });
   }
@@ -167,7 +167,7 @@ export const addText = (
   if (text || options) {
     fabricText = new fabric.IText(text ?? "Text", options);
   } else {
-    fabricText = new fabric.IText("Text", {});
+    fabricText = new fabric.IText("Text", { fill: "#000000" });
   }
   canvas.add(fabricText);
   canvas.centerObject(fabricText);
@@ -280,7 +280,12 @@ export const updateSelectedObj = (
     } else if (selectedObj.type === "circle") {
       setSelectedObj({
         ...commonProp,
-        radius: (selectedObj as fabric.Circle).radius,
+        radius:
+          (selectedObj as fabric.Circle).radius! *
+            (selectedObj as fabric.Circle).scaleX! ??
+          (selectedObj as fabric.Circle).radius,
+        scaleX: 1,
+        scaleY: 1,
       } as CircleProperty);
     } else if (selectedObj.type === "i-text") {
       setSelectedObj({
