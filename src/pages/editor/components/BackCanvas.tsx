@@ -61,12 +61,12 @@ export const BackCanvas: FC<Props> = ({
           fontSize: 30,
           top: 500,
           left: 400,
-          fill: "black",
+          fill: "#000000",
         });
 
         fb.addRectangle(canvas, {
           name: `Rect ${rectCounter.current}`,
-          fill: "red",
+          fill: "#ff0000",
           width: 100,
           height: 50,
           rx: 5,

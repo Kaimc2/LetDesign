@@ -120,6 +120,10 @@ export const Editor = () => {
       ...prev,
       [name]: acceptString ? value : Number(value),
     }));
+
+    if (name === "fill") {
+      handleInputBlur();
+    }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -147,6 +151,7 @@ export const Editor = () => {
         width: selectedObj.width,
         height: selectedObj.height,
         angle: selectedObj.angle,
+        fill: selectedObj.fill,
         scaleX: 1,
         scaleY: 1,
       };
