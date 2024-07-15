@@ -31,7 +31,9 @@ export const Profile = ({
           />
           <div>
             <p className="text-lg">{user?.name || username}</p>
-            <p className="text-sm text-gray-600">{user?.email || "example@example.com"}</p>
+            <p className="text-sm text-gray-600">
+              {user?.email || "example@example.com"}
+            </p>
           </div>
           <button
             onClick={onEdit}
@@ -48,7 +50,9 @@ export const Profile = ({
             <FontAwesomeIcon icon={faMobileScreen} size="2x" />
           </div>
           <div>
-            <p className="text-lg">{hidePhoneNumber(0 + String(user?.phoneNumber || phoneNumber))}</p>
+            <p className="text-lg">
+              {hidePhoneNumber(0 + String(user?.phoneNumber || phoneNumber))}
+            </p>
             <p className="text-sm text-gray-600">
               Keep your primary phone number up-to-date
             </p>

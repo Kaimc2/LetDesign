@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMobileAlt, faLock, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMobileAlt,
+  faLock,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 
-const SuccessModal: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOpen, onClose }) => {
+const SuccessModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
+  isOpen,
+  onClose,
+}) => {
   return isOpen ? (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="bg-white rounded-lg p-6 w-96 shadow-lg relative">
@@ -25,21 +32,25 @@ const SuccessModal: React.FC<{ isOpen: boolean, onClose: () => void }> = ({ isOp
   ) : null;
 };
 
-const ChangePasswordModal: React.FC<{ isOpen: boolean, onClose: () => void, onSuccess: () => void }> = ({ isOpen, onClose, onSuccess }) => {
+const ChangePasswordModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}> = ({ isOpen, onClose, onSuccess }) => {
   const [step, setStep] = useState(1);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleNext = () => {
     if (step === 1 && currentPassword) {
       setStep(2);
     } else if (step === 2 && newPassword && confirmPassword) {
       if (newPassword !== confirmPassword) {
-        setError('Passwords do not match');
+        setError("Passwords do not match");
       } else {
-        setError('');
+        setError("");
         onSuccess(); // Trigger success logic
         onClose(); // Close ChangePasswordModal
       }
@@ -52,7 +63,9 @@ const ChangePasswordModal: React.FC<{ isOpen: boolean, onClose: () => void, onSu
         {step === 1 ? (
           <>
             <h2 className="text-xl mb-4">Change Password</h2>
-            <label className="block mb-2">Enter your current password below</label>
+            <label className="block mb-2">
+              Enter your current password below
+            </label>
             <input
               type="password"
               placeholder="Current Password"
@@ -113,11 +126,14 @@ const ChangePasswordModal: React.FC<{ isOpen: boolean, onClose: () => void, onSu
 };
 
 export const Security: React.FC = () => {
-  const [selectedMethod, setSelectedMethod] = useState<'text' | 'authenticator' | null>('text');
-  const [isChangePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<
+    "text" | "authenticator" | null
+  >("text");
+  const [isChangePasswordModalOpen, setChangePasswordModalOpen] =
+    useState(false);
   const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
 
-  const handleSelect = (method: 'text' | 'authenticator') => {
+  const handleSelect = (method: "text" | "authenticator") => {
     setSelectedMethod(method);
   };
 
@@ -168,13 +184,17 @@ export const Security: React.FC = () => {
           {selectedMethod === null ? (
             <div className="p-4 border rounded-lg shadow-sm flex justify-between items-center mb-4">
               <div>
-                <p className="text-gray-800 font-semibold">No method is selected</p>
-                <p className="text-gray-600">Please select one to secure your account</p>
+                <p className="text-gray-800 font-semibold">
+                  No method is selected
+                </p>
+                <p className="text-gray-600">
+                  Please select one to secure your account
+                </p>
               </div>
             </div>
           ) : (
             <div className="p-4 border rounded-lg shadow-sm flex justify-between items-center mb-4">
-              {selectedMethod === 'text' && (
+              {selectedMethod === "text" && (
                 <div className="flex items-center">
                   <FontAwesomeIcon
                     icon={faMobileAlt}
@@ -186,7 +206,7 @@ export const Security: React.FC = () => {
                   </div>
                 </div>
               )}
-              {selectedMethod === 'authenticator' && (
+              {selectedMethod === "authenticator" && (
                 <div className="flex items-center">
                   <FontAwesomeIcon
                     icon={faLock}
@@ -212,7 +232,7 @@ export const Security: React.FC = () => {
 
         <div>
           <h3 className="ml-2 text-lg mb-2 text-gray-600">Other Options</h3>
-          {selectedMethod !== 'text' && (
+          {selectedMethod !== "text" && (
             <div className="p-4 border rounded-lg shadow-sm flex justify-between items-center mb-4">
               <div className="flex items-center">
                 <FontAwesomeIcon
@@ -225,14 +245,14 @@ export const Security: React.FC = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleSelect('text')}
+                onClick={() => handleSelect("text")}
                 className="active:bg-gray-200 text-gray-700 px-4 py-2 rounded-md border border-gray-400"
               >
                 Select
               </button>
             </div>
           )}
-          {selectedMethod !== 'authenticator' && (
+          {selectedMethod !== "authenticator" && (
             <div className="p-4 border rounded-lg shadow-sm flex justify-between items-center">
               <div className="flex items-center">
                 <FontAwesomeIcon
@@ -247,7 +267,7 @@ export const Security: React.FC = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleSelect('authenticator')}
+                onClick={() => handleSelect("authenticator")}
                 className="active:bg-gray-200 text-gray-700 px-4 py-2 rounded-md border border-gray-400"
               >
                 Select
