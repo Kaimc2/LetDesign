@@ -13,7 +13,7 @@ export const ConfirmDialog: FC<{
     >
       <div className="w-auto sm:w-[500px] h-auto sm:h-[163px] flex flex-col justify-center p-4 gap-2 bg-white rounded-md">
         <p className="text-2xl mb-3">
-          Are you sure you want to move to {name} trash?
+          Are you sure you want to move {name} to trash?
         </p>
         <div className="flex gap-2">
           <button

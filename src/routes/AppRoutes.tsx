@@ -16,6 +16,7 @@ import { Commission } from "../pages/dashboard/commission/Commission";
 import { CreateCommission } from "../pages/editor/CreateCommission";
 import { Page404 } from "../core/error/Page404";
 import { Page403 } from "../core/error/Page403";
+import { UpdateEditor } from "../pages/editor/UpdateEditor";
 
 const router = createBrowserRouter([
   {
@@ -36,7 +37,7 @@ const router = createBrowserRouter([
     element: <EditorLayout />,
     children: [
       { path: "", element: <Editor /> },
-      { path: "edit/:id", element: <Editor /> },
+      { path: "edit/:id", element: <UpdateEditor /> },
       {
         path: "commission/create",
         element: <CreateCommission />,

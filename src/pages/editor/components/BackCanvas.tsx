@@ -63,15 +63,6 @@ export const BackCanvas: FC<Props> = ({
           left: 400,
           fill: "#000000",
         });
-
-        fb.addRectangle(canvas, {
-          name: `Rect ${rectCounter.current}`,
-          fill: "#ff0000",
-          width: 100,
-          height: 50,
-          rx: 5,
-          ry: 5,
-        });
       }
     }
 
@@ -105,11 +96,15 @@ export const BackCanvas: FC<Props> = ({
     const updateCanvasObjects = () => {
       const canvasObjects: fabric.Object[] = [];
       canvas.getObjects().forEach((obj) => {
+        const imgObj = obj as fabric.Image;
         if (
           obj.type === "rect" ||
           obj.type === "circle" ||
           obj.type === "i-text" ||
-          (obj.type === "image" && obj.name !== "canvasTemplate")
+          (obj.type === "image" &&
+            obj.name !== "canvasTemplate" &&
+            !imgObj.getSrc().includes("shirtTemplateFront") &&
+            !imgObj.getSrc().includes("shirtTemplateBack"))
         ) {
           canvasObjects.push(obj);
         }

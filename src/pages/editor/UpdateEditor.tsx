@@ -12,7 +12,7 @@ import useTextPropertyChange from "../../hooks/useTextPropertyChange";
 import shirtFrontView from "../../assets/images/canvas/shirtTemplateFront.png";
 import shirtBackView from "../../assets/images/canvas/shirtTemplateBack.png";
 import { Property } from "./components/Property";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import { faT, faUpload } from "@fortawesome/free-solid-svg-icons";
@@ -25,7 +25,7 @@ import api from "../../utils/api";
 import { displayNotification } from "../../utils/helper";
 import { DesignInput } from "../../types/design.types";
 
-export const Editor = () => {
+export const UpdateEditor = () => {
   const frontCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const backCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricFrontCanvasRef = useRef<fabric.Canvas | null>(null);
@@ -39,10 +39,34 @@ export const Editor = () => {
   const [objects, setObjects] = useState<fabric.Object[]>([]);
   const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
   const [designName, setDesignName] = useState<string>("My Design");
-  const fileUpload = useRef<HTMLInputElement>(null);
   const { user, isAuthenticated } = useContext(AuthContext);
   const [toggleDropdown, setToggleDropdown] = useState(false);
+  const { id } = useParams();
+  const fileUpload = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      const user = JSON.parse(String(localStorage.getItem("user")));
+      const token = user.accessToken;
+
+      api
+        .get(`designs/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          const designData = res.data.data;
+          fb.loadCanvas(fabricFrontCanvasRef.current, designData.front_content);
+          fb.loadCanvas(fabricBackCanvasRef.current, designData.back_content);
+          setDesignName(designData.name);
+          const canvas = fabricFrontCanvasRef.current;
+          if (canvas) initializeCanvasObjects(canvas);
+        })
+        .catch(() => {
+          displayNotification("Failed to load design", "error");
+        });
+    }
+  }, [id, user?.accessToken]);
 
   // Apply styles to canvas wrappers
   useEffect(() => {
@@ -256,13 +280,12 @@ export const Editor = () => {
     };
 
     api
-      .post(
-        "designs",
+      .put(
+        `designs/${id}`,
         { ...inputs },
         { headers: { Authorization: `Bearer ${user?.accessToken}` } }
       )
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         displayNotification("Design save successfully", "success");
       })
       .catch((err) => {
@@ -283,8 +306,8 @@ export const Editor = () => {
     };
 
     api
-      .post(
-        "designs",
+      .put(
+        `designs/${id}`,
         { ...inputs },
         { headers: { Authorization: `Bearer ${user?.accessToken}` } }
       )
@@ -305,247 +328,249 @@ export const Editor = () => {
   };
 
   return (
-    <section className="w-screen overflow-x-hidden flex flex-col">
-      <div className="flex justify-between h-16 px-8 items-center bg-secondary shadow-sm">
-        <div className="flex items-center gap-6">
-          <Link to={"/"}>
-            <img className="w-12 h-12 rounded-md" src={logo} alt="Logo" />
-          </Link>
+    <>
+      <section className="w-screen overflow-x-hidden flex flex-col">
+        <div className="flex justify-between h-16 px-8 items-center bg-secondary shadow-sm">
+          <div className="flex items-center gap-6">
+            <Link to={"/"}>
+              <img className="w-12 h-12 rounded-md" src={logo} alt="Logo" />
+            </Link>
 
-          <div className="flex gap-8">
-            <button
-              className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
-              title="Add Rectangle"
-              onClick={addRect}
+            <div className="flex gap-8">
+              <button
+                className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
+                title="Add Rectangle"
+                onClick={addRect}
+              >
+                <FontAwesomeIcon icon={faSquare} size="xl" />
+              </button>
+              <button
+                className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
+                title="Add Circle"
+                onClick={addCircle}
+              >
+                <FontAwesomeIcon icon={faCircle} size="xl" />
+              </button>
+              <button
+                className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
+                title="Add Text"
+                onClick={addText}
+              >
+                <FontAwesomeIcon icon={faT} size="xl" />
+              </button>
+              <button
+                className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
+                onClick={() => fileUpload.current?.click()}
+                title="Upload Picture"
+              >
+                <input
+                  className="hidden"
+                  type="file"
+                  accept="image/*"
+                  ref={fileUpload}
+                  onInput={handleUpload}
+                  name="upload"
+                  id="upload"
+                />
+                <FontAwesomeIcon icon={faUpload} size="xl" />
+              </button>
+            </div>
+          </div>
+
+          <input
+            className="bg-transparent text-center focus:bg-white py-1"
+            value={designName}
+            onChange={(e) => setDesignName(e.target.value)}
+            type="text"
+          />
+
+          {isAuthenticated ? (
+            <div
+              onClick={() => setToggleDropdown(!toggleDropdown)}
+              className="hidden md:flex relative items-center gap-4 hover:cursor-pointer"
             >
-              <FontAwesomeIcon icon={faSquare} size="xl" />
-            </button>
-            <button
-              className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
-              title="Add Circle"
-              onClick={addCircle}
-            >
-              <FontAwesomeIcon icon={faCircle} size="xl" />
-            </button>
-            <button
-              className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
-              title="Add Text"
-              onClick={addText}
-            >
-              <FontAwesomeIcon icon={faT} size="xl" />
-            </button>
-            <button
-              className="hover:-translate-y-1 transition-transform ease-in-out duration-300"
-              onClick={() => fileUpload.current?.click()}
-              title="Upload Picture"
-            >
-              <input
-                className="hidden"
-                type="file"
-                accept="image/*"
-                ref={fileUpload}
-                onInput={handleUpload}
-                name="upload"
-                id="upload"
+              <img
+                className="w-10 h-10 rounded-full"
+                src="/placeholder/pf.png"
+                alt="profile picture"
               />
-              <FontAwesomeIcon icon={faUpload} size="xl" />
-            </button>
-          </div>
-        </div>
 
-        <input
-          className="bg-transparent text-center focus:bg-white py-1"
-          value={designName}
-          onChange={(e) => setDesignName(e.target.value)}
-          type="text"
-        />
-
-        {isAuthenticated ? (
-          <div
-            onClick={() => setToggleDropdown(!toggleDropdown)}
-            className="hidden md:flex relative items-center gap-4 hover:cursor-pointer"
-          >
-            <img
-              className="w-10 h-10 rounded-full"
-              src="/placeholder/pf.png"
-              alt="profile picture"
-            />
-
-            {/* Dropdown Menu */}
-            {toggleDropdown && <NavbarDropdown />}
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <Link
-              to={"/login"}
-              className="hidden md:block px-[20px] py-[10px] text-lg hover:text-accent-80"
-            >
-              Sign In
-            </Link>
-            <Link
-              to={"/register"}
-              className="hidden md:block px-[20px] py-[10px] text-lg bg-accent hover:bg-accent-80 text-white rounded-md "
-            >
-              Sign Up
-            </Link>
-          </div>
-        )}
-      </div>
-
-      <div className="flex">
-        <div className="w-[314px] border border-r-gray-300 shadow-md">
-          <h1 className="py-4 px-8 font-bold border border-b-brand-gray">
-            Layers
-          </h1>
-
-          <ul className="h-[517px] overflow-y-auto">
-            {objects.map((obj, index) => (
-              <li
-                onClick={() => setActive(obj)}
-                className={`py-4 px-9 border border-b-brand-gray hover:bg-[#DADADA]/80 hover:cursor-pointer ${
-                  activeObject === obj && "bg-[#DADADA]/80"
-                }`}
-                key={index}
-              >
-                {obj.name}
-              </li>
-            ))}
-          </ul>
-
-          <div className="px-8 border border-y-brand-gray">
-            <h1 className="py-4 font-bold">View</h1>
-            <div className="flex pb-4 justify-evenly gap-9">
-              <div
-                onClick={() => handleSwitchView(true)}
-                className="group flex flex-col gap-4 items-center hover:cursor-pointer"
-              >
-                <div
-                  className={`flex w-[100px] h-[100px] rounded-md border ${
-                    isFront
-                      ? "border-black"
-                      : "border-brand-gray group-hover:border-black"
-                  } `}
-                >
-                  <img
-                    className="p-2"
-                    src={shirtFrontView}
-                    alt="Shirt Front View"
-                  />
-                </div>
-                <p
-                  className={`${
-                    isFront
-                      ? "text-black"
-                      : "text-brand-gray group-hover:text-black"
-                  }`}
-                >
-                  Front
-                </p>
-              </div>
-
-              <div
-                onClick={() => handleSwitchView(false)}
-                className="group flex flex-col gap-4 items-center hover:cursor-pointer"
-              >
-                <div
-                  className={`flex w-[100px] h-[100px] rounded-md border ${
-                    isFront
-                      ? "border-brand-gray group-hover:border-black"
-                      : "border-black"
-                  } `}
-                >
-                  <img
-                    className="p-2"
-                    src={shirtBackView}
-                    alt="Shirt Back View"
-                  />
-                </div>
-                <p
-                  className={`${
-                    isFront
-                      ? "text-brand-gray group-hover:text-black"
-                      : "text-black"
-                  }`}
-                >
-                  Back
-                </p>
-              </div>
+              {/* Dropdown Menu */}
+              {toggleDropdown && <NavbarDropdown />}
             </div>
-          </div>
-
-          <div className="flex justify-center px-8 gap-[10px] mt-[18px]">
-            <button
-              onClick={handleSave}
-              className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80"
-            >
-              Save Design
-            </button>
-            <button
-              onClick={handleSend}
-              className="p-[10px] w-[128px] text-center rounded-md text-white bg-accent hover:bg-accent-80"
-            >
-              Commission
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-grow flex justify-center items-center relative h-[calc(100vh-4rem)]">
-          <FrontCanvas
-            frontCanvasRef={frontCanvasRef}
-            fabricFrontCanvasRef={fabricFrontCanvasRef}
-            setObjects={setObjects}
-            setActiveObject={setActiveObject}
-            setSelectedObj={setSelectedObj}
-            setShowProperty={setShowProperty}
-            isFront={isFront}
-          />
-          <BackCanvas
-            backCanvasRef={backCanvasRef}
-            fabricBackCanvasRef={fabricBackCanvasRef}
-            setObjects={setObjects}
-            setActiveObject={setActiveObject}
-            setSelectedObj={setSelectedObj}
-            setShowProperty={setShowProperty}
-            isFront={isFront}
-          />
-
-          {!isEdit && (
-            <CanvasViewer
-              frontCanvas={frontCanvasRef.current}
-              backCanvas={backCanvasRef.current}
-            />
+          ) : (
+            <div className="flex gap-2">
+              <Link
+                to={"/login"}
+                className="hidden md:block px-[20px] py-[10px] text-lg hover:text-accent-80"
+              >
+                Sign In
+              </Link>
+              <Link
+                to={"/register"}
+                className="hidden md:block px-[20px] py-[10px] text-lg bg-accent hover:bg-accent-80 text-white rounded-md "
+              >
+                Sign Up
+              </Link>
+            </div>
           )}
-
-          <div className="absolute flex top-8 right-8">
-            <div
-              onClick={() => {
-                setIsEdit(true);
-              }}
-              className={`border ${
-                isEdit && "bg-[#DADADA]/80"
-              } border-black hover:bg-[#DADADA]/80 hover:cursor-pointer px-4 py-2 rounded-tl-md rounded-bl-md`}
-            >
-              Edit
-            </div>
-            <div
-              onClick={() => setIsEdit(false)}
-              className={`border ${
-                !isEdit && "bg-[#DADADA]/80"
-              } border-l-0 border-black hover:bg-[#DADADA]/80 hover:cursor-pointer px-4 py-2 rounded-tr-md rounded-br-md`}
-            >
-              Preview
-            </div>
-          </div>
         </div>
 
-        <Property
-          selectedObj={selectedObj}
-          showProperty={showProperty}
-          handleInputChange={handleInputChange}
-          handleSelectChange={handleSelectChange}
-          handleInputBlur={handleInputBlur}
-        />
-      </div>
-    </section>
+        <div className="flex">
+          <div className="w-[314px] border border-r-gray-300 shadow-md">
+            <h1 className="py-4 px-8 font-bold border border-b-brand-gray">
+              Layers
+            </h1>
+
+            <ul className="h-[517px] overflow-y-auto">
+              {objects.map((obj, index) => (
+                <li
+                  onClick={() => setActive(obj)}
+                  className={`py-4 px-9 border border-b-brand-gray hover:bg-[#DADADA]/80 hover:cursor-pointer ${
+                    activeObject === obj && "bg-[#DADADA]/80"
+                  }`}
+                  key={index}
+                >
+                  {obj.name}
+                </li>
+              ))}
+            </ul>
+
+            <div className="px-8 border border-y-brand-gray">
+              <h1 className="py-4 font-bold">View</h1>
+              <div className="flex pb-4 justify-evenly gap-9">
+                <div
+                  onClick={() => handleSwitchView(true)}
+                  className="group flex flex-col gap-4 items-center hover:cursor-pointer"
+                >
+                  <div
+                    className={`flex w-[100px] h-[100px] rounded-md border ${
+                      isFront
+                        ? "border-black"
+                        : "border-brand-gray group-hover:border-black"
+                    } `}
+                  >
+                    <img
+                      className="p-2"
+                      src={shirtFrontView}
+                      alt="Shirt Front View"
+                    />
+                  </div>
+                  <p
+                    className={`${
+                      isFront
+                        ? "text-black"
+                        : "text-brand-gray group-hover:text-black"
+                    }`}
+                  >
+                    Front
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => handleSwitchView(false)}
+                  className="group flex flex-col gap-4 items-center hover:cursor-pointer"
+                >
+                  <div
+                    className={`flex w-[100px] h-[100px] rounded-md border ${
+                      isFront
+                        ? "border-brand-gray group-hover:border-black"
+                        : "border-black"
+                    } `}
+                  >
+                    <img
+                      className="p-2"
+                      src={shirtBackView}
+                      alt="Shirt Back View"
+                    />
+                  </div>
+                  <p
+                    className={`${
+                      isFront
+                        ? "text-brand-gray group-hover:text-black"
+                        : "text-black"
+                    }`}
+                  >
+                    Back
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center px-8 gap-[10px] mt-[18px]">
+              <button
+                onClick={handleSave}
+                className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80"
+              >
+                Save Design
+              </button>
+              <button
+                onClick={handleSend}
+                className="p-[10px] w-[128px] text-center rounded-md text-white bg-accent hover:bg-accent-80"
+              >
+                Commission
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-grow flex justify-center items-center relative h-[calc(100vh-4rem)]">
+            <FrontCanvas
+              frontCanvasRef={frontCanvasRef}
+              fabricFrontCanvasRef={fabricFrontCanvasRef}
+              setObjects={setObjects}
+              setActiveObject={setActiveObject}
+              setSelectedObj={setSelectedObj}
+              setShowProperty={setShowProperty}
+              isFront={isFront}
+            />
+            <BackCanvas
+              backCanvasRef={backCanvasRef}
+              fabricBackCanvasRef={fabricBackCanvasRef}
+              setObjects={setObjects}
+              setActiveObject={setActiveObject}
+              setSelectedObj={setSelectedObj}
+              setShowProperty={setShowProperty}
+              isFront={isFront}
+            />
+
+            {!isEdit && (
+              <CanvasViewer
+                frontCanvas={frontCanvasRef.current}
+                backCanvas={backCanvasRef.current}
+              />
+            )}
+
+            <div className="absolute flex top-8 right-8">
+              <div
+                onClick={() => {
+                  setIsEdit(true);
+                }}
+                className={`border ${
+                  isEdit && "bg-[#DADADA]/80"
+                } border-black hover:bg-[#DADADA]/80 hover:cursor-pointer px-4 py-2 rounded-tl-md rounded-bl-md`}
+              >
+                Edit
+              </div>
+              <div
+                onClick={() => setIsEdit(false)}
+                className={`border ${
+                  !isEdit && "bg-[#DADADA]/80"
+                } border-l-0 border-black hover:bg-[#DADADA]/80 hover:cursor-pointer px-4 py-2 rounded-tr-md rounded-br-md`}
+              >
+                Preview
+              </div>
+            </div>
+          </div>
+
+          <Property
+            selectedObj={selectedObj}
+            showProperty={showProperty}
+            handleInputChange={handleInputChange}
+            handleSelectChange={handleSelectChange}
+            handleInputBlur={handleInputBlur}
+          />
+        </div>
+      </section>
+    </>
   );
 };

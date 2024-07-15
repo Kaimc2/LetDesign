@@ -1,12 +1,32 @@
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
+import api from "../../../utils/api";
+
+interface Tailor {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+}
 
 export const TailorDialog: FC<{
   blurFn: () => void;
   confirmFn: () => void;
   cancelFn: () => void;
 }> = ({ blurFn, confirmFn, cancelFn }) => {
+  const [tailors, setTailors] = useState<Tailor[]>([]);
+
+  useEffect(() => {
+    api
+      .get("tailors")
+      .then((res) => {
+        console.log(res);
+        setTailors(res.data.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   return (
     <div
       onClick={blurFn}
@@ -27,6 +47,27 @@ export const TailorDialog: FC<{
           <h1 className="text-center mb-6">
             Choose from our selection of tailors for your fit
           </h1>
+
+          {tailors.length ? (
+            tailors.map((tailor) => (
+              <div
+                onClick={confirmFn}
+                className="flex items-center border border-gray-400 rounded-md p-4 gap-4 mb-4 select-none hover:cursor-pointer shadow-md hover:shadow-none"
+              >
+                <img
+                  className="w-[60px] h-[60px] rounded-md"
+                  src="/placeholder/placeholder.jpg"
+                  alt="tailor"
+                />
+                <div>
+                  <h1>{tailor.name}</h1>
+                  <p className="text-gray-500">{tailor.description}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div>No Tailors</div>
+          )}
 
           <div
             onClick={confirmFn}

@@ -146,13 +146,15 @@ export const Property: FC<Props> = ({
               </div>
             )}
           </div>
-          <input
-            type="color"
-            name="fill"
-            id="fill"
-            onChange={(e) => handleInputChange(e, true)}
-            value={String(selectedObj.fill) ?? "#000000"}
-          />
+          {!(selectedObj.type === "image") && (
+            <input
+              type="color"
+              name="fill"
+              id="fill"
+              onChange={(e) => handleInputChange(e, true)}
+              value={String(selectedObj.fill) ?? "#000000"}
+            />
+          )}
           {"fontFamily" in selectedObj && (
             <div className="flex flex-col w-full gap-1">
               <p className="ml-1">Font Family:</p>
