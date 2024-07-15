@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import shirtFrontView from "../../assets/images/canvas/shirtTemplateFront.png";
 import shirtBackView from "../../assets/images/canvas/shirtTemplateBack.png";
@@ -12,15 +12,17 @@ import { ReadOnlyBackCanvas } from "./components/ReadOnlyBackCanvas";
 import { FirstStep } from "./commission/FirstStep";
 import { SecondStep } from "./commission/SecondStep";
 import useIsAuthenticated from "../../hooks/useIsAuthenticated";
+import api from "../../utils/api";
 
 export const CreateCommission = () => {
   useIsAuthenticated();
-  const { isAuthenticated } = useContext(AuthContext);
+  const { user, isAuthenticated } = useContext(AuthContext);
   const { state } = useLocation();
   const {
+    id,
     frontCanvas,
     backCanvas,
-  }: { frontCanvas: string; backCanvas: string } = state;
+  }: { id: string; frontCanvas: string; backCanvas: string } = state;
   const frontCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const backCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricFrontCanvasRef = useRef<fabric.Canvas | null>(null);
@@ -29,6 +31,7 @@ export const CreateCommission = () => {
   const [is2D, setIs2D] = useState(true);
   const [isFront, setIsFront] = useState(true);
   const [step, setStep] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (frontCanvas && backCanvas) {
@@ -63,6 +66,31 @@ export const CreateCommission = () => {
     }
   };
 
+  const handleSave = () => {
+    navigate("/dashboard/designs");
+  };
+
+  const handleCreate = () => {
+    const commissionData = {
+      design_id: id,
+      tailor_id: "",
+      status: "pending",
+      start_date: Date.now(),
+    };
+
+    api
+      .post(
+        "commissions",
+        { ...commissionData },
+        { headers: { Authorization: `Bearer ${user?.accessToken}` } }
+      )
+      .then((res) => {
+        console.log(res);
+        navigate("/dashboard/commissions");
+      })
+      .catch((err) => console.error(err));
+  };
+
   return (
     <section className="w-screen overflow-x-hidden flex flex-col">
       <div className="flex justify-between h-16 px-8 items-center bg-secondary shadow-sm">
@@ -87,12 +115,20 @@ export const CreateCommission = () => {
             {toggleDropdown && <NavbarDropdown />}
           </div>
         ) : (
-          <Link
-            to={"/register"}
-            className="hidden md:block px-[20px] py-[10px] text-lg bg-accent hover:bg-accent-80 text-white rounded-md "
-          >
-            Sign Up
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              to={"/login"}
+              className="hidden md:block px-[20px] py-[10px] text-lg hover:text-accent-80"
+            >
+              Sign In
+            </Link>
+            <Link
+              to={"/register"}
+              className="hidden md:block px-[20px] py-[10px] text-lg bg-accent hover:bg-accent-80 text-white rounded-md "
+            >
+              Sign Up
+            </Link>
+          </div>
         )}
       </div>
 
@@ -173,7 +209,10 @@ export const CreateCommission = () => {
           <div className="flex px-8 gap-[10px] mt-[18px]">
             {step == 1 ? (
               <>
-                <button className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80">
+                <button
+                  onClick={handleSave}
+                  className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80"
+                >
                   Save Design
                 </button>
                 <button
@@ -191,7 +230,10 @@ export const CreateCommission = () => {
                 >
                   Go Back
                 </button>
-                <button className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80">
+                <button
+                  onClick={handleCreate}
+                  className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80"
+                >
                   Confirm
                 </button>
               </>

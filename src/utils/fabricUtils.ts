@@ -208,6 +208,7 @@ export const displaySelectedObj = (
       y: parseFloat(top),
       angle: parseFloat(angle),
       fill: selectedObj.fill,
+      type: selectedObj.type,
     };
 
     if (selectedObj.type === "rect") {
@@ -241,7 +242,7 @@ export const displaySelectedObj = (
       selectedObj.type === "image" &&
       selectedObj.name !== "canvasTemplate"
     ) {
-      setSelectedObj({ ...commonProp });
+      setSelectedObj({ ...commonProp, scaleX: 0.2, scaleY: 0.2 });
     }
   }
 };
@@ -270,6 +271,7 @@ export const updateSelectedObj = (
       y: parseFloat(top),
       angle: parseFloat(angle),
       fill: selectedObj.fill,
+      type: selectedObj.type,
     };
 
     if (selectedObj.type === "rect") {
@@ -308,7 +310,7 @@ export const updateSelectedObj = (
       selectedObj.type === "image" &&
       selectedObj.name !== "canvasTemplate"
     ) {
-      setSelectedObj({ ...commonProp });
+      setSelectedObj({ ...commonProp, scaleX: 0.2, scaleY: 0.2 });
     }
   }
 };
@@ -476,9 +478,47 @@ export const pasteObject = (
  * @param canvas Reference to a canvas
  * @returns An JSON object of canvas data
  */
-export const saveCanvas = (canvas: fabric.Canvas | null) => {
+export const saveCanvas = async (
+  canvas: fabric.Canvas | null,
+  quality = 0.1
+) => {
   if (!canvas) return;
-  return canvas.toJSON(["selectable"]);
+  const canvasJSON = canvas.toJSON(["selectable", "name"]);
+
+  await Promise.all(
+    canvasJSON.objects.map(async (obj) => {
+      if (obj.type === "image") {
+        // Why doesn't the fabric.Image type have src when it clearly there!!!!
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const element = obj as any;
+
+        if (
+          element &&
+          !element.src.includes("shirtTemplateFront") &&
+          !element.src.includes("shirtTemplateBack")
+        ) {
+          const img = new Image();
+          img.crossOrigin = "Anonymous";
+          img.src = element.src;
+
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              const canvasElement = document.createElement("canvas");
+              const context = canvasElement.getContext("2d");
+              canvasElement.width = img.width;
+              canvasElement.height = img.height;
+              context?.drawImage(img, 0, 0);
+              element.src = canvasElement.toDataURL("image/webp", quality);
+              resolve();
+            };
+          });
+        }
+      }
+    })
+  );
+
+  console.log("After conversion: ", canvasJSON);
+  return canvasJSON;
 };
 
 /**

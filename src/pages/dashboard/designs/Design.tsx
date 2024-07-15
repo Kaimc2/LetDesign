@@ -11,6 +11,7 @@ import { Design } from "../../../types/design.types";
 export const DesignPage = () => {
   const { user } = useContext(AuthContext);
   const [designs, setDesigns] = useState<Design[]>();
+  const [design, setDesign] = useState<Design | null>(null);
   const [loading, setLoading] = useState(true);
   const [dialogState, setDialogState] = useState(false);
   const navigate = useNavigate();
@@ -22,11 +23,10 @@ export const DesignPage = () => {
           headers: { Authorization: `Bearer ${user?.accessToken}` },
         })
         .then((res) => {
-          console.log(res);
-          setDesigns(res.data.data.data);
+          setDesigns(res.data.data);
         })
         .catch((err) => {
-          if (err.request.status === 401) {
+          if (err.request.status === 403) {
             navigate("/unauthorized");
             setLoading(false);
           }
@@ -40,8 +40,11 @@ export const DesignPage = () => {
 
   if (loading) return <LayoutLoader />;
 
-  const deleteDesign = () => {
-    console.log("delete");
+  const deleteDesign = (id: string) => {
+    api
+      .delete(`/designs/${id}`)
+      .then((res) => console.log(res))
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -73,30 +76,40 @@ export const DesignPage = () => {
 
       <div className="p-8 max-w-[calc(100vw-330px)] h-[calc(100vh-120px)] overflow-y-auto flex flex-wrap gap-12">
         {designs?.length ? (
-          <div className="flex flex-col gap-2 hover:cursor-pointer">
-            <Link
-              to={"/design/edit/1"}
-              className="group relative border border-black rounded-md w-[200px] h-[200px] flex items-center justify-center"
-            >
-              <img
-                className="p-6"
-                src="/placeholder/pf.png"
-                alt="design_preview"
-              />
-              <FontAwesomeIcon
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDialogState(true);
-                }}
-                className="absolute hidden group-hover:block top-2 right-2 hover:text-error"
-                title="Delete"
-                icon={faTrash}
-                size="lg"
-              />
-            </Link>
-            <p>Design Name</p>
-            <p className="text-xs text-brand-gray">Edited 1 day ago</p>
-          </div>
+          designs.map((design) => {
+            return (
+              <div
+                key={design.id}
+                className="flex flex-col gap-2 hover:cursor-pointer"
+              >
+                <Link
+                  to={`/design/edit/${design.id}`}
+                  className="group relative border border-black rounded-md w-[200px] h-[200px] flex items-center justify-center"
+                >
+                  <img
+                    className="p-6"
+                    src="/placeholder/pf.png"
+                    alt="design_preview"
+                  />
+                  <FontAwesomeIcon
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDialogState(true);
+                      setDesign(design);
+                    }}
+                    className="absolute hidden group-hover:block top-2 right-2 hover:text-error"
+                    title="Delete"
+                    icon={faTrash}
+                    size="lg"
+                  />
+                </Link>
+                <p>{design.name}</p>
+                <p className="text-xs text-brand-gray">
+                  Edited {design.updatedAt}
+                </p>
+              </div>
+            );
+          })
         ) : (
           <div className="w-full h-full flex justify-center items-center text-2xl text-gray-400">
             No Designs
@@ -106,9 +119,9 @@ export const DesignPage = () => {
 
       {dialogState && (
         <ConfirmDialog
-          name="Design Name"
+          name={design?.name ?? "Design Name"}
           blurFn={() => setDialogState(false)}
-          confirmFn={deleteDesign}
+          confirmFn={() => deleteDesign(design?.id ?? "")}
           cancelFn={() => setDialogState(false)}
         />
       )}

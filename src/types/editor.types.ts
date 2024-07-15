@@ -6,7 +6,10 @@ export interface ObjectProperty {
   x?: number;
   y?: number;
   angle?: number;
+  scaleX?: number;
+  scaleY?: number;
   fill?: string | Pattern | Gradient;
+  type?: string;
 }
 
 export interface TextProperty extends ObjectProperty {
@@ -34,6 +37,7 @@ export interface CircleProperty extends ObjectProperty {
 }
 
 export type SelectedObjectProperty =
+  | ObjectProperty
   | RectangleProperty
   | CircleProperty
   | TextProperty;
