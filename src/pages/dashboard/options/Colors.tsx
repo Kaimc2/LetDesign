@@ -79,7 +79,7 @@ export const Colors = () => {
     field: string,
     e: ChangeEvent<HTMLInputElement>
   ) => {
-    setUpdateFormData({ ...formData, [field]: e.target.value });
+    setUpdateFormData({ ...updateFormData, [field]: e.target.value });
   };
 
   const handleSubmit = () => {
@@ -113,12 +113,13 @@ export const Colors = () => {
 
     api
       .put(
-        "/colors",
-        { name: formData.name, hex_code: formData.hexCode },
+        `/colors/${selectedColor?.id}`,
+        { name: updateFormData.name, hex_code: updateFormData.hexCode },
         { headers: { Authorization: `Bearer  ${user?.accessToken}` } }
       )
       .then(() => {
         displayNotification("Color added successfully", "success");
+        setIsEdit(false);
         setFormData({ name: "", hexCode: "#000000" });
         triggerRefetch();
       })
@@ -164,10 +165,12 @@ export const Colors = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2">
           <div className="flex flex-col">
             <input
-              className="px-4 py-2 rounded-md border border-gray-400"
+              className={`px-4 py-2 rounded-md border ${
+                errors.name ? "border-error" : "border-gray-400"
+              }`}
               type="text"
               placeholder="Name"
               value={formData.name}
@@ -217,7 +220,9 @@ export const Colors = () => {
                         <td className="w-1/3 py-2 pl-6">
                           <input
                             className={`px-2 py-2 border rounded-md ${
-                              errors.name ? "border-error" : "border-gray-400"
+                              errors.updateName
+                                ? "border-error"
+                                : "border-gray-400"
                             }`}
                             type="text"
                             value={updateFormData.name}

@@ -31,7 +31,6 @@ export const Sizes = () => {
     api
       .get("/sizes", { params: { search: search } })
       .then((res) => {
-        console.log(res);
         const fetchData = res.data.data.data;
         setSizes(fetchData);
         setLoading(false);
@@ -135,19 +134,28 @@ export const Sizes = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            className="px-4 py-2 rounded-md border border-gray-400"
-            type="text"
-            placeholder="Size"
-            value={sizeName}
-            onChange={(e) => {
-              setSizeName(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (sizeName && e.key === "Enter") handleSubmit();
-            }}
-          />
+        <div className="flex items-start gap-2">
+          <div className="flex flex-col">
+            <input
+              className={`px-4 py-2 rounded-md border ${
+                errors.name ? "border-error" : "border-gray-400"
+              }`}
+              type="text"
+              placeholder="Size"
+              value={sizeName}
+              onChange={(e) => {
+                setSizeName(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (sizeName && e.key === "Enter") handleSubmit();
+              }}
+            />
+            {errors.name && (
+              <span className="text-error text-sm ml-2 mt-1">
+                {errors.name}
+              </span>
+            )}
+          </div>
           <button
             onClick={handleSubmit}
             className="px-4 py-2 rounded-md border border-gray-400 hover:bg-gray-100"
