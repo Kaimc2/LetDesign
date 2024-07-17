@@ -1,6 +1,5 @@
 import axios from "axios";
 import User from "../types/user.types";
-import { useNavigate } from "react-router-dom";
 
 const api = axios.create({
   baseURL: "http://127.0.0.1:8000/api",
@@ -35,10 +34,8 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (refreshError) {
-        const navigate = useNavigate();
         console.error("Failed to refresh token", refreshError);
         // Redirect to login or handle as necessary
-        navigate("/login");
       }
     }
 

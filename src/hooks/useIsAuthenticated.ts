@@ -13,7 +13,7 @@ const useIsAuthenticated = (redirectUrl?: string) => {
         navigate("/login");
       } else if (user?.isVerified) {
         navigate(redirectUrl || "/", { replace: true });
-      } else {
+      } else if (!user?.isVerified) {
         navigate("/account/verify", {
           state: { email: user?.email, id: user?.id },
         });

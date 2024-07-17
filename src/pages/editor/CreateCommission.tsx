@@ -11,11 +11,10 @@ import { loadCanvas } from "../../utils/fabricUtils";
 import { ReadOnlyBackCanvas } from "./components/ReadOnlyBackCanvas";
 import { FirstStep } from "./commission/FirstStep";
 import { SecondStep } from "./commission/SecondStep";
-import useIsAuthenticated from "../../hooks/useIsAuthenticated";
+// import useIsAuthenticated from "../../hooks/useIsAuthenticated";
 import api from "../../utils/api";
 
 export const CreateCommission = () => {
-  useIsAuthenticated();
   const { user, isAuthenticated } = useContext(AuthContext);
   const { state } = useLocation();
   const {
@@ -33,6 +32,7 @@ export const CreateCommission = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
+  // useIsAuthenticated();
   useEffect(() => {
     if (frontCanvas && backCanvas) {
       loadCanvas(fabricFrontCanvasRef.current, frontCanvas);

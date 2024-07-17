@@ -5,7 +5,8 @@ export const ConfirmDialog: FC<{
   blurFn: () => void;
   confirmFn: () => void;
   cancelFn: () => void;
-}> = ({ name, blurFn, confirmFn, cancelFn }) => {
+  isDeleted?: boolean;
+}> = ({ name, blurFn, confirmFn, cancelFn, isDeleted = false }) => {
   return (
     <div
       onClick={blurFn}
@@ -13,18 +14,20 @@ export const ConfirmDialog: FC<{
     >
       <div className="w-auto sm:w-[500px] h-auto sm:h-[163px] flex flex-col justify-center p-4 gap-2 bg-white rounded-md">
         <p className="text-2xl mb-3">
-          Are you sure you want to move {name} to trash?
+          {isDeleted
+            ? `Are you sure you want to delete ${name}?`
+            : `Are you sure you want to move ${name} to trash?`}
         </p>
         <div className="flex gap-2">
           <button
             onClick={confirmFn}
-            className="px-[40px] py-[10px] text-2xl rounded-md bg-error hover:bg-error-dark text-white"
+            className="px-[20px] py-[8px] text-2xl rounded-md bg-error hover:bg-error-dark text-white"
           >
             Yes
           </button>
           <button
             onClick={cancelFn}
-            className="px-[40px] py-[10px] text-2xl rounded-md bg-black hover:bg-black/80 text-white"
+            className="px-[20px] py-[8px] text-2xl rounded-md bg-black hover:bg-black/80 text-white"
           >
             No
           </button>

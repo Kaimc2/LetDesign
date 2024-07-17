@@ -8,6 +8,14 @@ export const Loader = () => {
   );
 };
 
+export const SectionLoader = () => {
+  return (
+    <div className="w-full h-full flex justify-center items-center">
+      <img className="w-64" src={logoLoading} alt="loader" />
+    </div>
+  );
+};
+
 export const LayoutLoader = () => {
   return (
     <div className="w-[calc(100vw-314px)] h-[calc(100vh-64px)] flex justify-center items-center absolute">

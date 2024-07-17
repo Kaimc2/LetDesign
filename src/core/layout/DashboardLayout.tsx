@@ -8,6 +8,7 @@ import {
   faPenRuler,
   faRightFromBracket,
   faShop,
+  faSliders,
   faSwatchbook,
   faTrash,
   faUserGroup,
@@ -101,7 +102,7 @@ export const DashboardLayout = () => {
             {role === "tailor" && (
               <NavbarItem
                 name={"My Store"}
-                link={"/dashboard/stores/1"}
+                link={"/dashboard/my-store"}
                 icon={faShop}
               />
             )}
@@ -116,6 +117,11 @@ export const DashboardLayout = () => {
                   name={"Stores"}
                   link={"/dashboard/stores"}
                   icon={faShop}
+                />
+                <NavbarItem
+                  name={"Options"}
+                  link={"/dashboard/options"}
+                  icon={faSliders}
                 />
               </>
             )}

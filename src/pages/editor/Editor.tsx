@@ -39,6 +39,8 @@ export const Editor = () => {
   const [objects, setObjects] = useState<fabric.Object[]>([]);
   const [activeObject, setActiveObject] = useState<fabric.Object | null>(null);
   const [designName, setDesignName] = useState<string>("My Design");
+  const [isSaved, setIsSaved] = useState(false);
+  const [designId, setDesignId] = useState("");
   const fileUpload = useRef<HTMLInputElement>(null);
   const { user, isAuthenticated } = useContext(AuthContext);
   const [toggleDropdown, setToggleDropdown] = useState(false);
@@ -255,30 +257,51 @@ export const Editor = () => {
       status: "draft",
     };
 
-    api
-      .post(
-        "designs",
-        { ...inputs },
-        { headers: { Authorization: `Bearer ${user?.accessToken}` } }
-      )
-      .then((res) => {
-        console.log(res);
-        displayNotification("Design save successfully", "success");
-      })
-      .catch((err) => {
-        console.error(err);
-        displayNotification("Failed to save design", "error");
-      });
+    if (isSaved) {
+      api
+        .put(
+          `designs/${designId}`,
+          { ...inputs },
+          { headers: { Authorization: `Bearer ${user?.accessToken}` } }
+        )
+        .then((res) => {
+          console.log(res);
+          displayNotification("Design save successfully", "success");
+        })
+        .catch((err) => {
+          console.error(err);
+          displayNotification("Failed to save design", "error");
+        });
+    } else {
+      api
+        .post(
+          "designs",
+          { ...inputs },
+          { headers: { Authorization: `Bearer ${user?.accessToken}` } }
+        )
+        .then((res) => {
+          console.log(res);
+          setIsSaved(true);
+          setDesignId(res.data.data.id);
+          displayNotification("Design save successfully", "success");
+        })
+        .catch((err) => {
+          console.error(err);
+          displayNotification("Failed to save design", "error");
+        });
+    }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const inputs: DesignInput = {
       name: designName,
-      user_id: user!.id,
+      user_id: String(user?.id),
       front_content: JSON.stringify(
-        fb.saveCanvas(fabricFrontCanvasRef.current)
+        await fb.saveCanvas(fabricFrontCanvasRef.current)
       ),
-      back_content: JSON.stringify(fb.saveCanvas(fabricBackCanvasRef.current)),
+      back_content: JSON.stringify(
+        await fb.saveCanvas(fabricBackCanvasRef.current)
+      ),
       status: "draft",
     };
 
