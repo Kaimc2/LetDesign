@@ -109,13 +109,13 @@ const LoginForm: React.FC<LoginFormProps> = () => {
               {hide ? (
                 <FontAwesomeIcon
                   onClick={() => setHide(false)}
-                  icon={faEyeSlash}
+                  icon={faEye}
                   className="absolute right-3 top-7 transform -translate-y-1/2 text-gray-800 hover:cursor-pointer"
                 />
               ) : (
                 <FontAwesomeIcon
                   onClick={() => setHide(true)}
-                  icon={faEye}
+                  icon={faEyeSlash}
                   className="absolute right-3 top-7 transform -translate-y-1/2 text-gray-800 hover:cursor-pointer"
                 />
               )}

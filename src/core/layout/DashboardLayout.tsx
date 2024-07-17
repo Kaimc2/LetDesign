@@ -1,39 +1,56 @@
-import {
-  Link,
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/brands/logo_white.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronDown,
   faFileInvoiceDollar,
   faGear,
   faHome,
   faPenRuler,
   faRightFromBracket,
+  faShop,
+  faSliders,
   faSwatchbook,
   faTrash,
+  faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import useIsAuthenticated from "../../hooks/useIsAuthenticated";
 import { Loader } from "../common/Loader";
+import api from "../../utils/api";
+import { NavbarItem } from "../../pages/dashboard/components/NavbarItem";
+import { NavbarDropdown } from "../../pages/dashboard/components/NavbarDropdown";
 
 export const DashboardLayout = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [role, setRole] = useState("");
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
   const loading = useIsAuthenticated(location.pathname);
 
+  const getRole = useMemo(
+    () => async () => {
+      api
+        .get("/profile", {
+          headers: { Authorization: `Bearer ${user?.accessToken}` },
+        })
+        .then((res) => {
+          setRole(res.data.roles[0]);
+        })
+        .catch((err) => console.error(err));
+    },
+    [user?.accessToken]
+  );
+
+  useEffect(() => {
+    getRole();
+  }, [getRole]);
+
   if (loading) return <Loader />;
 
   return (
-    <section className="w-screen h-screen overflow-hidden">
+    <section className="w-screen h-screen overflow-y-auto">
       <div className="flex items-center h-16 px-8 bg-secondary">
         <Link to={"/"}>
           <img className="w-12 h-12 rounded-md" src={logo} alt="Logo" />
@@ -52,93 +69,81 @@ export const DashboardLayout = () => {
         </ul>
       </div>
 
-      <div className="flex h-[calc(100vh-64px)]">
-        <div className="flex flex-col justify-between w-[314px] px-8 py-[26px] border border-r-gray-300 shadow-md">
-          <ul className="flex flex-col gap-[26px]">
-            <NavLink
-              to={"/dashboard"}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-              }
-              end
-            >
-              <FontAwesomeIcon icon={faHome} size="lg" />
-              <p>Overview</p>
-            </NavLink>
+      <div className="flex flex-col md:flex-row h-full md:h-[calc(100vh-64px)]">
+        <div className="flex flex-row md:flex-col justify-between w-auto overflow-auto mb-4 md:mb-0 md:w-[314px] px-8 py-[26px] border border-r-gray-300 shadow-md">
+          <ul className="flex flex-row md:flex-col gap-[26px]">
+            <NavbarItem
+              name={"Overview"}
+              link={"/dashboard"}
+              icon={faHome}
+              isEnd={true}
+            />
 
-            <div
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-between px-4 py-3 rounded-md hover:bg-accent-80
-               hover:text-white hover:cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faPenRuler} size="lg" />
-                <p>Designs</p>
-              </div>
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className={
-                  isOpen
-                    ? "rotate-180 transition-transform"
-                    : "rotate-0 transition-transform"
-                }
+            <NavbarDropdown name={"Designs"} icon={faPenRuler}>
+              <NavbarItem
+                name={"My Designs"}
+                link={"/dashboard/designs"}
+                icon={faSwatchbook}
+                isEnd={true}
               />
-            </div>
-            {isOpen && (
-              <div className="flex flex-col gap-2 ml-6">
-                <NavLink
-                  to={"/dashboard/designs"}
-                  end
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                      : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                  }
-                >
-                  <FontAwesomeIcon icon={faSwatchbook} size="lg" />
-                  <p>My Designs</p>
-                </NavLink>
-                <NavLink
-                  to={"/dashboard/designs/removed"}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                      : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                  }
-                >
-                  <FontAwesomeIcon icon={faTrash} size="lg" />
-                  <p>Deleted Designs</p>
-                </NavLink>
-              </div>
-            )}
+              <NavbarItem
+                name={"Deleted Designs"}
+                link={"/dashboard/designs/removed"}
+                icon={faTrash}
+              />
+            </NavbarDropdown>
 
-            <NavLink
-              to={"/dashboard/commissions"}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-              }
+            <NavbarItem
+              name={"Commissions"}
+              link={"/dashboard/commissions"}
+              icon={faFileInvoiceDollar}
+            />
+
+            {role === "tailor" && (
+              <NavbarItem
+                name={"My Store"}
+                link={"/dashboard/my-store"}
+                icon={faShop}
+              />
+            )}
+            {role === "admin" && (
+              <>
+                <NavbarItem
+                  name={"Users"}
+                  link={"/dashboard/users"}
+                  icon={faUserGroup}
+                />
+                <NavbarItem
+                  name={"Stores"}
+                  link={"/dashboard/stores"}
+                  icon={faShop}
+                />
+                <NavbarItem
+                  name={"Options"}
+                  link={"/dashboard/options"}
+                  icon={faSliders}
+                />
+              </>
+            )}
+            <NavbarItem
+              name={"Settings"}
+              link={"/dashboard/settings"}
+              icon={faGear}
+            />
+
+            <button
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+              className="flex md:hidden w-full items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
             >
-              <FontAwesomeIcon icon={faFileInvoiceDollar} size="lg" />
-              <p>Commissions</p>
-            </NavLink>
-            <NavLink
-              to={"/dashboard/settings"}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-                  : "flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-              }
-            >
-              <FontAwesomeIcon icon={faGear} size="lg" />
-              <p>Settings</p>
-            </NavLink>
+              <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
+              <p>Sign Out</p>
+            </button>
           </ul>
 
-          <div className="flex flex-col gap-6">
+          <div className="hidden md:flex flex-col gap-6">
             <Link
               to={"/dashboard/settings"}
               className="flex p-2 gap-2 items-center hover:shadow-md border hover:border-gray-300 hover:cursor-pointer rounded-md"
@@ -162,7 +167,7 @@ export const DashboardLayout = () => {
               className="flex w-full items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
             >
               <FontAwesomeIcon icon={faRightFromBracket} size="lg" />
-              <p>Logout</p>
+              <p>Sign Out</p>
             </button>
           </div>
         </div>

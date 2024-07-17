@@ -17,6 +17,10 @@ import { CreateCommission } from "../pages/editor/CreateCommission";
 import { Page404 } from "../core/error/Page404";
 import { Page403 } from "../core/error/Page403";
 import { UpdateEditor } from "../pages/editor/UpdateEditor";
+import { Users } from "../pages/dashboard/Users";
+import { Stores } from "../pages/dashboard/Stores";
+import { MyStore } from "../pages/dashboard/MyStore";
+import { Options } from "../pages/dashboard/options/Options";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +55,10 @@ const router = createBrowserRouter([
       { path: "", element: <Dashboard /> },
       { path: "designs", element: <DesignPage /> },
       { path: "designs/removed", element: <DeletedDesign /> },
+      { path: "my-store", element: <MyStore /> },
+      { path: "stores", element: <Stores /> },
+      { path: "users", element: <Users /> },
+      { path: "options", element: <Options /> },
       { path: "commissions", element: <Commission /> },
       { path: "settings", element: <Settings /> },
     ],

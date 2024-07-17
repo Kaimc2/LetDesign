@@ -3,10 +3,7 @@ import ReactDOM from "react-dom";
 import { Profile } from "./Profile";
 import { Security } from "./Security";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
-
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
 const ManagePhoneModal = ({
   isOpen,
@@ -65,7 +62,7 @@ const ManagePhoneModal = ({
           </button>
           <button
             onClick={handleConfirm}
-            className="bg-purple-600 text-white px-4 py-2 rounded"
+            className="bg-accent hover:bg-accent-80 text-white px-4 py-2 rounded"
           >
             Confirm
           </button>
@@ -171,7 +168,7 @@ const EditProfileModal = ({
           </button>
           <button
             onClick={handleConfirm}
-            className="bg-purple-600 text-white px-4 py-2 rounded"
+            className="bg-accent hover:bg-accent-80 text-white px-4 py-2 rounded"
           >
             Confirm
           </button>
@@ -181,7 +178,6 @@ const EditProfileModal = ({
     document.body
   );
 };
-
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
@@ -210,52 +206,52 @@ export const Settings = () => {
   };
 
   return (
-    <div className=" p-2 pl-8 font-regular text-gray-700">
-      <h1 className="text-2xl mb-3">Settings</h1>
-      <div>
-        <hr className="border-1 border-gray-500 mb-3" /> {/* Divider line */}
+    <div className="ml-4">
+      <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
+        <h1 className="text-2xl">Settings</h1>
       </div>
-      <div className="overflow-y-auto border rounded-md shadow shadow-zinc-300 border-gray-300">
-        {" "}
-        {/* Elevated container */}
-        <div className=" flex px-3 pt-2">
-          {" "}
-          {/* Tab container */}
-          <button
-            className={`px-4 py-2 mr-2 rounded-t-md ${
-              activeTab === "profile"
-                ? "border-b-2 border-purple-500 text-purple-700"
-                : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab("profile")}
-          >
-            Profile
-          </button>
-          <button
-            className={`px-4 py-2 rounded-t-md ${
-              activeTab === "security"
-                ? "border-b-2 border-purple-500 text-purple-700"
-                : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab("security")}
-          >
-            Security
-          </button>
-        </div>
-        <hr className="border-1  border-gray-500 opacity-50" />{" "}
-        {/* Faded bottom border */}
-        <div className="p-3 max-h-[500px]">
-          {activeTab === "profile" && (
-            <Profile
-              onEdit={openProfileModal}
-              onManagePhone={openPhoneModal}
-              username={username}
-              phoneNumber={phoneNumber}
-              profileImage={profileImage}
-            />
-          )}{" "}
-          {/* Pass username, phoneNumber, and profileImage as props */}
-          {activeTab === "security" && <Security />}
+
+      <div className="p-8">
+        <div className="overflow-y-auto pb-8 border rounded-md shadow shadow-zinc-300 border-gray-300">
+          {/* Elevated container */}
+          <div className=" flex px-3 pt-2">
+            {/* Tab container */}
+            <button
+              className={`px-4 py-2 mr-2 rounded-t-md ${
+                activeTab === "profile"
+                  ? "border-b-2 border-accent text-accent-80"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("profile")}
+            >
+              Profile
+            </button>
+            <button
+              className={`px-4 py-2 rounded-t-md ${
+                activeTab === "security"
+                  ? "border-b-2 border-accent text-accent-80"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("security")}
+            >
+              Security
+            </button>
+          </div>
+          <hr className="border-1  border-gray-500 opacity-50" />
+          {/* Faded bottom border */}
+          <div className="p-3 max-h-[500px]">
+            {activeTab === "profile" && (
+              <Profile
+                onEdit={openProfileModal}
+                onManagePhone={openPhoneModal}
+                username={username}
+                phoneNumber={phoneNumber}
+                profileImage={profileImage}
+              />
+            )}
+            {/* Pass username, phoneNumber, and profileImage as props */}
+            {activeTab === "security" && <Security />}
+          </div>
         </div>
       </div>
       <EditProfileModal
