@@ -18,7 +18,7 @@ export const SectionLoader = () => {
 
 export const LayoutLoader = () => {
   return (
-    <div className="w-[calc(100vw-314px)] h-[calc(100vh-64px)] flex justify-center items-center absolute">
+    <div className="w-full md:w-[calc(100vw-314px)] h-full md:h-[calc(100vh-64px)] flex justify-center items-center absolute">
       <img src={logoLoading} alt="loader" />
     </div>
   );
