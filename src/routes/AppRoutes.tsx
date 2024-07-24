@@ -19,7 +19,7 @@ import { Page403 } from "../core/error/Page403";
 import { UpdateEditor } from "../pages/editor/UpdateEditor";
 import { Users } from "../pages/dashboard/Users";
 import { Stores } from "../pages/dashboard/Stores";
-import { MyStore } from "../pages/dashboard/MyStore";
+import { MyStore } from "../pages/dashboard/store/MyStore";
 import { Options } from "../pages/dashboard/options/Options";
 
 const router = createBrowserRouter([

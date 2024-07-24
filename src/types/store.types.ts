@@ -14,18 +14,31 @@ export interface Store {
   updatedAt: string;
 }
 
+export interface StoreInput {
+  name: string;
+  description: string;
+  tailorThumbnail?: string;
+  address: string;
+  email: string;
+  phoneNumber: string;
+  ownerId: string;
+}
+
 export interface Material {
   id: string;
   name: string;
+  price?: number;
 }
 
 export interface Size {
   id: string;
   name: string;
+  price?: number;
 }
 
 export interface Color {
   id: string;
   name: string;
   hexCode: string;
+  price?: number;
 }

@@ -18,7 +18,7 @@ export const ConfirmDialog: FC<{
             ? `Are you sure you want to delete ${name}?`
             : `Are you sure you want to move ${name} to trash?`}
         </p>
-        <div className="flex gap-2">
+        <div className="flex justify-center gap-2">
           <button
             onClick={confirmFn}
             className="px-[20px] py-[8px] text-2xl rounded-md bg-error hover:bg-error-dark text-white"

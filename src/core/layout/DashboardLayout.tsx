@@ -7,6 +7,7 @@ import {
   faHome,
   faPenRuler,
   faRightFromBracket,
+  faRuler,
   faShop,
   faSliders,
   faSwatchbook,
@@ -50,7 +51,7 @@ export const DashboardLayout = () => {
   if (loading) return <Loader />;
 
   return (
-    <section className="w-screen h-screen overflow-y-auto">
+    <section className="w-screen h-screen overflow-y-auto md:overflow-hidden">
       <div className="flex items-center h-16 px-8 bg-secondary">
         <Link to={"/"}>
           <img className="w-12 h-12 rounded-md" src={logo} alt="Logo" />
@@ -70,8 +71,8 @@ export const DashboardLayout = () => {
       </div>
 
       <div className="flex flex-col md:flex-row h-full md:h-[calc(100vh-64px)]">
-        <div className="flex flex-row md:flex-col justify-between w-auto overflow-auto mb-4 md:mb-0 md:w-[314px] px-8 py-[26px] border border-r-gray-300 shadow-md">
-          <ul className="flex flex-row md:flex-col gap-[26px]">
+        <div className="flex flex-row md:flex-col justify-between w-auto mb-4 md:mb-0 md:w-[314px] px-8 py-[26px] border border-r-gray-300 shadow-md">
+          <ul className="flex flex-row md:flex-col gap-[26px] overflow-x-auto">
             <NavbarItem
               name={"Overview"}
               link={"/dashboard"}
@@ -100,11 +101,18 @@ export const DashboardLayout = () => {
             />
 
             {role === "tailor" && (
-              <NavbarItem
-                name={"My Store"}
-                link={"/dashboard/my-store"}
-                icon={faShop}
-              />
+              <>
+                <NavbarItem
+                  name={"Adjustment"}
+                  link={"/dashboard/adjustment"}
+                  icon={faRuler}
+                />
+                <NavbarItem
+                  name={"My Store"}
+                  link={"/dashboard/my-store"}
+                  icon={faShop}
+                />
+              </>
             )}
             {role === "admin" && (
               <>
