@@ -280,12 +280,13 @@ export const updateSelectedObj = (
         cornerRadius: (selectedObj as fabric.Rect).rx,
       } as RectangleProperty);
     } else if (selectedObj.type === "circle") {
+      const selectedCircleObj = selectedObj as fabric.Circle;
       setSelectedObj({
         ...commonProp,
         radius:
-          (selectedObj as fabric.Circle).radius! *
-            (selectedObj as fabric.Circle).scaleX! ??
-          (selectedObj as fabric.Circle).radius,
+          selectedCircleObj.radius && selectedCircleObj.scaleX
+            ? selectedCircleObj.radius * selectedCircleObj.scaleX
+            : selectedCircleObj.radius,
         scaleX: 1,
         scaleY: 1,
       } as CircleProperty);
@@ -476,6 +477,7 @@ export const pasteObject = (
 /**
  * Save the canvas objects into a JSON format for storing
  * @param canvas Reference to a canvas
+ * @param quality The quality of the converted image
  * @returns An JSON object of canvas data
  */
 export const saveCanvas = async (
@@ -508,7 +510,7 @@ export const saveCanvas = async (
               canvasElement.width = img.width;
               canvasElement.height = img.height;
               context?.drawImage(img, 0, 0);
-              element.src = canvasElement.toDataURL("image/webp", quality);
+              element.src = canvasElement.toDataURL("image/jpeg", quality);
               resolve();
             };
           });
@@ -517,8 +519,28 @@ export const saveCanvas = async (
     })
   );
 
-  console.log("After conversion: ", canvasJSON);
+  // console.log("After conversion: ", canvasJSON);
   return canvasJSON;
+};
+
+/**
+ * Convert the canvas to an image object for storing
+ * @param canvas Reference to a canvas
+ * @param quality The quality of the converted image
+ * @returns A data URL of the canvas element
+ */
+export const getDesignThumbnail = (
+  canvas: fabric.Canvas | null,
+  quality = 0.1
+) => {
+  if (!canvas) return;
+
+  const thumbnail = canvas.toDataURL({
+    format: "webp",
+    quality: quality,
+  });
+
+  return thumbnail;
 };
 
 /**

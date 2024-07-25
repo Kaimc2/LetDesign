@@ -7,6 +7,7 @@ import { AuthContext } from "../../../context/AuthContext";
 import { ConfirmDialog } from "../../../core/common/ConfirmDialog";
 import { LayoutLoader } from "../../../core/common/Loader";
 import { Design } from "../../../types/design.types";
+import { displayNotification } from "../../../utils/helper";
 
 export const DesignPage = () => {
   const { user } = useContext(AuthContext);
@@ -14,12 +15,15 @@ export const DesignPage = () => {
   const [design, setDesign] = useState<Design | null>(null);
   const [loading, setLoading] = useState(true);
   const [dialogState, setDialogState] = useState(false);
+  const [refetch, setRefetch] = useState(false);
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDesigns = async () => {
       await api
         .get("/designs", {
+          params: { search: search },
           headers: { Authorization: `Bearer ${user?.accessToken}` },
         })
         .then((res) => {
@@ -36,41 +40,47 @@ export const DesignPage = () => {
     };
 
     fetchDesigns();
-  }, [navigate, user?.accessToken]);
+  }, [navigate, user?.accessToken, refetch, search]);
 
   if (loading) return <LayoutLoader />;
 
   const deleteDesign = (id: string) => {
     api
       .delete(`/designs/${id}`)
-      .then((res) => console.log(res))
-      .catch((err) => console.error(err));
+      .then(() => {
+        displayNotification("Design successfully deleted", "success");
+        setRefetch(!refetch);
+      })
+      .catch((err) => {
+        console.error(err);
+        displayNotification("Failed to delete design", "error");
+      });
   };
 
   return (
     <div className="ml-4">
       <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
         <h1 className="text-2xl">My Designs</h1>
-        <div className="flex gap-4">
-          <Link
-            to={"/design"}
-            className="flex items-center bg-accent hover:bg-accent-80 px-4 rounded-md shadow-md text-white"
-          >
-            Create
-          </Link>
-          <div className="relative">
-            <FontAwesomeIcon
-              className="absolute text-gray-400 left-4 translate-y-[calc(50%+4px)]"
-              icon={faSearch}
-            />
-            <input
-              className="px-2 pl-10 py-2 border border-gray-300 rounded-md shadow-md"
-              placeholder="Search"
-              type="text"
-              name="search"
-              id="search"
-            />
-          </div>
+
+        <div className="relative">
+          <FontAwesomeIcon
+            className="absolute text-gray-400 left-4 translate-y-[calc(50%+4px)]"
+            icon={faSearch}
+          />
+          <input
+            className="px-2 pl-10 py-2 border border-gray-300 rounded-md shadow-md"
+            placeholder="Search"
+            type="text"
+            name="search"
+            id="search"
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setRefetch(!refetch);
+              }
+            }}
+            title="Press enter to search"
+          />
         </div>
       </div>
 
@@ -88,7 +98,7 @@ export const DesignPage = () => {
                 >
                   <img
                     className="p-6"
-                    src="/placeholder/pf.png"
+                    src={design.designThumbnail ?? "/placeholder/pf.png"}
                     alt="design_preview"
                   />
                   <FontAwesomeIcon
