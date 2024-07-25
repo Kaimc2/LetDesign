@@ -248,6 +248,9 @@ export const Editor = () => {
     const inputs: DesignInput = {
       name: designName,
       user_id: String(user?.id),
+      design_thumbnail: String(
+        fb.getDesignThumbnail(fabricFrontCanvasRef.current)
+      ),
       front_content: JSON.stringify(
         await fb.saveCanvas(fabricFrontCanvasRef.current)
       ),
@@ -264,8 +267,7 @@ export const Editor = () => {
           { ...inputs },
           { headers: { Authorization: `Bearer ${user?.accessToken}` } }
         )
-        .then((res) => {
-          console.log(res);
+        .then(() => {
           displayNotification("Design save successfully", "success");
         })
         .catch((err) => {
@@ -280,7 +282,6 @@ export const Editor = () => {
           { headers: { Authorization: `Bearer ${user?.accessToken}` } }
         )
         .then((res) => {
-          console.log(res);
           setIsSaved(true);
           setDesignId(res.data.data.id);
           displayNotification("Design save successfully", "success");
@@ -296,6 +297,9 @@ export const Editor = () => {
     const inputs: DesignInput = {
       name: designName,
       user_id: String(user?.id),
+      design_thumbnail: String(
+        fb.getDesignThumbnail(fabricFrontCanvasRef.current)
+      ),
       front_content: JSON.stringify(
         await fb.saveCanvas(fabricFrontCanvasRef.current)
       ),

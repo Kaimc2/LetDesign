@@ -270,6 +270,9 @@ export const UpdateEditor = () => {
     const inputs: DesignInput = {
       name: designName,
       user_id: String(user?.id),
+      design_thumbnail: String(
+        fb.getDesignThumbnail(fabricFrontCanvasRef.current)
+      ),
       front_content: JSON.stringify(
         await fb.saveCanvas(fabricFrontCanvasRef.current)
       ),
@@ -298,6 +301,9 @@ export const UpdateEditor = () => {
     const inputs: DesignInput = {
       name: designName,
       user_id: user!.id,
+      design_thumbnail: String(
+        fb.getDesignThumbnail(fabricFrontCanvasRef.current)
+      ),
       front_content: JSON.stringify(
         fb.saveCanvas(fabricFrontCanvasRef.current)
       ),
