@@ -316,7 +316,6 @@ export const Editor = () => {
         { headers: { Authorization: `Bearer ${user?.accessToken}` } }
       )
       .then((res) => {
-        console.log(res);
         navigate("/design/commission/create", {
           state: {
             id: res.data.data.id,
@@ -394,7 +393,7 @@ export const Editor = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src="/placeholder/pf.png"
+              src={user?.profilePicture ?? "/placeholder/pf.png"}
               alt="profile picture"
             />
 

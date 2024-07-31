@@ -47,7 +47,7 @@ export const Stores = () => {
   return (
     <div className="ml-4">
       <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
-        <h1 className="text-2xl">Users</h1>
+        <h1 className="text-2xl">Stores</h1>
       </div>
 
       <div className="p-8 w-full md:max-w-[calc(100vw-330px)] max-h-[calc(100vh-120px)] overflow-y-auto flex flex-col flex-wrap gap-4">
@@ -88,8 +88,9 @@ export const Stores = () => {
                       <img
                         className="w-10 h-10 rounded-md"
                         src={
-                          store.tailorThumbnail ??
-                          "/placeholder/placeholder.jpg"
+                          store.tailorThumbnail
+                            ? String(store.tailorThumbnail)
+                            : "/placeholder/placeholder.jpg"
                         }
                         alt="tailor_thumbnail"
                       />

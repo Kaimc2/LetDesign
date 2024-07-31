@@ -21,13 +21,13 @@ export const ConfirmDialog: FC<{
         <div className="flex justify-center gap-2">
           <button
             onClick={confirmFn}
-            className="px-[20px] py-[8px] text-2xl rounded-md bg-error hover:bg-error-dark text-white"
+            className="px-[20px] py-[8px] rounded-md bg-error hover:bg-error-dark text-white"
           >
             Yes
           </button>
           <button
             onClick={cancelFn}
-            className="px-[20px] py-[8px] text-2xl rounded-md bg-black hover:bg-black/80 text-white"
+            className="px-[20px] py-[8px] rounded-md bg-black hover:bg-black/80 text-white"
           >
             No
           </button>

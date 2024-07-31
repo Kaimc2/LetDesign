@@ -1,5 +1,13 @@
-import { ChangeEvent, Dispatch, FC, useContext, useState } from "react";
-import { Store, StoreInput } from "../../../types/store.types";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  MouseEvent,
+  useContext,
+  useRef,
+  useState,
+} from "react";
+import { Store, StoreAPIInput, StoreInput } from "../../../types/store.types";
 import {
   faLocationDot,
   faPhone,
@@ -19,8 +27,8 @@ export const StoreUpdate: FC<{
   refetch: (search?: string, label?: string) => void;
 }> = ({ store, setEdit, refetch }) => {
   const { user } = useContext(AuthContext);
-  const [formData, setFormData] = useState<Store>(store);
-  const [errors, setErrors] = useState<StoreInput>({
+  const [formData, setFormData] = useState<StoreInput>(store);
+  const [errors, setErrors] = useState({
     name: "",
     description: "",
     tailorThumbnail: "",
@@ -29,12 +37,35 @@ export const StoreUpdate: FC<{
     phoneNumber: "",
     ownerId: "",
   });
+  const thumbnailRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(
+    String(store.tailorThumbnail)
+  );
 
   const handleFormChange = (
     field: string,
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const file = files[0];
+    const thumbnailPreview = URL.createObjectURL(file);
+
+    setPreview(thumbnailPreview);
+    setFormData({ ...formData, tailorThumbnail: file });
+  };
+
+  const handleFileInputClick = (
+    e: MouseEvent<HTMLImageElement, globalThis.MouseEvent>
+  ) => {
+    e.preventDefault();
+    if (!thumbnailRef || !thumbnailRef.current) return;
+    thumbnailRef.current.click();
   };
 
   const validate = () => {
@@ -75,21 +106,30 @@ export const StoreUpdate: FC<{
   };
 
   const handleUpdate = () => {
-    const formContent = {
-      name: formData?.name,
-      description: formData?.description,
-      tailor_thumbnail: "something",
-      address: formData?.address,
-      phone_number: formData?.phoneNumber,
-      email: formData?.email,
+    const formContent: StoreAPIInput = {
+      name: formData.name,
+      description: formData.description,
+      address: formData.address,
+      phone_number: formData.phoneNumber,
+      email: formData.email,
       owner_id: parseInt(String(user?.id)),
     };
 
+    if (typeof formData.tailorThumbnail !== "string") {
+      formContent.tailor_thumbnail = formData.tailorThumbnail;
+    }
+
     if (validate()) {
       api
-        .put(`/stores/${store.id}`, formContent, {
-          headers: { Authorization: `Bearer ${user?.accessToken}` },
-        })
+        .post(
+          `/stores/${store.id}`,
+          { ...formContent, _method: "PUT" },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
         .then(() => {
           displayNotification("Store updated successfully", "success");
           refetch();
@@ -107,9 +147,20 @@ export const StoreUpdate: FC<{
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           <img
-            className="w-20 h-20 rounded-md"
-            src="/placeholder/placeholder.jpg"
+            onClick={handleFileInputClick}
+            className="w-20 h-20 rounded-md hover:cursor-pointer"
+            src={preview ?? "/placeholder/placeholder.jpg"}
             alt="store_thumbnail"
+            title="Change thumbnail"
+          />
+          <input
+            className="hidden"
+            type="file"
+            accept="image/*"
+            name="thumbnail"
+            id="thumbnail"
+            onChange={handleThumbnailChange}
+            ref={thumbnailRef}
           />
           <label className="flex flex-col" htmlFor="name">
             <span>Name</span>
