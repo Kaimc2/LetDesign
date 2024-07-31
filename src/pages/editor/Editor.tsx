@@ -398,7 +398,9 @@ export const Editor = () => {
             />
 
             {/* Dropdown Menu */}
-            {toggleDropdown && <NavbarDropdown />}
+            {toggleDropdown && (
+              <NavbarDropdown setToggleDropdown={setToggleDropdown} />
+            )}
           </div>
         ) : (
           <div className="flex gap-2">

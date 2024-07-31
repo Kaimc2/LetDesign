@@ -297,20 +297,25 @@ export const UpdateEditor = () => {
       });
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const inputs: DesignInput = {
       name: designName,
-      user_id: user!.id,
+      user_id: String(user!.id),
       design_thumbnail: String(
         fb.getDesignThumbnail(fabricFrontCanvasRef.current)
       ),
       front_content: JSON.stringify(
-        fb.saveCanvas(fabricFrontCanvasRef.current)
+        await fb.saveCanvas(fabricFrontCanvasRef.current)
       ),
-      back_content: JSON.stringify(fb.saveCanvas(fabricBackCanvasRef.current)),
+      back_content: JSON.stringify(
+        await fb.saveCanvas(fabricBackCanvasRef.current)
+      ),
       status: "draft",
     };
 
+    // TODO:
+    // If commission of this exact design exist should just redirect to the commission page
+    // Could check design_id of commissions with the id params
     api
       .put(
         `designs/${id}`,
@@ -318,10 +323,10 @@ export const UpdateEditor = () => {
         { headers: { Authorization: `Bearer ${user?.accessToken}` } }
       )
       .then((res) => {
-        console.log(res);
+        const designId = res.data.data.id;
         navigate("/design/commission/create", {
           state: {
-            id: res.data.data.id,
+            id: designId,
             frontCanvas: inputs.front_content,
             backCanvas: inputs.back_content,
           },
@@ -397,12 +402,14 @@ export const UpdateEditor = () => {
             >
               <img
                 className="w-10 h-10 rounded-full"
-                src="/placeholder/pf.png"
+                src={user?.profilePicture ?? "/placeholder/pf.png"}
                 alt="profile picture"
               />
 
               {/* Dropdown Menu */}
-              {toggleDropdown && <NavbarDropdown />}
+              {toggleDropdown && (
+                <NavbarDropdown setToggleDropdown={setToggleDropdown} />
+              )}
             </div>
           ) : (
             <div className="flex gap-2">

@@ -57,7 +57,9 @@ export const Navbar = () => {
           />
 
           {/* Dropdown Menu */}
-          {toggleDropdown && <NavbarDropdown />}
+          {toggleDropdown && (
+            <NavbarDropdown setToggleDropdown={setToggleDropdown} />
+          )}
         </div>
       ) : (
         <div className="flex items-center gap-6">
