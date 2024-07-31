@@ -52,7 +52,7 @@ export const Navbar = () => {
         >
           <img
             className="w-16 h-16 rounded-full"
-            src="/placeholder/pf.png"
+            src={user?.profilePicture ?? "/placeholder/pf.png"}
             alt="profile picture"
           />
 
@@ -61,7 +61,12 @@ export const Navbar = () => {
         </div>
       ) : (
         <div className="flex items-center gap-6">
-          <Link to={"/login"} className="hidden md:block text-2xl hover:text-secondary-80">Sign In</Link>
+          <Link
+            to={"/login"}
+            className="hidden md:block text-2xl hover:text-secondary-80"
+          >
+            Sign In
+          </Link>
           <Link
             to={"/register"}
             className="hidden md:block px-[20px] py-[10px] text-2xl bg-secondary hover:bg-secondary-80 text-white rounded-md "

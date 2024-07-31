@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMobileAlt,
   faLock,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
+import { AuthContext } from "../../../context/AuthContext";
+import { hidePhoneNumber } from "../../../utils/helper";
 
 const SuccessModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
@@ -126,6 +128,7 @@ const ChangePasswordModal: React.FC<{
 };
 
 export const Security: React.FC = () => {
+  const { user } = useContext(AuthContext);
   const [selectedMethod, setSelectedMethod] = useState<
     "text" | "authenticator" | null
   >("text");
@@ -202,7 +205,10 @@ export const Security: React.FC = () => {
                   />
                   <div>
                     <p className="text-gray-800 font-semibold">Text Message</p>
-                    <p className="text-gray-600">Phone Number: +855xxxxxxxxx</p>
+                    <p className="text-gray-600">
+                      Phone Number:
+                      {hidePhoneNumber(0 + String(user?.phoneNumber))}
+                    </p>
                   </div>
                 </div>
               )}

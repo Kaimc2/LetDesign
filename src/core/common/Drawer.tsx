@@ -47,7 +47,7 @@ export const Drawer: FC<Props> = ({
             <p>{user?.name}</p>
             <img
               className="w-16 h-16 rounded-full"
-              src="/placeholder/pf.png"
+              src={user?.profilePicture ?? "/placeholder/pf.png"}
               alt="profile picture"
             />
           </div>

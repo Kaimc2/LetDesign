@@ -21,7 +21,7 @@ function HomeLayout() {
         .channel(`status-notification`)
         .listen("StatusNotification", (e: StatusNotificationResponse) => {
           if (e.message === "Registration successful") {
-            updateUser("isVerified", true);
+            updateUser({ isVerified: true });
           }
           displayNotification(e.message, e.status);
         });

@@ -27,7 +27,6 @@ export const DashboardLayout = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-
   const loading = useIsAuthenticated(location.pathname);
 
   const getRole = useMemo(
@@ -158,7 +157,7 @@ export const DashboardLayout = () => {
             >
               <img
                 className="w-10 h-10 rounded-full"
-                src="/placeholder/pf.png"
+                src={user?.profilePicture ?? "/placeholder/pf.png"}
                 alt="Profile"
               />
               <div>

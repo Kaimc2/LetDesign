@@ -7,15 +7,9 @@ import { hidePhoneNumber } from "../../../utils/helper";
 export const Profile = ({
   onEdit,
   onManagePhone,
-  username,
-  phoneNumber,
-  profileImage,
 }: {
   onEdit: () => void;
   onManagePhone: () => void;
-  username: string;
-  phoneNumber: string;
-  profileImage: string;
 }) => {
   const { user } = useContext(AuthContext);
 
@@ -25,19 +19,17 @@ export const Profile = ({
       <div className="p-4 border rounded-lg shadow-sm mb-4">
         <div className="flex items-center">
           <img
-            src={profileImage}
+            src={user?.profilePicture ?? "/placeholder/pf.png"}
             alt="profile picture"
             className="w-16 h-16 bg-gray-200 rounded-full mr-4"
           />
           <div>
-            <p className="text-lg">{user?.name || username}</p>
-            <p className="text-sm text-gray-600">
-              {user?.email || "example@example.com"}
-            </p>
+            <p className="text-lg">{user?.name}</p>
+            <p className="text-sm text-gray-600">{user?.email}</p>
           </div>
           <button
             onClick={onEdit}
-            className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-md"
+            className="ml-auto px-4 py-2 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 rounded-md"
           >
             Edit
           </button>
@@ -46,12 +38,12 @@ export const Profile = ({
       <h2 className="text-xl mb-4">Phone Number</h2>
       <div className="p-4 border rounded-lg shadow-sm">
         <div className="flex items-center">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+          <div className="w-16 h-16 border border-gray-300 rounded-full flex items-center justify-center mr-4">
             <FontAwesomeIcon icon={faMobileScreen} size="2x" />
           </div>
           <div>
             <p className="text-lg">
-              {hidePhoneNumber(0 + String(user?.phoneNumber || phoneNumber))}
+              {hidePhoneNumber(0 + String(user?.phoneNumber))}
             </p>
             <p className="text-sm text-gray-600">
               Keep your primary phone number up-to-date
@@ -59,7 +51,7 @@ export const Profile = ({
           </div>
           <button
             onClick={onManagePhone}
-            className="ml-auto bg-gray-200 text-gray-700 px-4 py-2 rounded-md"
+            className="ml-auto px-4 py-2 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 rounded-md"
           >
             Manage
           </button>
