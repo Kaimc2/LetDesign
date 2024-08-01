@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/brands/logo_white.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,18 +16,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import useIsAuthenticated from "../../hooks/useIsAuthenticated";
 import { Loader } from "../common/Loader";
 import api from "../../utils/api";
 import { NavbarItem } from "../../pages/dashboard/components/NavbarItem";
 import { NavbarDropdown } from "../../pages/dashboard/components/NavbarDropdown";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 export const DashboardLayout = () => {
   const [role, setRole] = useState("");
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation();
-  const loading = useIsAuthenticated(location.pathname);
+  useAuthRedirect();
 
   const getRole = useMemo(
     () => async () => {
