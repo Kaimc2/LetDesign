@@ -47,12 +47,9 @@ export const UpdateEditor = () => {
 
   useEffect(() => {
     if (id) {
-      const user = JSON.parse(String(localStorage.getItem("user")));
-      const token = user.accessToken;
-
       api
         .get(`designs/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${user?.accessToken}` },
         })
         .then((res) => {
           const designData = res.data.data;
@@ -66,7 +63,7 @@ export const UpdateEditor = () => {
           displayNotification("Failed to load design", "error");
         });
     }
-  }, [id, user?.accessToken]);
+  }, [id, isAuthenticated, navigate, user?.accessToken]);
 
   // Apply styles to canvas wrappers
   useEffect(() => {
@@ -274,10 +271,10 @@ export const UpdateEditor = () => {
         fb.getDesignThumbnail(fabricFrontCanvasRef.current)
       ),
       front_content: JSON.stringify(
-        await fb.saveCanvas(fabricFrontCanvasRef.current)
+        await fb.saveCanvas(fabricFrontCanvasRef.current, 0.5)
       ),
       back_content: JSON.stringify(
-        await fb.saveCanvas(fabricBackCanvasRef.current)
+        await fb.saveCanvas(fabricBackCanvasRef.current, 0.5)
       ),
       status: "draft",
     };
@@ -305,10 +302,10 @@ export const UpdateEditor = () => {
         fb.getDesignThumbnail(fabricFrontCanvasRef.current)
       ),
       front_content: JSON.stringify(
-        await fb.saveCanvas(fabricFrontCanvasRef.current)
+        await fb.saveCanvas(fabricFrontCanvasRef.current, 0.5)
       ),
       back_content: JSON.stringify(
-        await fb.saveCanvas(fabricBackCanvasRef.current)
+        await fb.saveCanvas(fabricBackCanvasRef.current, 0.5)
       ),
       status: "draft",
     };
