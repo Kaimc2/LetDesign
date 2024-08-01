@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { Profile } from "./Profile";
 import { Security } from "./Security";
-import { EditProfileModal } from "./EditProfileModal";
-import { ManagePhoneModal } from "./EditPhoneModal";
+import { EditProfileModal } from "./components/EditProfileModal";
+import { ManagePhoneModal } from "./components/EditPhoneModal";
 import { AuthContext } from "../../../context/AuthContext";
 
 export const Settings = () => {

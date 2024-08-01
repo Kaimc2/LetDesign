@@ -7,6 +7,7 @@ import { displayNotification } from "../utils/helper";
 interface AuthContextState {
   isAuthenticated: boolean;
   user: User | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
@@ -16,6 +17,7 @@ interface AuthContextState {
 const initialAuthState: AuthContextState = {
   isAuthenticated: false,
   user: null,
+  loading: true,
   login: async () => {
     return false;
   },
@@ -29,6 +31,7 @@ export const AuthContext = createContext<AuthContextState>(initialAuthState);
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storeUser = localStorage.getItem("user");
@@ -44,6 +47,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         accessToken: parseData.accessToken,
       } as User);
       setIsAuthenticated(true);
+      setLoading(false);
     }
   }, []);
 
@@ -104,6 +108,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         isAuthenticated,
         user,
+        loading,
         login,
         logout,
         updateUser,

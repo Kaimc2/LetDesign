@@ -2,10 +2,10 @@ import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useRef, useContext } from "react";
 import ReactDOM from "react-dom";
-import { AuthContext } from "../../../context/AuthContext";
-import api from "../../../utils/api";
-import { displayNotification } from "../../../utils/helper";
-import User from "../../../types/user.types";
+import { AuthContext } from "../../../../context/AuthContext";
+import api from "../../../../utils/api";
+import { displayNotification } from "../../../../utils/helper";
+import User from "../../../../types/user.types";
 
 export const EditProfileModal = ({
   isOpen,

@@ -4,15 +4,29 @@ import { AuthContext } from "../../context/AuthContext";
 import shirtFrontView from "../../assets/images/canvas/shirtTemplateFront.png";
 import shirtBackView from "../../assets/images/canvas/shirtTemplateBack.png";
 import logo from "../../assets/images/brands/logo_white.png";
-import { ReadOnlyFrontCanvas } from "./components/ReadOnlyFrontCanvas";
+import { ReadOnlyFrontCanvas } from "../editor/components/ReadOnlyFrontCanvas";
 import { NavbarDropdown } from "../../core/common/NavbarDropdown";
-import CanvasViewer from "./components/CanvasViewer";
+import CanvasViewer from "../editor/components/CanvasViewer";
 import { loadCanvas } from "../../utils/fabricUtils";
-import { ReadOnlyBackCanvas } from "./components/ReadOnlyBackCanvas";
-import { FirstStep } from "./commission/FirstStep";
-import { SecondStep } from "./commission/SecondStep";
-// import useIsAuthenticated from "../../hooks/useIsAuthenticated";
+import { ReadOnlyBackCanvas } from "../editor/components/ReadOnlyBackCanvas";
+import { FirstStep } from "./components/FirstStep";
+import { SecondStep } from "./components/SecondStep";
 import api from "../../utils/api";
+import { Store } from "../../types/store.types";
+import { displayNotification } from "../../utils/helper";
+import { CommissionStatus } from "../../types/commission.types";
+
+export interface Step2Ref {
+  getFormData: () => {
+    material: string;
+    color: string;
+    sizes: {
+      size: string;
+      qty: number;
+    }[];
+  };
+  validateForm: () => boolean;
+}
 
 export const CreateCommission = () => {
   const { user, isAuthenticated } = useContext(AuthContext);
@@ -26,13 +40,40 @@ export const CreateCommission = () => {
   const backCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricFrontCanvasRef = useRef<fabric.Canvas | null>(null);
   const fabricBackCanvasRef = useRef<fabric.Canvas | null>(null);
+  const secondStepRef = useRef<Step2Ref>(null);
+  const [store, setStore] = useState<Store | null>(null);
+  const [commissionType, setCommissionType] = useState<"individual" | "team">(
+    "individual"
+  );
+  const [errors, setErrors] = useState<{
+    material?: string;
+    color?: string;
+    sizes?: string;
+  }>({});
+  const [options, setOptions] = useState<{
+    material: string;
+    color: string;
+    sizes: {
+      size: string;
+      qty: number;
+    }[];
+  }>();
+  const [preview, setPreview] = useState(false);
   const [toggleDropdown, setToggleDropdown] = useState(false);
+  const selectedMaterial = store?.materials.find(
+    (material) => material.name === options?.material
+  );
+  const selectedColor = store?.colors.find(
+    (color) => color.name === options?.color
+  );
+  const selectedSizes = (currentSize: string) => {
+    return store?.sizes.find((size) => size.name === currentSize);
+  };
   const [is2D, setIs2D] = useState(true);
   const [isFront, setIsFront] = useState(true);
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  // useIsAuthenticated();
   useEffect(() => {
     if (frontCanvas && backCanvas) {
       loadCanvas(fabricFrontCanvasRef.current, frontCanvas);
@@ -70,25 +111,58 @@ export const CreateCommission = () => {
     navigate("/dashboard/designs");
   };
 
-  const handleCreate = () => {
-    const commissionData = {
-      design_id: id,
-      tailor_id: "",
-      status: "pending",
-      start_date: Date.now(),
-    };
+  const handleCreate = (confirm: boolean) => {
+    if (secondStepRef.current) {
+      const isValid = secondStepRef.current.validateForm();
+      if (!isValid) {
+        return;
+      }
 
-    api
-      .post(
-        "commissions",
-        { ...commissionData },
-        { headers: { Authorization: `Bearer ${user?.accessToken}` } }
-      )
-      .then((res) => {
-        console.log(res);
-        navigate("/dashboard/commissions");
-      })
-      .catch((err) => console.error(err));
+      const formData = secondStepRef.current.getFormData();
+      setOptions(formData);
+      const commissionData = {
+        design_id: String(id),
+        tailor_id: String(store?.id),
+        options: JSON.stringify(formData),
+        total: calculateTotal(),
+        type: commissionType,
+        status: CommissionStatus.REVIEWING,
+      };
+      console.log(commissionData);
+
+      setPreview(true);
+      if (confirm) {
+        console.log("hello");
+        api
+          .post(
+            "commissions",
+            { ...commissionData },
+            { headers: { Authorization: `Bearer ${user?.accessToken}` } }
+          )
+          .then(() => {
+            navigate("/dashboard/commissions");
+            displayNotification("Commission created successfully", "success");
+          })
+          .catch((err) => console.error(err));
+      }
+    }
+  };
+
+  const calculateTotal = () => {
+    let total = 0;
+    const materialPrice = Number(selectedMaterial?.price) || 0;
+    const colorPrice = Number(selectedColor?.price) || 0;
+    const sizePrices = options?.sizes.map((size) => {
+      const sizePrice =
+        store?.sizes.find((storeSize) => storeSize.name === size.size)?.price ||
+        0;
+      return sizePrice * Number(size.qty);
+    });
+
+    const totalSizeCost = sizePrices?.reduce((acc, curr) => acc + curr, 0);
+    total = materialPrice + colorPrice + totalSizeCost!;
+
+    return total;
   };
 
   return (
@@ -107,12 +181,14 @@ export const CreateCommission = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src="/placeholder/pf.png"
+              src={user?.profilePicture ?? "/placeholder/pf.png"}
               alt="profile picture"
             />
 
             {/* Dropdown Menu */}
-            {toggleDropdown && <NavbarDropdown />}
+            {toggleDropdown && (
+              <NavbarDropdown setToggleDropdown={setToggleDropdown} />
+            )}
           </div>
         ) : (
           <div className="flex gap-2">
@@ -140,8 +216,23 @@ export const CreateCommission = () => {
 
           <div className="h-[517px] overflow-y-auto">
             <div className="flex flex-col gap-6 p-6">
-              {step == 1 && <FirstStep />}
-              {step == 2 && <SecondStep />}
+              {step == 1 && (
+                <FirstStep
+                  store={store}
+                  selectedStore={setStore}
+                  commissionType={commissionType}
+                  setCommissionType={setCommissionType}
+                />
+              )}
+              {step == 2 && (
+                <SecondStep
+                  ref={secondStepRef}
+                  store={store}
+                  commissionType={commissionType}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
+              )}
             </div>
           </div>
 
@@ -213,11 +304,12 @@ export const CreateCommission = () => {
                   onClick={handleSave}
                   className="p-[10px] w-[128px] rounded-md text-white bg-secondary hover:bg-secondary-80"
                 >
-                  Save Design
+                  Designs
                 </button>
                 <button
+                  disabled={!store}
                   onClick={() => setStep(2)}
-                  className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80"
+                  className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80 disabled:bg-accent-80/50"
                 >
                   Next
                 </button>
@@ -231,10 +323,10 @@ export const CreateCommission = () => {
                   Go Back
                 </button>
                 <button
-                  onClick={handleCreate}
+                  onClick={() => handleCreate(false)}
                   className="p-[10px] w-[128px] rounded-md text-white bg-accent hover:bg-accent-80"
                 >
-                  Confirm
+                  Create
                 </button>
               </>
             )}
@@ -279,9 +371,76 @@ export const CreateCommission = () => {
             </div>
           </div>
         </div>
-
-        {/* <div className="w-[314px]"></div> */}
       </div>
+
+      {/* Commission Preview */}
+      {preview && (
+        <div className="w-screen h-screen absolute flex items-center justify-center top-0 left-0 bg-brand-gray/20">
+          <div className="w-auto sm:w-[512px] overflow-y-auto flex flex-col bg-white rounded-md">
+            <h1 className="p-4 border border-b-gray-400 ">
+              Commission Preview
+            </h1>
+            <div className="p-4 flex flex-col gap-2 h-auto sm:max-h-[600px] ">
+              <div className="flex gap-2">
+                <p className="font-semibold">Commission Type:</p>
+                <p>
+                  {commissionType.slice(0, 1).toUpperCase() +
+                    commissionType.slice(1)}
+                </p>
+              </div>
+              <div className="flex gap-2 justify-between">
+                <div className="flex gap-2">
+                  <p className="font-semibold">Material Type:</p>
+                  <p>{options?.material}</p>
+                </div>
+                <p>${selectedMaterial?.price}</p>
+              </div>
+              <div className="flex gap-2 justify-between mb-2">
+                <div className="flex gap-2">
+                  <p className="font-semibold">Color Type:</p>
+                  <p>{options?.color}</p>
+                </div>
+                <p>${selectedColor?.price}</p>
+              </div>
+              <div className="border border-t-gray-400 border-l-0 border-r-0 border-b-0 p-2">
+                <div className="flex">
+                  <p className="w-[30%]">Size</p>
+                  <p className="w-[30%]">Price</p>
+                  <p className="w-[40%] text-right">Quantity</p>
+                </div>
+                {options?.sizes.map((size, index) => {
+                  return (
+                    <div key={index} className="flex gap-2">
+                      <p className="w-[30%]">{size.size}</p>
+                      <p className="w-[30%]">
+                        ${selectedSizes(size.size)?.price}
+                      </p>
+                      <p className="w-[40%] text-right">{size.qty}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="border flex justify-end border-t-gray-400 border-l-0 border-r-0 border-b-0 py-2">
+                <p>Total: ${calculateTotal()}</p>
+              </div>
+            </div>
+            <div className="p-4 pt-0 flex gap-2 justify-end">
+              <button
+                onClick={() => setPreview(false)}
+                className="px-[20px] py-[8px] rounded-md bg-black hover:bg-black/80 text-white"
+              >
+                Cance
+              </button>
+              <button
+                onClick={() => handleCreate(true)}
+                className="px-[20px] py-[8px] rounded-md bg-accent hover:bg-accent-80 text-white"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

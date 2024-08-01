@@ -4,7 +4,7 @@ import api from "../../utils/api";
 import { Design } from "../../types/design.types";
 import { CommissionType } from "../../types/commission.types";
 import { LayoutLoader } from "../../core/common/Loader";
-import { CommissionTable } from "./components/CommissionTable";
+import { CommissionTable } from "./commission/componenets/CommissionTable";
 
 export const Dashboard = () => {
   const [designs, setDesigns] = useState<Design[]>([]);
@@ -17,7 +17,7 @@ export const Dashboard = () => {
     api
       .get("designs/recent")
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         setDesigns(res.data.data);
         setLoading(false);
       })
@@ -32,7 +32,7 @@ export const Dashboard = () => {
     api
       .get("commissions/recent")
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         setCommissions(res.data.data);
         setLoading(false);
       })
