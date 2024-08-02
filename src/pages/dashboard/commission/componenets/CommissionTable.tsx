@@ -90,6 +90,8 @@ export const CommissionTable: FC<Props> = ({
                     setRefetch={setRefetch}
                     id={commission.id}
                     status={commission.status}
+                    startDate={commission.startDate}
+                    endDate={commission.endDate}
                   />
                 )}
               </tr>

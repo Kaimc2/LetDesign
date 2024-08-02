@@ -101,11 +101,6 @@ export const DashboardLayout = () => {
             {role === "tailor" && (
               <>
                 <NavbarItem
-                  name={"Adjustment"}
-                  link={"/dashboard/adjustment"}
-                  icon={faRuler}
-                />
-                <NavbarItem
                   name={"My Store"}
                   link={"/dashboard/my-store"}
                   icon={faShop}
@@ -123,6 +118,11 @@ export const DashboardLayout = () => {
                   name={"Stores"}
                   link={"/dashboard/stores"}
                   icon={faShop}
+                />
+                <NavbarItem
+                  name={"Adjustment"}
+                  link={"/dashboard/adjustment"}
+                  icon={faRuler}
                 />
                 <NavbarItem
                   name={"Options"}

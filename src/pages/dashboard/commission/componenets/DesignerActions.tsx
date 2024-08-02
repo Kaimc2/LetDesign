@@ -15,8 +15,17 @@ export const DesignerActions: FC<{
   const handleReject = (id: string) => {
     api
       .put(`commissions/${id}`, { status: CommissionStatus.REJECTED })
-      .then((res) => {
-        console.log(res);
+      .then(() => {
+        displayNotification("Commission updated successfully", "success");
+        setRefetch(!refetch);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const handleReceived = (id: string) => {
+    api
+      .put(`commissions/${id}`, { status: CommissionStatus.COMPLETED })
+      .then(() => {
         displayNotification("Commission updated successfully", "success");
         setRefetch(!refetch);
       })
@@ -34,10 +43,10 @@ export const DesignerActions: FC<{
       </Link>
       {Number(status) === CommissionStatus.DELIVERING && (
         <FontAwesomeIcon
-          onClick={() => console.log("hello")}
+          onClick={() => handleReceived(id)}
           className="hover:text-success"
           icon={faCheck}
-          title="Accept"
+          title="Received"
         />
       )}
       <FontAwesomeIcon

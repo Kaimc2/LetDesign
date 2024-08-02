@@ -5,11 +5,13 @@ import { CommissionType } from "../../../types/commission.types";
 import api from "../../../utils/api";
 import useFetchRole from "../../../hooks/useFetchRole";
 import { CommissionTable } from "./componenets/CommissionTable";
+import { LayoutLoader } from "../../../core/common/Loader";
 
 export const Commission = () => {
   const [commissions, setCommisions] = useState<CommissionType[]>([]);
   const [search, setSearch] = useState("");
   const [refetch, setRefetch] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { role } = useFetchRole();
 
   const fetchCommissions = useCallback(() => {
@@ -24,6 +26,7 @@ export const Commission = () => {
       .get(url, { params: { search: search } })
       .then((res) => {
         setCommisions(res.data.data.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.error(err);
@@ -33,6 +36,8 @@ export const Commission = () => {
   useEffect(() => {
     fetchCommissions();
   }, [fetchCommissions, refetch]);
+
+  if (loading) return <LayoutLoader />;
 
   return (
     <div className="ml-4">

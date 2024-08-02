@@ -22,6 +22,7 @@ import { CreateCommission } from "../pages/commission/CreateCommission";
 import { Editor } from "../pages/editor/Editor";
 import { UpdateEditor } from "../pages/editor/UpdateEditor";
 import { Home } from "../pages/Home";
+import { Adjustment } from "../pages/dashboard/Adjustment";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
       { path: "users", element: <Users /> },
       { path: "options", element: <Options /> },
       { path: "commissions", element: <Commission /> },
+      { path: "adjustment", element: <Adjustment /> },
       { path: "settings", element: <Settings /> },
     ],
   },
