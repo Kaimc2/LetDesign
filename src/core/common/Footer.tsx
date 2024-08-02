@@ -41,6 +41,10 @@ export const Footer = () => {
             size="xl"
           />
         </a>
+        <h3 className="font-bold">Resources</h3>
+        <a className="hover:text-secondary-80" href="http://www.freepik.com">
+          Designed by vectorjuice / Freepik
+        </a>
       </div>
     </footer>
   );
