@@ -47,12 +47,9 @@ export const UpdateEditor = () => {
 
   useEffect(() => {
     if (id) {
-      const user = JSON.parse(String(localStorage.getItem("user")));
-      const token = user.accessToken;
-
       api
         .get(`designs/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${user?.accessToken}` },
         })
         .then((res) => {
           const designData = res.data.data;
@@ -66,7 +63,7 @@ export const UpdateEditor = () => {
           displayNotification("Failed to load design", "error");
         });
     }
-  }, [id, user?.accessToken]);
+  }, [id, isAuthenticated, navigate, user?.accessToken]);
 
   // Apply styles to canvas wrappers
   useEffect(() => {
@@ -274,10 +271,10 @@ export const UpdateEditor = () => {
         fb.getDesignThumbnail(fabricFrontCanvasRef.current)
       ),
       front_content: JSON.stringify(
-        await fb.saveCanvas(fabricFrontCanvasRef.current)
+        await fb.saveCanvas(fabricFrontCanvasRef.current, 0.5)
       ),
       back_content: JSON.stringify(
-        await fb.saveCanvas(fabricBackCanvasRef.current)
+        await fb.saveCanvas(fabricBackCanvasRef.current, 0.5)
       ),
       status: "draft",
     };
@@ -297,20 +294,25 @@ export const UpdateEditor = () => {
       });
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const inputs: DesignInput = {
       name: designName,
-      user_id: user!.id,
+      user_id: String(user!.id),
       design_thumbnail: String(
         fb.getDesignThumbnail(fabricFrontCanvasRef.current)
       ),
       front_content: JSON.stringify(
-        fb.saveCanvas(fabricFrontCanvasRef.current)
+        await fb.saveCanvas(fabricFrontCanvasRef.current, 0.5)
       ),
-      back_content: JSON.stringify(fb.saveCanvas(fabricBackCanvasRef.current)),
+      back_content: JSON.stringify(
+        await fb.saveCanvas(fabricBackCanvasRef.current, 0.5)
+      ),
       status: "draft",
     };
 
+    // TODO:
+    // If commission of this exact design exist should just redirect to the commission page
+    // Could check design_id of commissions with the id params
     api
       .put(
         `designs/${id}`,
@@ -318,10 +320,10 @@ export const UpdateEditor = () => {
         { headers: { Authorization: `Bearer ${user?.accessToken}` } }
       )
       .then((res) => {
-        console.log(res);
+        const designId = res.data.data.id;
         navigate("/design/commission/create", {
           state: {
-            id: res.data.data.id,
+            id: designId,
             frontCanvas: inputs.front_content,
             backCanvas: inputs.back_content,
           },
@@ -397,12 +399,14 @@ export const UpdateEditor = () => {
             >
               <img
                 className="w-10 h-10 rounded-full"
-                src="/placeholder/pf.png"
+                src={user?.profilePicture ?? "/placeholder/pf.png"}
                 alt="profile picture"
               />
 
               {/* Dropdown Menu */}
-              {toggleDropdown && <NavbarDropdown />}
+              {toggleDropdown && (
+                <NavbarDropdown setToggleDropdown={setToggleDropdown} />
+              )}
             </div>
           ) : (
             <div className="flex gap-2">

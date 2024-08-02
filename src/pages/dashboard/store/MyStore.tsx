@@ -29,7 +29,6 @@ export const MyStore = () => {
       })
       .then((res) => {
         const fetchData = res.data.data;
-        console.log(fetchData);
         if (fetchData) {
           setStore({ ...fetchData });
           setLoading(false);

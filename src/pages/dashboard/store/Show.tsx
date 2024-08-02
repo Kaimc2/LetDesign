@@ -28,7 +28,11 @@ export const StoreShow: FC<{
         <div className="flex items-center gap-4">
           <img
             className="w-20 h-20 rounded-md"
-            src="/placeholder/placeholder.jpg"
+            src={
+              store.tailorThumbnail
+                ? String(store.tailorThumbnail)
+                : "/placeholder/placeholder.jpg"
+            }
             alt="store_thumbnail"
           />
           <div className="flex flex-col">

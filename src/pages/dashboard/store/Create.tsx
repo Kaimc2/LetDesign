@@ -4,7 +4,15 @@ import {
   faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FC, Dispatch, useState, ChangeEvent, useContext } from "react";
+import {
+  FC,
+  Dispatch,
+  useState,
+  ChangeEvent,
+  useContext,
+  useRef,
+  MouseEvent,
+} from "react";
 import { StoreInput } from "../../../types/store.types";
 import api from "../../../utils/api";
 import { AuthContext } from "../../../context/AuthContext";
@@ -20,11 +28,10 @@ export const StoreCreate: FC<{
     description: "",
     email: "",
     phoneNumber: "",
-    tailorThumbnail: "",
     ownerId: "",
     address: "",
   });
-  const [errors, setErrors] = useState<StoreInput>({
+  const [errors, setErrors] = useState({
     name: "",
     description: "",
     tailorThumbnail: "",
@@ -33,12 +40,33 @@ export const StoreCreate: FC<{
     phoneNumber: "",
     ownerId: "",
   });
+  const thumbnailRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const handleFormChange = (
     field: string,
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const file = files[0];
+    const thumbnailPreview = URL.createObjectURL(file);
+
+    setPreview(thumbnailPreview);
+    setFormData({ ...formData, tailorThumbnail: file });
+  };
+
+  const handleFileInputClick = (
+    e: MouseEvent<HTMLImageElement, globalThis.MouseEvent>
+  ) => {
+    e.preventDefault();
+    if (!thumbnailRef || !thumbnailRef.current) return;
+    thumbnailRef.current.click();
   };
 
   const validate = () => {
@@ -79,19 +107,22 @@ export const StoreCreate: FC<{
 
   const handleCreate = () => {
     const formContent = {
-      name: formData?.name,
-      description: formData?.description,
-      tailor_thumbnail: "something",
-      address: formData?.address,
-      phone_number: formData?.phoneNumber,
-      email: formData?.email,
+      name: formData.name,
+      description: formData.description,
+      tailor_thumbnail: formData.tailorThumbnail,
+      address: formData.address,
+      phone_number: formData.phoneNumber,
+      email: formData.email,
       owner_id: parseInt(String(user?.id)),
     };
 
     if (validate()) {
       api
         .post("/stores", formContent, {
-          headers: { Authorization: `Bearer ${user?.accessToken}` },
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
         })
         .then(() => {
           displayNotification("Store created successfully", "success");
@@ -110,9 +141,20 @@ export const StoreCreate: FC<{
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           <img
-            className="w-20 h-20 rounded-md"
-            src="/placeholder/placeholder.jpg"
+            onClick={handleFileInputClick}
+            className="w-20 h-20 rounded-md hover:cursor-pointer"
+            src={preview ?? "/placeholder/placeholder.jpg"}
             alt="store_thumbnail"
+            title="Change thumbnail"
+          />
+          <input
+            className="hidden"
+            type="file"
+            accept="image/*"
+            name="thumbnail"
+            id="thumbnail"
+            onChange={handleThumbnailChange}
+            ref={thumbnailRef}
           />
           <label className="flex flex-col" htmlFor="name">
             <span>Name</span>

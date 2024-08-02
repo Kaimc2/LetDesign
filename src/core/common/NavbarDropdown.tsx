@@ -7,16 +7,34 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { Divider } from "./Divider";
-import { useContext } from "react";
+import { FC, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-export const NavbarDropdown = () => {
+export const NavbarDropdown: FC<{
+  setToggleDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setToggleDropdown }) => {
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const { logout } = useContext(AuthContext);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setToggleDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setToggleDropdown]);
 
   return (
     <div
-      tabIndex={0}
-      onBlur={() => console.log("not me")}
+      ref={dropdownRef}
       className="flex flex-col absolute right-0 top-[72px] w-[206px] border border-gray-200 bg-white 
               rounded-md shadow-md z-20"
     >

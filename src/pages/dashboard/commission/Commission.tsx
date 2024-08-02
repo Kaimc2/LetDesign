@@ -1,14 +1,51 @@
-import { faEllipsis, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useCallback, useEffect, useState } from "react";
+import { CommissionType } from "../../../types/commission.types";
+import api from "../../../utils/api";
+import useFetchRole from "../../../hooks/useFetchRole";
+import { CommissionTable } from "./componenets/CommissionTable";
+import { LayoutLoader } from "../../../core/common/Loader";
 
 export const Commission = () => {
+  const [commissions, setCommisions] = useState<CommissionType[]>([]);
+  const [search, setSearch] = useState("");
+  const [refetch, setRefetch] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { role } = useFetchRole();
+
+  const fetchCommissions = useCallback(() => {
+    const url =
+      role === "tailor"
+        ? "store/commissions"
+        : role === "admin"
+        ? "commissions"
+        : "user/commissions";
+
+    api
+      .get(url, { params: { search: search } })
+      .then((res) => {
+        setCommisions(res.data.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [role, search]);
+
+  useEffect(() => {
+    fetchCommissions();
+  }, [fetchCommissions, refetch]);
+
+  if (loading) return <LayoutLoader />;
+
   return (
     <div className="ml-4">
       <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
         <h1 className="text-2xl">Commissions</h1>
       </div>
 
-      <div className="p-8 w-full md:max-w-[calc(100vw-330px)] max-h-[calc(100vh-120px)] overflow-y-auto flex flex-col flex-wrap gap-4">
+      <div className="p-8 w-full md:max-w-[calc(100vw-330px)] h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-y-auto flex flex-col flex-wrap gap-4">
         <div className="relative">
           <FontAwesomeIcon
             className="absolute text-gray-400 left-4 translate-y-[calc(50%+4px)]"
@@ -20,65 +57,21 @@ export const Commission = () => {
             type="text"
             name="search"
             id="search"
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setRefetch(!refetch);
+              }
+            }}
+            title="Press enter to search"
           />
         </div>
 
-        <table className="shadow-md border border-gray-200 rounded-md">
-          <thead className="text-left">
-            <tr className="border border-b-brand-gray">
-              <th className="py-6 pl-10">Design</th>
-              <th className="py-6">Tailor</th>
-              <th className="py-6">Status</th>
-              <th className="py-6">Start Date</th>
-              <th className="py-6">Complete Date</th>
-              <th className="py-6 pr-10"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border border-b-brand-gray">
-              <td className="py-4 pl-10">Design Name</td>
-              <td className="py-4">Tailor Name</td>
-              <td className="py-4">
-                <p className="bg-warning text-white w-fit p-2 rounded-md">
-                  In progress
-                </p>
-              </td>
-              <td className="py-4">May 30, 2024</td>
-              <td className="py-4 pr-10">To be estimated</td>
-              <td className="hover:cursor-pointer">
-                <FontAwesomeIcon icon={faEllipsis} />
-              </td>
-            </tr>
-            <tr className="border border-b-brand-gray">
-              <td className="py-4 pl-10">Design Name 2</td>
-              <td className="py-4">Tailor Name</td>
-              <td className="py-4">
-                <p className="bg-success text-white w-fit p-2 rounded-md">
-                  Complete
-                </p>
-              </td>
-              <td className="py-4">May 30, 2024</td>
-              <td className="py-4 pr-10">To be estimated</td>
-              <td className="hover:cursor-pointer">
-                <FontAwesomeIcon icon={faEllipsis} />
-              </td>
-            </tr>
-            <tr className="border border-b-brand-gray">
-              <td className="py-4 pl-10">Design Name 3</td>
-              <td className="py-4">Tailor Name</td>
-              <td className="py-4">
-                <p className="bg-error text-white w-fit p-2 rounded-md">
-                  Reject
-                </p>
-              </td>
-              <td className="py-4">May 30, 2024</td>
-              <td className="py-4 pr-10">To be estimated</td>
-              <td className="hover:cursor-pointer">
-                <FontAwesomeIcon icon={faEllipsis} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <CommissionTable
+          commissions={commissions}
+          refetch={refetch}
+          setRefetch={setRefetch}
+        />
       </div>
     </div>
   );

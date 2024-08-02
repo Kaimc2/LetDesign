@@ -1,3 +1,5 @@
+import designIcon from "../assets/images/graphics/design.jpg";
+
 export const About = () => {
   return (
     <div className="px-16 md:px-[106px]">
@@ -17,8 +19,8 @@ export const About = () => {
             </p>
           </div>
           <img
-            className="rounded-md my-[75px]"
-            src="/placeholder/placeholder.jpg"
+            className="w-[48rem] rounded-md my-[75px]"
+            src={designIcon ?? "/placeholder/placeholder.jpg"}
             alt="photo"
           />
         </div>

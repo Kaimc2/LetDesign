@@ -7,15 +7,17 @@ import { displayNotification } from "../utils/helper";
 interface AuthContextState {
   isAuthenticated: boolean;
   user: User | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  updateUser: (field: string, newValue: string | number | boolean) => void;
+  updateUser: (updates: Partial<User>) => void;
   initializeUser: (user: User) => void;
 }
 
 const initialAuthState: AuthContextState = {
   isAuthenticated: false,
   user: null,
+  loading: true,
   login: async () => {
     return false;
   },
@@ -29,6 +31,7 @@ export const AuthContext = createContext<AuthContextState>(initialAuthState);
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storeUser = localStorage.getItem("user");
@@ -38,12 +41,13 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         id: parseData.id,
         name: parseData.name,
         email: parseData.email,
-        profilePicture: parseData?.profile_picture,
-        phoneNumber: parseData.phone_number,
+        profilePicture: parseData?.profilePicture,
+        phoneNumber: parseData.phoneNumber,
         isVerified: parseData.isVerified,
         accessToken: parseData.accessToken,
       } as User);
       setIsAuthenticated(true);
+      setLoading(false);
     }
   }, []);
 
@@ -53,11 +57,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setIsAuthenticated(true);
   };
 
-  const updateUser = (field: string, newValue: string | number | boolean) => {
+  const updateUser = (updates: Partial<User>) => {
     if (user) {
       const newUser: User = {
         ...user,
-        [field]: newValue,
+        ...updates,
       };
       setUser(newUser);
       localStorage.removeItem("user");
@@ -73,8 +77,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         id: userData.id,
         name: userData.name,
         email: userData.email,
-        profilePicture: userData?.profile_picture,
-        phoneNumber: userData.phone_number,
+        profilePicture: userData?.profilePicture,
+        phoneNumber: userData.phoneNumber,
         isVerified: userData.isVerified,
         accessToken: userData.accessToken,
       };
@@ -104,6 +108,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         isAuthenticated,
         user,
+        loading,
         login,
         logout,
         updateUser,

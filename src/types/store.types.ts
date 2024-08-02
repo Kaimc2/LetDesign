@@ -1,7 +1,7 @@
 export interface Store {
   id: string;
   name: string;
-  tailorThumbnail?: string;
+  tailorThumbnail?: string | File;
   description: string;
   address: string;
   email: string;
@@ -17,11 +17,21 @@ export interface Store {
 export interface StoreInput {
   name: string;
   description: string;
-  tailorThumbnail?: string;
+  tailorThumbnail?: string | File;
   address: string;
   email: string;
   phoneNumber: string;
   ownerId: string;
+}
+
+export interface StoreAPIInput {
+  name: string;
+  description: string;
+  address: string;
+  phone_number: string;
+  email: string;
+  owner_id: number;
+  tailor_thumbnail?: File;
 }
 
 export interface Material {
