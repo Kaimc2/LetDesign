@@ -7,7 +7,7 @@ import { SizeTable } from "../../components/SizeTable";
 export const ShowSizes: FC<{
   store: Store;
   setEdit: Dispatch<React.SetStateAction<boolean>>;
-  refetch: (search?: string, label?: string) => void
+  refetch: (search?: string, label?: string) => void;
 }> = ({ store, setEdit, refetch }) => {
   return (
     <div className="mt-4 mb-6">
@@ -21,8 +21,8 @@ export const ShowSizes: FC<{
           size="lg"
         />
       </div>
-      
-      <SizeTable sizes={store.sizes} refetch={refetch} />
+
+      <SizeTable storeId={store.id} sizes={store.sizes} refetch={refetch} />
     </div>
   );
 };

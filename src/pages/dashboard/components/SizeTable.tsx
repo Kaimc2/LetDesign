@@ -14,9 +14,10 @@ import api from "../../../utils/api";
 import { displayNotification } from "../../../utils/helper";
 
 export const SizeTable: FC<{
+  storeId: string;
   sizes: Size[];
   refetch: (search?: string, label?: string) => void;
-}> = ({ sizes, refetch }) => {
+}> = ({ storeId, sizes, refetch }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [errors, setErrors] = useState({ price: "" });
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
@@ -30,8 +31,14 @@ export const SizeTable: FC<{
       return;
     }
 
+    const formData = {
+      store_id: String(storeId),
+      size_id: String(selectedSize?.sizeID),
+      price: updatePrice,
+    };
+
     api
-      .put(`store/sizes/${selectedSize?.id}`, { price: updatePrice })
+      .put(`store/sizes/${selectedSize?.id}`, formData)
       .then(() => {
         displayNotification("Size updated successfully", "success");
         setIsEdit(false);
@@ -115,7 +122,7 @@ export const SizeTable: FC<{
                             min={0.1}
                             id="price"
                             onChange={(e) =>
-                              setUpdatePrice(parseInt(e.target.value))
+                              setUpdatePrice(Number(e.target.value))
                             }
                             className="border shadow text-gray-900 rounded-md ps-6 p-2"
                             placeholder="Ex: 10"

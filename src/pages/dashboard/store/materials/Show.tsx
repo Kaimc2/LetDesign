@@ -22,7 +22,7 @@ export const ShowMaterials: FC<{
         />
       </div>
 
-      <MaterialTable materials={store.materials} refetch={refetch} />
+      <MaterialTable storeId={store.id} materials={store.materials} refetch={refetch} />
     </div>
   );
 };

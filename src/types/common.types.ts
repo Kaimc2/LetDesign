@@ -21,3 +21,21 @@ export interface StatusNotificationResponse {
   message: string;
   status: string;
 }
+
+export interface PageMeta {
+  currentPage: number;
+  from: number;
+  lastPage: number;
+  perPage: number;
+  to: number;
+  total: number;
+}
+
+export const DefaultPageMeta = {
+  currentPage: 1,
+  from: 1,
+  lastPage: 1,
+  perPage: 1,
+  to: 1,
+  total: 1,
+};

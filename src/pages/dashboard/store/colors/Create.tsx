@@ -24,7 +24,7 @@ export const CreateColors: FC<{
 
   useEffect(() => {
     api
-      .get("/colors")
+      .get("/colors", { params: { item_per_page: 100 } })
       .then((res) => {
         const fetchData = res.data.data;
         setColors(fetchData);
@@ -157,7 +157,7 @@ export const CreateColors: FC<{
         </label>
       </div>
 
-      <ColorTable colors={store.colors} refetch={refetch} />
+      <ColorTable storeId={store.id} colors={store.colors} refetch={refetch} />
     </div>
   );
 };

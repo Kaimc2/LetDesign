@@ -36,18 +36,21 @@ export interface StoreAPIInput {
 
 export interface Material {
   id: string;
+  materialID: string;
   name: string;
   price?: number;
 }
 
 export interface Size {
   id: string;
+  sizeID: string;
   name: string;
   price?: number;
 }
 
 export interface Color {
   id: string;
+  colorID: string;
   name: string;
   hexCode: string;
   price?: number;

@@ -24,7 +24,7 @@ export const CreateSizes: FC<{
 
   useEffect(() => {
     api
-      .get("/sizes")
+      .get("/sizes", { params: { item_per_page: 100 } })
       .then((res) => {
         const fetchData = res.data.data.data;
         setSizes(fetchData);
@@ -158,7 +158,7 @@ export const CreateSizes: FC<{
         </label>
       </div>
 
-      <SizeTable sizes={store.sizes} refetch={refetch} />
+      <SizeTable storeId={store.id} sizes={store.sizes} refetch={refetch} />
     </div>
   );
 };
