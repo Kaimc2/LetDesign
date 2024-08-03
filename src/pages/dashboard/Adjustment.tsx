@@ -4,22 +4,37 @@ import { useState, ChangeEvent, useEffect } from "react";
 import api from "../../utils/api";
 import { AdjustmentType } from "../../types/adjustment.types";
 import { formatDate } from "../../utils/helper";
+import { PageMeta, DefaultPageMeta } from "../../types/common.types";
+import { Paginator } from "../../core/common/Paginator";
+import { LayoutLoader } from "../../core/common/Loader";
 
 export const Adjustment = () => {
   const [search, setSearch] = useState("");
   const [adjustments, setAdjustments] = useState<AdjustmentType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
+  const [pageNumber, setPageNumber] = useState(1);
 
   useEffect(() => {
     api
-      .get("adjustments")
+      .get("adjustments", { params: { search: search, page: pageNumber } })
       .then((res) => {
         const fetchData = res.data.data.data;
+        setPageInfo({
+          currentPage: res.data.data.current_page,
+          from: res.data.data.from,
+          lastPage: res.data.data.last_page,
+          perPage: res.data.data.per_page,
+          to: res.data.data.to,
+          total: res.data.data.total,
+        });
         setAdjustments(fetchData);
+        setLoading(false);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [pageNumber, search]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -34,6 +49,8 @@ export const Adjustment = () => {
       return `${duration} days late`;
     }
   };
+
+  if (loading) return <LayoutLoader />;
 
   return (
     <div className="ml-4">
@@ -83,7 +100,9 @@ export const Adjustment = () => {
                     <td className="py-4">
                       {formatDate(adjustment.adjustmentDate)}
                     </td>
-                    <td className="py-4">{formatDuration(adjustment.duration)}</td>
+                    <td className="py-4">
+                      {formatDuration(adjustment.duration)}
+                    </td>
                     <td className="py-4">{adjustment.message ?? "None"}</td>
                     <td className="py-4">{adjustment.tailorName}</td>
                   </tr>
@@ -96,6 +115,18 @@ export const Adjustment = () => {
             )}
           </tbody>
         </table>
+
+        <Paginator
+          pageNumber={pageNumber}
+          currentPage={pageInfo.currentPage}
+          lastPage={pageInfo.lastPage}
+          prevPage={() => {
+            setPageNumber(pageInfo.currentPage - 1);
+          }}
+          nextPage={() => {
+            setPageNumber(pageInfo.currentPage + 1);
+          }}
+        />
       </div>
     </div>
   );

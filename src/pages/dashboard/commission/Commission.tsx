@@ -6,12 +6,16 @@ import api from "../../../utils/api";
 import useFetchRole from "../../../hooks/useFetchRole";
 import { CommissionTable } from "./componenets/CommissionTable";
 import { LayoutLoader } from "../../../core/common/Loader";
+import { PageMeta, DefaultPageMeta } from "../../../types/common.types";
+import { Paginator } from "../../../core/common/Paginator";
 
 export const Commission = () => {
   const [commissions, setCommisions] = useState<CommissionType[]>([]);
   const [search, setSearch] = useState("");
   const [refetch, setRefetch] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
+  const [pageNumber, setPageNumber] = useState(1);
   const { role } = useFetchRole();
 
   const fetchCommissions = useCallback(() => {
@@ -23,15 +27,23 @@ export const Commission = () => {
         : "user/commissions";
 
     api
-      .get(url, { params: { search: search } })
+      .get(url, { params: { search: search, page: pageNumber } })
       .then((res) => {
+        setPageInfo({
+          currentPage: res.data.data.current_page,
+          from: res.data.data.from,
+          lastPage: res.data.data.last_page,
+          perPage: res.data.data.per_page,
+          to: res.data.data.to,
+          total: res.data.data.total,
+        });
         setCommisions(res.data.data.data);
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, [role, search]);
+  }, [pageNumber, role, search]);
 
   useEffect(() => {
     fetchCommissions();
@@ -71,6 +83,18 @@ export const Commission = () => {
           commissions={commissions}
           refetch={refetch}
           setRefetch={setRefetch}
+        />
+
+        <Paginator
+          pageNumber={pageNumber}
+          currentPage={pageInfo.currentPage}
+          lastPage={pageInfo.lastPage}
+          prevPage={() => {
+            setPageNumber(pageInfo.currentPage - 1);
+          }}
+          nextPage={() => {
+            setPageNumber(pageInfo.currentPage + 1);
+          }}
         />
       </div>
     </div>

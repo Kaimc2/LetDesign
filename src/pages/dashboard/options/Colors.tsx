@@ -19,6 +19,8 @@ import { SectionLoader } from "../../../core/common/Loader";
 import api from "../../../utils/api";
 import { displayNotification } from "../../../utils/helper";
 import { ConfirmDialog } from "../../../core/common/ConfirmDialog";
+import { PageMeta, DefaultPageMeta } from "../../../types/common.types";
+import { Paginator } from "../../../core/common/Paginator";
 
 export const Colors = () => {
   const { user } = useContext(AuthContext);
@@ -41,12 +43,15 @@ export const Colors = () => {
   const [dialogState, setDialogState] = useState(false);
   const [refetch, setRefetch] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const fetchColors = useCallback(() => {
     api
-      .get("/colors", { params: { search: search } })
+      .get("/colors", { params: { search: search, page: pageNumber } })
       .then((res) => {
         const fetchData = res.data.data;
+        setPageInfo(res.data.meta);
         setColors(fetchData);
         setLoading(false);
       })
@@ -54,7 +59,7 @@ export const Colors = () => {
         console.error(err);
         setLoading(false);
       });
-  }, [search]);
+  }, [pageNumber, search]);
 
   useEffect(() => {
     fetchColors();
@@ -112,11 +117,10 @@ export const Colors = () => {
     }
 
     api
-      .put(
-        `/colors/${selectedColor?.id}`,
-        { name: updateFormData.name, hex_code: updateFormData.hexCode },
-        { headers: { Authorization: `Bearer  ${user?.accessToken}` } }
-      )
+      .put(`/colors/${selectedColor?.id}`, {
+        name: updateFormData.name,
+        hex_code: updateFormData.hexCode,
+      })
       .then(() => {
         displayNotification("Color added successfully", "success");
         setIsEdit(false);
@@ -124,8 +128,11 @@ export const Colors = () => {
         triggerRefetch();
       })
       .catch((err) => {
-        console.error(err);
-        displayNotification("Network Error", "error");
+        if (err.response.data.message) {
+          displayNotification(err.response.data.message[0], "error");
+        } else {
+          displayNotification("Network Error", "error");
+        }
       });
   };
 
@@ -201,120 +208,134 @@ export const Colors = () => {
       {loading ? (
         <SectionLoader />
       ) : (
-        <table className="shadow-md table-fixed border border-gray-200 rounded-md">
-          <thead className="text-left">
-            <tr className="border border-b-brand-gray">
-              <th className="py-5 pl-8">Name</th>
-              <th className="py-5 pl-8">Hex Code</th>
-              <th className="py-5">Action</th>
-            </tr>
-          </thead>
+        <>
+          <table className="shadow-md table-fixed border border-gray-200 rounded-md">
+            <thead className="text-left">
+              <tr className="border border-b-brand-gray">
+                <th className="py-5 pl-8">Name</th>
+                <th className="py-5 pl-8">Hex Code</th>
+                <th className="py-5">Action</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {colors.length ? (
-              colors.map((color) => {
-                return (
-                  <tr key={color.id} className="border border-b-brand-gray">
-                    {isEdit && selectedColor?.id === color.id ? (
-                      <>
-                        <td className="w-1/3 py-2 pl-6">
-                          <input
-                            className={`px-2 py-2 border rounded-md ${
-                              errors.updateName
-                                ? "border-error"
-                                : "border-gray-400"
-                            }`}
-                            type="text"
-                            value={updateFormData.name}
-                            onChange={(e) =>
-                              handleUpdateFormDataChange("name", e)
-                            }
-                            placeholder="Name"
-                          />
-                          {errors.updateName && (
-                            <span className="text-error text-sm ml-2 mt-1">
-                              {errors.updateName}
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4">
-                          <input
-                            className={`border rounded-md`}
-                            type="color"
-                            value={updateFormData.hexCode}
-                            onChange={(e) =>
-                              handleUpdateFormDataChange("hexCode", e)
-                            }
-                            placeholder="Hex Code"
-                          />
-                        </td>
-                        <td className="flex py-4 gap-8">
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-success"
-                            onClick={handleUpdate}
-                            icon={faCheck}
-                            title="Confirm"
-                            size="lg"
-                          />
-                          <FontAwesomeIcon
-                            onClick={() => {
-                              setIsEdit(false);
-                              setSelectedColor(null);
-                            }}
-                            className=" hover:cursor-pointer hover:text-error"
-                            icon={faClose}
-                            title="Cancel"
-                            size="lg"
-                          />
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="w-1/3 py-4 pl-8">{color.name}</td>
-                        <td className="flex items-center gap-2 py-4">
-                          <div
-                            style={{ backgroundColor: color.hexCode }}
-                            className={`w-8 h-8 rounded-md`}
-                          ></div>
-                          <span>{color.hexCode}</span>
-                        </td>
-                        <td className="py-4">
-                          <div className="flex gap-6">
+            <tbody>
+              {colors.length ? (
+                colors.map((color) => {
+                  return (
+                    <tr key={color.id} className="border border-b-brand-gray">
+                      {isEdit && selectedColor?.id === color.id ? (
+                        <>
+                          <td className="w-1/3 py-2 pl-6">
+                            <input
+                              className={`px-2 py-2 border rounded-md ${
+                                errors.updateName
+                                  ? "border-error"
+                                  : "border-gray-400"
+                              }`}
+                              type="text"
+                              value={updateFormData.name}
+                              onChange={(e) =>
+                                handleUpdateFormDataChange("name", e)
+                              }
+                              placeholder="Name"
+                            />
+                            {errors.updateName && (
+                              <span className="text-error text-sm ml-2 mt-1">
+                                {errors.updateName}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4">
+                            <input
+                              className={`border rounded-md`}
+                              type="color"
+                              value={updateFormData.hexCode}
+                              onChange={(e) =>
+                                handleUpdateFormDataChange("hexCode", e)
+                              }
+                              placeholder="Hex Code"
+                            />
+                          </td>
+                          <td className="flex py-4 gap-8">
                             <FontAwesomeIcon
                               className=" hover:cursor-pointer hover:text-success"
-                              onClick={() => {
-                                setIsEdit(true);
-                                setSelectedColor(color);
-                                setUpdateFormData(color);
-                              }}
-                              icon={faEdit}
-                              title="Edit"
+                              onClick={handleUpdate}
+                              icon={faCheck}
+                              title="Confirm"
                               size="lg"
                             />
                             <FontAwesomeIcon
-                              className=" hover:cursor-pointer hover:text-error"
-                              icon={faTrash}
                               onClick={() => {
-                                setDialogState(true);
-                                setSelectedColor(color);
+                                setIsEdit(false);
+                                setSelectedColor(null);
                               }}
-                              title="Delete"
+                              className=" hover:cursor-pointer hover:text-error"
+                              icon={faClose}
+                              title="Cancel"
                               size="lg"
                             />
-                          </div>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td className="p-4">No Colors</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="w-1/3 py-4 pl-8">{color.name}</td>
+                          <td className="flex items-center gap-2 py-4">
+                            <div
+                              style={{ backgroundColor: color.hexCode }}
+                              className={`w-8 h-8 rounded-md shadow border`}
+                            ></div>
+                            <span>{color.hexCode}</span>
+                          </td>
+                          <td className="py-4">
+                            <div className="flex gap-6">
+                              <FontAwesomeIcon
+                                className=" hover:cursor-pointer hover:text-success"
+                                onClick={() => {
+                                  setIsEdit(true);
+                                  setSelectedColor(color);
+                                  setUpdateFormData(color);
+                                }}
+                                icon={faEdit}
+                                title="Edit"
+                                size="lg"
+                              />
+                              <FontAwesomeIcon
+                                className=" hover:cursor-pointer hover:text-error"
+                                icon={faTrash}
+                                onClick={() => {
+                                  setDialogState(true);
+                                  setSelectedColor(color);
+                                }}
+                                title="Delete"
+                                size="lg"
+                              />
+                            </div>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td className="p-4">No Colors</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          <Paginator
+            pageNumber={pageNumber}
+            currentPage={pageInfo.currentPage}
+            lastPage={pageInfo.lastPage}
+            prevPage={() => {
+              setPageNumber(pageInfo.currentPage - 1);
+            }}
+            nextPage={() => {
+              setPageNumber(pageInfo.currentPage + 1);
+            }}
+          />
+        </>
       )}
 
       {dialogState && (
