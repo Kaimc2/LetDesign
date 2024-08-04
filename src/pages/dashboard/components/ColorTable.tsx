@@ -14,9 +14,10 @@ import api from "../../../utils/api";
 import { displayNotification } from "../../../utils/helper";
 
 export const ColorTable: FC<{
+  storeId: string;
   colors: Color[];
   refetch: (search?: string, label?: string) => void;
-}> = ({ colors, refetch }) => {
+}> = ({ storeId, colors, refetch }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [errors, setErrors] = useState({ price: "" });
   const [selectedColor, setSelectedColor] = useState<Color | null>(null);
@@ -30,8 +31,14 @@ export const ColorTable: FC<{
       return;
     }
 
+    const formData = {
+      store_id: String(storeId),
+      color_id: String(selectedColor?.colorID),
+      price: updatePrice,
+    };
+
     api
-      .put(`store/colors/${selectedColor?.id}`, { price: updatePrice })
+      .put(`store/colors/${selectedColor?.id}`, formData)
       .then(() => {
         displayNotification("Colors updated successfully", "success");
         setIsEdit(false);
@@ -106,7 +113,7 @@ export const ColorTable: FC<{
                       <td className="flex items-center gap-2 py-4">
                         <div
                           style={{ backgroundColor: color.hexCode }}
-                          className={`w-8 h-8 rounded-md`}
+                          className={`w-8 h-8 rounded-md shadow border`}
                         ></div>
                         <span>{color.hexCode}</span>
                       </td>
@@ -123,7 +130,7 @@ export const ColorTable: FC<{
                             min={0.1}
                             id="price"
                             onChange={(e) =>
-                              setUpdatePrice(parseInt(e.target.value))
+                              setUpdatePrice(Number(e.target.value))
                             }
                             className="border shadow text-gray-900 rounded-md ps-6 p-2"
                             placeholder="Ex: 10"
@@ -163,7 +170,7 @@ export const ColorTable: FC<{
                       <td className="flex items-center gap-2 py-2">
                         <div
                           style={{ backgroundColor: color.hexCode }}
-                          className={`w-8 h-8 rounded-md`}
+                          className={`w-8 h-8 rounded-md shadow border`}
                         ></div>
                         <span>{color.hexCode}</span>
                       </td>

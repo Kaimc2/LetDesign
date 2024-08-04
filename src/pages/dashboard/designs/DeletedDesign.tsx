@@ -20,7 +20,7 @@ export const DeletedDesign = () => {
     const fetchDesigns = async () => {
       await api
         .get("/designs/deleted", {
-          params: { search: search },
+          params: { search: search, item_per_page: 18 },
           headers: { Authorization: `Bearer ${user?.accessToken}` },
         })
         .then((res) => {
@@ -55,8 +55,8 @@ export const DeletedDesign = () => {
   };
 
   return (
-    <div className="ml-4">
-      <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
+    <div className="md:ml-4">
+      <div className="flex flex-col py-2 gap-4 md:py-0 md:gap-0 md:flex-row h-auto md:h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
         <h1 className="text-2xl">Deleted Designs</h1>
         <div className="relative">
           <FontAwesomeIcon
@@ -80,7 +80,10 @@ export const DeletedDesign = () => {
         </div>
       </div>
 
-      <div className="p-8 max-w-[calc(100vw-330px)] h-[calc(100vh-120px)] overflow-y-auto flex flex-wrap gap-12">
+      <div
+        className="p-8 w-full md:max-w-[calc(100vw-330px)] h-auto md:max-h-[calc(100vh-120px)] 
+        overflow-y-auto flex flex-wrap gap-12 justify-center"
+      >
         {designs?.length ? (
           designs.map((design) => {
             return (
@@ -88,10 +91,7 @@ export const DeletedDesign = () => {
                 key={design.id}
                 className="flex flex-col gap-2 hover:cursor-pointer"
               >
-                <div
-                  // to={`/design/edit/${design.id}`}
-                  className="group relative border border-black rounded-md w-[200px] h-[200px] flex items-center justify-center"
-                >
+                <div className="group relative border border-black rounded-md w-[200px] h-[200px] flex items-center justify-center">
                   <img
                     className="p-6"
                     src={design.designThumbnail ?? "/placeholder/pf.png"}

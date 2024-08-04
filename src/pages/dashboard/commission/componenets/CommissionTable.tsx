@@ -7,7 +7,7 @@ import { formatDate } from "../../../../utils/helper";
 import useFetchRole from "../../../../hooks/useFetchRole";
 import { TailorActions } from "./TailorActions";
 import { DesignerActions } from "./DesignerActions";
-import { LayoutLoader } from "../../../../core/common/Loader";
+import { SectionLoader } from "../../../../core/common/Loader";
 
 interface Props {
   commissions: CommissionType[];
@@ -22,17 +22,17 @@ export const CommissionTable: FC<Props> = ({
 }) => {
   const { role, loading } = useFetchRole();
 
-  if (loading) return <LayoutLoader />;
+  if (loading) return <SectionLoader />;
 
   return (
-    <table className="shadow-md border border-gray-200 rounded-md">
+    <table className="shadow-md border table-fixed overflow-x-auto border-gray-200 rounded-md">
       <thead className="text-left">
         <tr className="border border-b-brand-gray">
           <th className="py-4 pl-10">Design</th>
           <th className="py-4">Tailor</th>
           <th className="py-4">Status</th>
-          <th className="py-4">Start Date</th>
-          <th className="py-4">Complete Date</th>
+          <th className="py-4 w-[10rem]">Start Date</th>
+          <th className="py-4 w-[10rem]">Complete Date</th>
           <th className="py-4 pr-10">Action</th>
         </tr>
       </thead>

@@ -3,5 +3,23 @@
 @tailwind utilities;
 
 * {
-    font-family: 'Roboto', Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-family: "Roboto", Haettenschweiler, "Arial Narrow Bold", sans-serif;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background-color: #e5e5e5;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

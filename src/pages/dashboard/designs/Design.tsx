@@ -23,8 +23,7 @@ export const DesignPage = () => {
     const fetchDesigns = async () => {
       await api
         .get("/designs", {
-          params: { search: search },
-          headers: { Authorization: `Bearer ${user?.accessToken}` },
+          params: { search: search, item_per_page: 18 },
         })
         .then((res) => {
           setDesigns(res.data.data);
@@ -58,8 +57,8 @@ export const DesignPage = () => {
   };
 
   return (
-    <div className="ml-4">
-      <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
+    <div className="md:ml-4">
+      <div className="flex flex-col py-2 gap-4 md:py-0 md:gap-0 md:flex-row h-auto md:h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
         <h1 className="text-2xl">My Designs</h1>
 
         <div className="relative">
@@ -84,7 +83,10 @@ export const DesignPage = () => {
         </div>
       </div>
 
-      <div className="p-8 max-w-[calc(100vw-330px)] h-[calc(100vh-120px)] overflow-y-auto flex flex-wrap gap-12">
+      <div
+        className="p-8 w-full md:max-w-[calc(100vw-330px)] h-auto md:max-h-[calc(100vh-120px)] 
+        overflow-y-auto flex flex-wrap gap-10 justify-center"
+      >
         {designs?.length ? (
           designs.map((design) => {
             return (

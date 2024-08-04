@@ -21,8 +21,8 @@ export const ShowColors: FC<{
           size="lg"
         />
       </div>
-      
-      <ColorTable colors={store.colors} refetch={refetch} />
+
+      <ColorTable storeId={store.id} colors={store.colors} refetch={refetch} />
     </div>
   );
 };

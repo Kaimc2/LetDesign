@@ -1,27 +1,29 @@
 import { faEllipsis, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState, useMemo, useEffect, ChangeEvent } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { useState, useMemo, useEffect, ChangeEvent } from "react";
 import { LayoutLoader } from "../../core/common/Loader";
 import api from "../../utils/api";
 import { displayNotification } from "../../utils/helper";
 import { Store } from "../../types/store.types";
+import { Paginator } from "../../core/common/Paginator";
+import { PageMeta, DefaultPageMeta } from "../../types/common.types";
 
 export const Stores = () => {
-  const { user } = useContext(AuthContext);
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const fetchStores = useMemo(
     () => async () => {
       api
         .get("/stores", {
-          headers: { Authorization: `Bearer ${user?.accessToken}` },
-          params: { search: search },
+          params: { search: search, page: pageNumber },
         })
         .then((res) => {
           const fetchData = res.data.data;
+          setPageInfo(res.data.meta);
           setStores(fetchData);
           setLoading(false);
         })
@@ -31,7 +33,7 @@ export const Stores = () => {
           setLoading(false);
         });
     },
-    [search, user?.accessToken]
+    [pageNumber, search]
   );
 
   useEffect(() => {
@@ -113,6 +115,18 @@ export const Stores = () => {
             )}
           </tbody>
         </table>
+
+        <Paginator
+          pageNumber={pageNumber}
+          currentPage={pageInfo.currentPage}
+          lastPage={pageInfo.lastPage}
+          prevPage={() => {
+            setPageNumber(pageInfo.currentPage - 1);
+          }}
+          nextPage={() => {
+            setPageNumber(pageInfo.currentPage + 1);
+          }}
+        />
       </div>
     </div>
   );

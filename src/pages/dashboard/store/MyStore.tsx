@@ -30,7 +30,7 @@ export const MyStore = () => {
       .then((res) => {
         const fetchData = res.data.data;
         if (fetchData) {
-          setStore({ ...fetchData });
+          setStore(fetchData);
           setLoading(false);
         } else {
           setStore(null);

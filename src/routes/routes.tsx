@@ -23,6 +23,9 @@ import { Editor } from "../pages/editor/Editor";
 import { UpdateEditor } from "../pages/editor/UpdateEditor";
 import { Home } from "../pages/Home";
 import { Adjustment } from "../pages/dashboard/Adjustment";
+import { ForgetPassword } from "../pages/auth/ForgetPassword";
+import { ForgetPasswordNotify } from "../pages/auth/ForgetPasswordNotify";
+import { ResetPassword } from "../pages/auth/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +37,9 @@ export const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "account/verify", element: <VerificationMessage /> },
+      { path: "forgot-password", element: <ForgetPassword /> },
+      { path: "forgot-password/notify", element: <ForgetPasswordNotify /> },
+      { path: "reset-password", element: <ResetPassword /> },
       { path: "unauthorized", element: <Page403 /> },
       { path: "*", element: <Page404 /> },
     ],

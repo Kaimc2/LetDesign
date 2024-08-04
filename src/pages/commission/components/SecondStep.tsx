@@ -188,7 +188,7 @@ export const SecondStep = forwardRef<Step2Ref, Step2Props>((props, ref) => {
                     >
                       <div
                         style={{ backgroundColor: color.hexCode }}
-                        className={`w-5 h-5 rounded`}
+                        className={`w-5 h-5 rounded shadow border`}
                       ></div>
                       {color.name}
                     </div>

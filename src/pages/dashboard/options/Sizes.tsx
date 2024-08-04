@@ -13,6 +13,8 @@ import { Size } from "../../../types/store.types";
 import api from "../../../utils/api";
 import { displayNotification } from "../../../utils/helper";
 import { ConfirmDialog } from "../../../core/common/ConfirmDialog";
+import { PageMeta, DefaultPageMeta } from "../../../types/common.types";
+import { Paginator } from "../../../core/common/Paginator";
 
 export const Sizes = () => {
   const { user } = useContext(AuthContext);
@@ -26,12 +28,22 @@ export const Sizes = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [dialogState, setDialogState] = useState(false);
+  const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const fetchSizes = useCallback(() => {
     api
-      .get("/sizes", { params: { search: search } })
+      .get("/sizes", { params: { search: search, page: pageNumber } })
       .then((res) => {
         const fetchData = res.data.data.data;
+        setPageInfo({
+          currentPage: res.data.data.current_page,
+          from: res.data.data.from,
+          lastPage: res.data.data.last_page,
+          perPage: res.data.data.per_page,
+          to: res.data.data.to,
+          total: res.data.data.total,
+        });
         setSizes(fetchData);
         setLoading(false);
       })
@@ -39,7 +51,7 @@ export const Sizes = () => {
         console.error(err);
         setLoading(false);
       });
-  }, [search]);
+  }, [pageNumber, search]);
 
   useEffect(() => {
     fetchSizes();
@@ -79,11 +91,7 @@ export const Sizes = () => {
     }
 
     api
-      .put(
-        `/sizes/${selectedSize?.id}`,
-        { name: updateSizeName },
-        { headers: { Authorization: `Bearer  ${user?.accessToken}` } }
-      )
+      .put(`/sizes/${selectedSize?.id}`, { name: updateSizeName })
       .then(() => {
         displayNotification("Size updated successfully", "success");
         setIsEdit(false);
@@ -168,99 +176,113 @@ export const Sizes = () => {
       {loading ? (
         <SectionLoader />
       ) : (
-        <table className="shadow-md table-fixed border border-gray-200 rounded-md">
-          <thead className="text-left">
-            <tr className="border border-b-brand-gray">
-              <th className="py-5 pl-8">Name</th>
-              <th className="py-5">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sizes.length ? (
-              sizes.map((size) => {
-                return (
-                  <tr key={size.id} className="border border-b-brand-gray">
-                    {isEdit && selectedSize?.id === size.id ? (
-                      <>
-                        <td className="w-1/2 py-2 pl-6">
-                          <input
-                            className={`px-2 py-2 border rounded-md w-fit ${
-                              errors.updateName
-                                ? "border-error"
-                                : "border-gray-400"
-                            }`}
-                            type="text"
-                            value={updateSizeName}
-                            onChange={(e) => {
-                              setUpdateSizeName(e.target.value);
-                            }}
-                            placeholder="Size"
-                          />
-                          {errors.updateName && (
-                            <span className="text-error text-sm ml-2 mt-1">
-                              {errors.updateName}
-                            </span>
-                          )}
-                        </td>
-                        <td className="flex py-4 gap-8">
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-success"
-                            onClick={handleUpdate}
-                            icon={faCheck}
-                            title="Confirm"
-                            size="lg"
-                          />
-                          <FontAwesomeIcon
-                            onClick={() => {
-                              setIsEdit(false);
-                              setSelectedSize(null);
-                            }}
-                            className=" hover:cursor-pointer hover:text-error"
-                            icon={faClose}
-                            title="Cancel"
-                            size="lg"
-                          />
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="w-1/2 py-4 pl-8">{size.name}</td>
-                        <td className="flex py-4 gap-8">
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-success"
-                            onClick={() => {
-                              setIsEdit(true);
-                              setSelectedSize(size);
-                              setUpdateSizeName(size.name);
-                            }}
-                            icon={faEdit}
-                            title="Edit"
-                            size="lg"
-                          />
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-error"
-                            icon={faTrash}
-                            onClick={() => {
-                              setDialogState(true);
-                              setSelectedSize(size);
-                            }}
-                            title="Delete"
-                            size="lg"
-                          />
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td className="p-4">No Sizes</td>
+        <>
+          <table className="shadow-md table-fixed border border-gray-200 rounded-md">
+            <thead className="text-left">
+              <tr className="border border-b-brand-gray">
+                <th className="py-5 pl-8">Name</th>
+                <th className="py-5">Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {sizes.length ? (
+                sizes.map((size) => {
+                  return (
+                    <tr key={size.id} className="border border-b-brand-gray">
+                      {isEdit && selectedSize?.id === size.id ? (
+                        <>
+                          <td className="w-1/2 py-2 pl-6">
+                            <input
+                              className={`px-2 py-2 border rounded-md w-fit ${
+                                errors.updateName
+                                  ? "border-error"
+                                  : "border-gray-400"
+                              }`}
+                              type="text"
+                              value={updateSizeName}
+                              onChange={(e) => {
+                                setUpdateSizeName(e.target.value);
+                              }}
+                              placeholder="Size"
+                            />
+                            {errors.updateName && (
+                              <span className="text-error text-sm ml-2 mt-1">
+                                {errors.updateName}
+                              </span>
+                            )}
+                          </td>
+                          <td className="flex py-4 gap-8">
+                            <FontAwesomeIcon
+                              className=" hover:cursor-pointer hover:text-success"
+                              onClick={handleUpdate}
+                              icon={faCheck}
+                              title="Confirm"
+                              size="lg"
+                            />
+                            <FontAwesomeIcon
+                              onClick={() => {
+                                setIsEdit(false);
+                                setSelectedSize(null);
+                              }}
+                              className=" hover:cursor-pointer hover:text-error"
+                              icon={faClose}
+                              title="Cancel"
+                              size="lg"
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="w-1/2 py-4 pl-8">{size.name}</td>
+                          <td className="flex py-4 gap-8">
+                            <FontAwesomeIcon
+                              className=" hover:cursor-pointer hover:text-success"
+                              onClick={() => {
+                                setIsEdit(true);
+                                setSelectedSize(size);
+                                setUpdateSizeName(size.name);
+                              }}
+                              icon={faEdit}
+                              title="Edit"
+                              size="lg"
+                            />
+                            <FontAwesomeIcon
+                              className=" hover:cursor-pointer hover:text-error"
+                              icon={faTrash}
+                              onClick={() => {
+                                setDialogState(true);
+                                setSelectedSize(size);
+                              }}
+                              title="Delete"
+                              size="lg"
+                            />
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td className="p-4">No Sizes</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          <Paginator
+            pageNumber={pageNumber}
+            currentPage={pageInfo.currentPage}
+            lastPage={pageInfo.lastPage}
+            prevPage={() => {
+              setPageNumber(pageInfo.currentPage - 1);
+            }}
+            nextPage={() => {
+              setPageNumber(pageInfo.currentPage + 1);
+            }}
+          />
+        </>
       )}
 
       {dialogState && (

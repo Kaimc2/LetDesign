@@ -276,19 +276,27 @@ export const StoreUpdate: FC<{
           Choose available cloth materials
         </h1>
 
-        <MaterialTable materials={store.materials} refetch={refetch} />
+        <MaterialTable
+          storeId={store.id}
+          materials={store.materials}
+          refetch={refetch}
+        />
       </div>
 
       <div className="mt-4 mb-6">
         <h1 className="text-xl font-semibold">Choose available colors</h1>
 
-        <ColorTable colors={store.colors} refetch={refetch} />
+        <ColorTable
+          storeId={store.id}
+          colors={store.colors}
+          refetch={refetch}
+        />
       </div>
 
       <div className="mt-4 mb-6">
         <h1 className="text-xl font-semibold">Choose available sizes</h1>
 
-        <SizeTable sizes={store.sizes} refetch={refetch} />
+        <SizeTable storeId={store.id} sizes={store.sizes} refetch={refetch} />
       </div>
     </div>
   );

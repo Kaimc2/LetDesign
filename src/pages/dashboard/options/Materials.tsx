@@ -13,6 +13,8 @@ import { displayNotification } from "../../../utils/helper";
 import { SectionLoader } from "../../../core/common/Loader";
 import { Material } from "../../../types/store.types";
 import { ConfirmDialog } from "../../../core/common/ConfirmDialog";
+import { DefaultPageMeta, PageMeta } from "../../../types/common.types";
+import { Paginator } from "../../../core/common/Paginator";
 
 export const Materials = () => {
   const { user } = useContext(AuthContext);
@@ -28,12 +30,22 @@ export const Materials = () => {
     null
   );
   const [dialogState, setDialogState] = useState(false);
+  const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
+  const [pageNumber, setPageNumber] = useState(1);
 
   const fetchMaterials = useCallback(() => {
     api
-      .get("/materials", { params: { search: search } })
+      .get("/materials", { params: { search: search, page: pageNumber } })
       .then((res) => {
         const fetchData = res.data.data.data;
+        setPageInfo({
+          currentPage: res.data.data.current_page,
+          from: res.data.data.from,
+          lastPage: res.data.data.last_page,
+          perPage: res.data.data.per_page,
+          to: res.data.data.to,
+          total: res.data.data.total,
+        });
         setMaterials(fetchData);
         setLoading(false);
       })
@@ -41,7 +53,7 @@ export const Materials = () => {
         console.error(err);
         setLoading(false);
       });
-  }, [search]);
+  }, [pageNumber, search]);
 
   useEffect(() => {
     fetchMaterials();
@@ -58,11 +70,7 @@ export const Materials = () => {
     }
 
     api
-      .post(
-        "/materials",
-        { name: materialName },
-        { headers: { Authorization: `Bearer  ${user?.accessToken}` } }
-      )
+      .post("/materials", { name: materialName })
       .then(() => {
         displayNotification("Material added successfully", "success");
         setMaterialName("");
@@ -81,11 +89,7 @@ export const Materials = () => {
     }
 
     api
-      .put(
-        `/materials/${selectedMaterial?.id}`,
-        { name: updateMaterialName },
-        { headers: { Authorization: `Bearer  ${user?.accessToken}` } }
-      )
+      .put(`/materials/${selectedMaterial?.id}`, { name: updateMaterialName })
       .then(() => {
         displayNotification("Material updated successfully", "success");
         setIsEdit(false);
@@ -171,99 +175,116 @@ export const Materials = () => {
       {loading ? (
         <SectionLoader />
       ) : (
-        <table className="shadow-md table-fixed border border-gray-200 rounded-md">
-          <thead className="text-left">
-            <tr className="border border-b-brand-gray">
-              <th className="py-5 pl-8">Name</th>
-              <th className="py-5">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {materials.length ? (
-              materials.map((material) => {
-                return (
-                  <tr key={material.id} className="border border-b-brand-gray">
-                    {isEdit && selectedMaterial?.id === material.id ? (
-                      <>
-                        <td className="w-1/2 py-2 pl-6">
-                          <input
-                            className={`px-2 py-2 border rounded-md w-fit ${
-                              errors.updateName
-                                ? "border-error"
-                                : "border-gray-400"
-                            }`}
-                            type="text"
-                            value={updateMaterialName}
-                            onChange={(e) => {
-                              setUpdateMaterialName(e.target.value);
-                            }}
-                            placeholder="Material"
-                          />
-                          {errors.updateName && (
-                            <span className="text-error text-sm ml-2 mt-1">
-                              {errors.updateName}
-                            </span>
-                          )}
-                        </td>
-                        <td className="flex py-4 gap-8">
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-success"
-                            onClick={handleUpdate}
-                            icon={faCheck}
-                            title="Confirm"
-                            size="lg"
-                          />
-                          <FontAwesomeIcon
-                            onClick={() => {
-                              setIsEdit(false);
-                              setSelectedMaterial(null);
-                            }}
-                            className=" hover:cursor-pointer hover:text-error"
-                            icon={faClose}
-                            title="Cancel"
-                            size="lg"
-                          />
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="w-1/2 py-4 pl-8">{material.name}</td>
-                        <td className="flex py-4 gap-8">
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-success"
-                            onClick={() => {
-                              setIsEdit(true);
-                              setSelectedMaterial(material);
-                              setUpdateMaterialName(material.name);
-                            }}
-                            icon={faEdit}
-                            title="Edit"
-                            size="lg"
-                          />
-                          <FontAwesomeIcon
-                            className=" hover:cursor-pointer hover:text-error"
-                            icon={faTrash}
-                            onClick={() => {
-                              setDialogState(true);
-                              setSelectedMaterial(material);
-                            }}
-                            title="Delete"
-                            size="lg"
-                          />
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td className="p-4">No Materials</td>
+        <>
+          <table className="shadow-md table-fixed border border-gray-200 rounded-md">
+            <thead className="text-left">
+              <tr className="border border-b-brand-gray">
+                <th className="py-5 pl-8">Name</th>
+                <th className="py-5">Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {materials.length ? (
+                materials.map((material) => {
+                  return (
+                    <tr
+                      key={material.id}
+                      className="border border-b-brand-gray"
+                    >
+                      {isEdit && selectedMaterial?.id === material.id ? (
+                        <>
+                          <td className="w-1/2 py-2 pl-6">
+                            <input
+                              className={`px-2 py-2 border rounded-md w-fit ${
+                                errors.updateName
+                                  ? "border-error"
+                                  : "border-gray-400"
+                              }`}
+                              type="text"
+                              value={updateMaterialName}
+                              onChange={(e) => {
+                                setUpdateMaterialName(e.target.value);
+                              }}
+                              placeholder="Material"
+                            />
+                            {errors.updateName && (
+                              <span className="text-error text-sm ml-2 mt-1">
+                                {errors.updateName}
+                              </span>
+                            )}
+                          </td>
+                          <td className="flex py-4 gap-8">
+                            <FontAwesomeIcon
+                              className=" hover:cursor-pointer hover:text-success"
+                              onClick={handleUpdate}
+                              icon={faCheck}
+                              title="Confirm"
+                              size="lg"
+                            />
+                            <FontAwesomeIcon
+                              onClick={() => {
+                                setIsEdit(false);
+                                setSelectedMaterial(null);
+                              }}
+                              className=" hover:cursor-pointer hover:text-error"
+                              icon={faClose}
+                              title="Cancel"
+                              size="lg"
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="w-1/2 py-4 pl-8">{material.name}</td>
+                          <td className="flex py-4 gap-8">
+                            <FontAwesomeIcon
+                              className=" hover:cursor-pointer hover:text-success"
+                              onClick={() => {
+                                setIsEdit(true);
+                                setSelectedMaterial(material);
+                                setUpdateMaterialName(material.name);
+                              }}
+                              icon={faEdit}
+                              title="Edit"
+                              size="lg"
+                            />
+                            <FontAwesomeIcon
+                              className=" hover:cursor-pointer hover:text-error"
+                              icon={faTrash}
+                              onClick={() => {
+                                setDialogState(true);
+                                setSelectedMaterial(material);
+                              }}
+                              title="Delete"
+                              size="lg"
+                            />
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td className="p-4">No Materials</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          <Paginator
+            pageNumber={pageNumber}
+            currentPage={pageInfo.currentPage}
+            lastPage={pageInfo.lastPage}
+            prevPage={() => {
+              setPageNumber(pageInfo.currentPage - 1);
+            }}
+            nextPage={() => {
+              setPageNumber(pageInfo.currentPage + 1);
+            }}
+          />
+        </>
       )}
 
       {dialogState && (

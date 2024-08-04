@@ -24,7 +24,7 @@ export const CreateMaterials: FC<{
 
   useEffect(() => {
     api
-      .get("/materials")
+      .get("/materials", { params: { item_per_page: 100 } })
       .then((res) => {
         const fetchData = res.data.data.data;
         setMaterials(fetchData);
@@ -157,7 +157,11 @@ export const CreateMaterials: FC<{
         </label>
       </div>
 
-      <MaterialTable materials={store.materials} refetch={refetch} />
+      <MaterialTable
+        storeId={store.id}
+        materials={store.materials}
+        refetch={refetch}
+      />
     </div>
   );
 };

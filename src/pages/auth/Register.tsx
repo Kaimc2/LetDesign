@@ -10,15 +10,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import api from "../../utils/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Errors, FormData } from "../../types/common.types";
 import { ClipLoader } from "react-spinners";
 import { displayNotification } from "../../utils/helper";
-import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { AuthContext } from "../../context/AuthContext";
+import { PasswordStrength } from "../../core/common/PasswordStrength";
 
 export const Register = () => {
-  useAuthRedirect();
   const { initializeUser } = useContext(AuthContext);
   const [hide, setHide] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -58,6 +57,7 @@ export const Register = () => {
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.number) newErrors.number = "Phone number is required";
     if (!formData.password) newErrors.password = "Password is required";
+    if (passwordStrength <= 2) newErrors.password = "Password too weak";
     if (!formData.confirmPassword)
       newErrors.confirmPassword = "Confirm Password is required";
     if (formData.password !== formData.confirmPassword)
@@ -217,37 +217,7 @@ export const Register = () => {
               )}
             </div>
             {formData.password && (
-              <div className="mt-2">
-                <div className="h-2 relative max-w-xl rounded-full overflow-hidden">
-                  <div className="w-full h-full bg-gray-200 absolute"></div>
-                  <div
-                    className={`h-full ${
-                      passwordStrength === 0
-                        ? "bg-red-500"
-                        : passwordStrength === 1
-                        ? "bg-yellow-500"
-                        : passwordStrength === 2
-                        ? "bg-yellow-500"
-                        : passwordStrength === 3
-                        ? "bg-green-500"
-                        : "bg-green-700"
-                    } absolute`}
-                    style={{ width: `${(passwordStrength / 4) * 100}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm mt-2">
-                  Password strength:
-                  {passwordStrength === 0
-                    ? " Very Weak"
-                    : passwordStrength === 1
-                    ? " Weak"
-                    : passwordStrength === 2
-                    ? " Moderate"
-                    : passwordStrength === 3
-                    ? " Strong"
-                    : " Very Strong"}
-                </p>
-              </div>
+              <PasswordStrength strength={passwordStrength} />
             )}
 
             <div className="relative">
@@ -289,12 +259,12 @@ export const Register = () => {
             <div>
               <p className="text-sm font-regular text-center">
                 Already have an account?
-                <a
-                  href="/login"
+                <Link
+                  to={"/login"}
                   className="font-medium ml-1 hover:underline text-secondary"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
             <div className="flex items-center mt-2">

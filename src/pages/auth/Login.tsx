@@ -9,15 +9,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import useAuthRedirect from "../../hooks/useAuthRedirect";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
   onSubmit?: (email: string, password: string) => void; // Make onSubmit optional
 }
 
 const LoginForm: React.FC<LoginFormProps> = () => {
-  useAuthRedirect();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [hide, setHide] = useState(true);
@@ -127,9 +125,12 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             </div>
           </div>
           <div className="text-right">
-            <a href="#" className="text-sm text-accent hover:underline">
+            <Link
+              to={"/forgot-password"}
+              className="text-sm text-accent hover:underline"
+            >
               Forgot Password?
-            </a>
+            </Link>
           </div>
           <div className="pt-2">
             <button
@@ -143,12 +144,12 @@ const LoginForm: React.FC<LoginFormProps> = () => {
           <div className="flex items-center justify-center text-sm text-gray-500">
             <p>
               Don't have an account?
-              <a
-                href="/register"
+              <Link
+                to={"/register"}
                 className="ml-2 text-secondary hover:underline"
               >
                 Sign Up
-              </a>
+              </Link>
             </p>
           </div>
           <div className="flex items-center mt-2">

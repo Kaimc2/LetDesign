@@ -52,7 +52,7 @@ export const Options = () => {
           </div>
           <hr className="border-1  border-gray-500 opacity-50" />
           {/* Faded bottom border */}
-          <div className="p-3 overflow-y-auto max-h-[500px]">
+          <div className="p-3 overflow-y-auto max-h-[700px]">
             {activeTab === "materials" && <Materials />}
             {activeTab === "colors" && <Colors />}
             {activeTab === "sizes" && <Sizes />}

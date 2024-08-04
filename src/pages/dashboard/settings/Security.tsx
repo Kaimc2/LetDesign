@@ -6,7 +6,13 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../../../context/AuthContext";
-import { hidePhoneNumber } from "../../../utils/helper";
+import {
+  displayNotification,
+  evaluatePasswordStrength,
+  hidePhoneNumber,
+} from "../../../utils/helper";
+import api from "../../../utils/api";
+import { PasswordStrength } from "../../../core/common/PasswordStrength";
 
 const SuccessModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
@@ -19,15 +25,15 @@ const SuccessModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         <p className="mb-4">You have successfully changed your password.</p>
         <button
           onClick={onClose}
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+          className="bg-accent hover:bg-accent-80 text-white px-4 py-2 rounded-lg"
         >
           Close
         </button>
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          className="absolute top-5 right-6 text-gray-400 hover:text-gray-600"
         >
-          <FontAwesomeIcon icon={faTimes} />
+          <FontAwesomeIcon icon={faTimes} size="lg" />
         </button>
       </div>
     </div>
@@ -43,18 +49,38 @@ const ChangePasswordModal: React.FC<{
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const [error, setError] = useState("");
 
   const handleNext = () => {
     if (step === 1 && currentPassword) {
-      setStep(2);
+      api
+        .post("auth/current-password", { current_password: currentPassword })
+        .then(() => setStep(2))
+        .catch((err) =>
+          displayNotification(err.response.data.message, "error")
+        );
     } else if (step === 2 && newPassword && confirmPassword) {
-      if (newPassword !== confirmPassword) {
+      if (passwordStrength <= 2) {
+        setError("Password too weak");
+      } else if (newPassword !== confirmPassword) {
         setError("Passwords do not match");
       } else {
         setError("");
-        onSuccess(); // Trigger success logic
-        onClose(); // Close ChangePasswordModal
+        api
+          .post("auth/reset-existing-password", {
+            password: newPassword,
+            password_confirmation: confirmPassword,
+          })
+          .then(() => {
+            displayNotification("Password changed successfully", "success");
+            onSuccess(); // Trigger success logic
+            onClose(); // Close ChangePasswordModal
+          })
+          .catch((err) => {
+            console.error(err);
+            displayNotification("Failed to update password", "error");
+          });
       }
     }
   };
@@ -73,13 +99,13 @@ const ChangePasswordModal: React.FC<{
               placeholder="Current Password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
             />
             <div className="flex justify-between items-center">
               <span className="text-gray-500">Step 1 of 2</span>
               <button
                 onClick={handleNext}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                className="bg-accent hover:bg-accent-80 text-white px-4 py-2 rounded-lg"
               >
                 Next
               </button>
@@ -93,23 +119,27 @@ const ChangePasswordModal: React.FC<{
               type="password"
               placeholder="New Password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              onChange={(e) => {
+                setNewPassword(e.target.value);
+                setPasswordStrength(evaluatePasswordStrength(e.target.value));
+              }}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-2"
             />
-            <label className="block mb-2">Confirm New Password</label>
+            {newPassword && <PasswordStrength strength={passwordStrength} />}
+            <label className="block mt-4 mb-2">Confirm New Password</label>
             <input
               type="password"
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
             />
             {error && <p className="text-red-600 mb-4">{error}</p>}
             <div className="flex justify-between items-center">
               <span className="text-gray-500">Step 2 of 2</span>
               <button
                 onClick={handleNext}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                className="bg-accent hover:bg-accent-80 text-white px-4 py-2 rounded-lg"
               >
                 Confirm
               </button>
@@ -118,9 +148,9 @@ const ChangePasswordModal: React.FC<{
         )}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          className="absolute top-5 right-6 text-gray-400 hover:text-gray-600"
         >
-          <FontAwesomeIcon icon={faTimes} />
+          <FontAwesomeIcon icon={faTimes} size="lg" />
         </button>
       </div>
     </div>

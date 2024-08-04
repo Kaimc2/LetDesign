@@ -14,9 +14,10 @@ import api from "../../../utils/api";
 import { displayNotification } from "../../../utils/helper";
 
 export const MaterialTable: FC<{
+  storeId: string;
   materials: Material[];
   refetch: (search?: string, label?: string) => void;
-}> = ({ materials, refetch }) => {
+}> = ({ storeId, materials, refetch }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [errors, setErrors] = useState({ price: "" });
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
@@ -32,8 +33,14 @@ export const MaterialTable: FC<{
       return;
     }
 
+    const formData = {
+      store_id: String(storeId),
+      material_id: String(selectedMaterial?.materialID),
+      price: updatePrice,
+    };
+
     api
-      .put(`store/materials/${selectedMaterial?.id}`, { price: updatePrice })
+      .put(`store/materials/${selectedMaterial?.id}`, formData)
       .then(() => {
         displayNotification("Material updated successfully", "success");
         setIsEdit(false);
@@ -42,7 +49,7 @@ export const MaterialTable: FC<{
       })
       .catch((err) => {
         console.error(err);
-        displayNotification("Failed to add material", "error");
+        displayNotification("Failed to update material", "error");
       });
   };
 
@@ -117,7 +124,7 @@ export const MaterialTable: FC<{
                             min={0.1}
                             id="price"
                             onChange={(e) =>
-                              setUpdatePrice(parseInt(e.target.value))
+                              setUpdatePrice(Number(e.target.value))
                             }
                             className="border shadow text-gray-900 rounded-md ps-6 p-2"
                             placeholder="Ex: 10"
