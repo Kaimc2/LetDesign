@@ -16,8 +16,8 @@ export const NavbarItem: FC<Props> = ({ name, link, icon, isEnd = false }) => {
       to={link}
       className={({ isActive }) =>
         isActive
-          ? "w-fit md:w-full bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
-          : "w-fit md:w-full flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+          ? "w-[11rem] md:w-full bg-accent-80 text-white flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
+          : "w-[11rem] md:w-full flex items-center gap-2 px-4 py-3 rounded-md hover:bg-accent-80 hover:text-white hover:cursor-pointer"
       }
       end={isEnd}
     >

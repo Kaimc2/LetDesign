@@ -89,7 +89,7 @@ export const Users = () => {
                       <img
                         className="w-10 h-10 rounded-md"
                         src={
-                          user.profilePicture ?? "/placeholder/placeholder.jpg"
+                          user.profilePicture ?? "/placeholder/pf.png"
                         }
                         alt="profile_picture"
                       />

@@ -113,7 +113,7 @@ export const ColorTable: FC<{
                       <td className="flex items-center gap-2 py-4">
                         <div
                           style={{ backgroundColor: color.hexCode }}
-                          className={`w-8 h-8 rounded-md`}
+                          className={`w-8 h-8 rounded-md shadow border`}
                         ></div>
                         <span>{color.hexCode}</span>
                       </td>
@@ -170,7 +170,7 @@ export const ColorTable: FC<{
                       <td className="flex items-center gap-2 py-2">
                         <div
                           style={{ backgroundColor: color.hexCode }}
-                          className={`w-8 h-8 rounded-md`}
+                          className={`w-8 h-8 rounded-md shadow border`}
                         ></div>
                         <span>{color.hexCode}</span>
                       </td>

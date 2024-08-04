@@ -68,7 +68,7 @@ const ChangePasswordModal: React.FC<{
       } else {
         setError("");
         api
-          .post("auth/reset-password", {
+          .post("auth/reset-existing-password", {
             password: newPassword,
             password_confirmation: confirmPassword,
           })

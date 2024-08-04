@@ -45,46 +45,43 @@ export const Dashboard = () => {
   if (loading) return <LayoutLoader />;
 
   return (
-    <div className="ml-4">
+    <div className="md:ml-4">
       <div className="flex h-16 px-8 shadow-lg border border-b-gray-200 items-center justify-between">
         <h1 className="text-2xl">Overview</h1>
       </div>
 
       {/* Recent Designs */}
-      <div className="p-8 flex flex-col gap-6">
+      <div className="p-8 flex flex-col gap-6 md:max-w-[calc(100vw-330px)] md:max-h-[calc(100vh-120px)] overflow-auto">
         <h1 className="font-bold">Recent Designs</h1>
-        <div className="flex gap-2">
-          {designs.length ? (
+        <div className="w-full h-auto flex flex-wrap gap-11 justify-center md:justify-normal">
+          {designs?.length ? (
             designs.map((design) => {
               return (
                 <div
                   key={design.id}
-                  className="max-w-[calc(100vw-330px)] max-h-[calc(100vh-120px)] overflow-y-auto flex flex-wrap gap-12"
+                  className="flex flex-col gap-2 hover:cursor-pointer"
                 >
                   <Link
                     to={`/design/edit/${design.id}`}
-                    className="flex flex-col gap-2 hover:cursor-pointer"
+                    className="group relative border border-black rounded-md w-[200px] h-[200px] flex items-center justify-center"
                   >
-                    <div className="group relative border border-black rounded-md w-[200px] h-[200px] flex items-center justify-center">
-                      <img
-                        className="p-6"
-                        src={
-                          design.designThumbnail ??
-                          "/placeholder/placeholder.jpg"
-                        }
-                        alt="design_preview"
-                      />
-                    </div>
-                    <p>{design.name}</p>
-                    <p className="text-xs text-brand-gray">
-                      Edited {design.updatedAt}
-                    </p>
+                    <img
+                      className="p-6"
+                      src={design.designThumbnail ?? "/placeholder/pf.png"}
+                      alt="design_preview"
+                    />
                   </Link>
+                  <p>{design.name}</p>
+                  <p className="text-xs text-brand-gray">
+                    Edited {design.updatedAt}
+                  </p>
                 </div>
               );
             })
           ) : (
-            <div>No designs</div>
+            <div className="w-full h-full flex justify-center items-center text-2xl text-gray-400">
+              No Designs
+            </div>
           )}
         </div>
 
