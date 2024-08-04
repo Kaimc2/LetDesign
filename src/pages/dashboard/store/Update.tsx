@@ -149,7 +149,11 @@ export const StoreUpdate: FC<{
           <img
             onClick={handleFileInputClick}
             className="w-20 h-20 rounded-md hover:cursor-pointer"
-            src={preview ?? "/placeholder/placeholder.jpg"}
+            src={
+              preview !== "null"
+                ? String(preview)
+                : "/placeholder/placeholder.jpg"
+            }
             alt="store_thumbnail"
             title="Change thumbnail"
           />

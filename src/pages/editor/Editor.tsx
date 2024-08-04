@@ -310,25 +310,47 @@ export const Editor = () => {
       status: "draft",
     };
 
-    api
-      .post(
-        "designs",
-        { ...inputs },
-        { headers: { Authorization: `Bearer ${user?.accessToken}` } }
-      )
-      .then((res) => {
-        navigate("/design/commission/create", {
-          state: {
-            id: res.data.data.id,
-            frontCanvas: inputs.front_content,
-            backCanvas: inputs.back_content,
-          },
+    if (isSaved) {
+      api
+        .put(
+          `designs/${designId}`,
+          { ...inputs },
+          { headers: { Authorization: `Bearer ${user?.accessToken}` } }
+        )
+        .then((res) => {
+          navigate("/design/commission/create", {
+            state: {
+              id: res.data.data.id,
+              frontCanvas: inputs.front_content,
+              backCanvas: inputs.back_content,
+            },
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          displayNotification("Failed to save design", "error");
         });
-      })
-      .catch((err) => {
-        console.error(err);
-        displayNotification("Failed to save design", "error");
-      });
+    } else {
+      api
+        .post(
+          "designs",
+          { ...inputs },
+          { headers: { Authorization: `Bearer ${user?.accessToken}` } }
+        )
+        .then((res) => {
+          navigate("/design/commission/create", {
+            state: {
+              id: res.data.data.id,
+              frontCanvas: inputs.front_content,
+              backCanvas: inputs.back_content,
+            },
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          displayNotification("Failed to save design", "error");
+        });
+    }
   };
 
   return (

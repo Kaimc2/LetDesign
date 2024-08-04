@@ -85,7 +85,7 @@ export const DesignPage = () => {
 
       <div
         className="p-8 w-full md:max-w-[calc(100vw-330px)] h-auto md:max-h-[calc(100vh-120px)] 
-        overflow-y-auto flex flex-wrap gap-10 justify-center"
+        overflow-y-auto flex flex-wrap gap-10 justify-center md:justify-normal"
       >
         {designs?.length ? (
           designs.map((design) => {
