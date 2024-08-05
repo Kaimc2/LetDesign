@@ -8,12 +8,12 @@ import {
   faEyeSlash,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
-import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
+// import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import api from "../../utils/api";
 import { Link, useNavigate } from "react-router-dom";
 import { Errors, FormData } from "../../types/common.types";
 import { ClipLoader } from "react-spinners";
-import { displayNotification } from "../../utils/helper";
+import { displayNotification, validatePhoneNumber } from "../../utils/helper";
 import { AuthContext } from "../../context/AuthContext";
 import { PasswordStrength } from "../../core/common/PasswordStrength";
 
@@ -56,6 +56,8 @@ export const Register = () => {
     if (!formData.username) newErrors.username = "Username is required";
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.number) newErrors.number = "Phone number is required";
+    if (!validatePhoneNumber(formData.number))
+      newErrors.number = "Invalid phone number";
     if (!formData.password) newErrors.password = "Password is required";
     if (passwordStrength <= 2) newErrors.password = "Password too weak";
     if (!formData.confirmPassword)
@@ -267,7 +269,7 @@ export const Register = () => {
                 </Link>
               </p>
             </div>
-            <div className="flex items-center mt-2">
+            {/* <div className="flex items-center mt-2">
               <hr className="w-full h-px bg-gray-200 border-1 dark:bg-gray-500 mr-2" />
               <span className="font-regular">Or</span>
               <hr className="w-full h-px bg-gray-200 border-1 dark:bg-gray-500 ml-2" />
@@ -283,7 +285,7 @@ export const Register = () => {
                 className="absolute left-4 w-5 h-5"
               />
               <span className="w-full text-center">Sign up with Google</span>
-            </button>
+            </button> */}
           </form>
         </div>
       </div>

@@ -17,6 +17,9 @@ const ShirtModel: FC<Props> = ({ frontCanvas, backCanvas }) => {
     texture.flipY = false;
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
+    // Scale and offset properties
+    texture.repeat.set(1.15, 1.15);
+    texture.offset = new THREE.Vector2(0.935, 0.89);
     texture.needsUpdate = true;
     return texture;
   }, [frontCanvas]);
@@ -27,6 +30,9 @@ const ShirtModel: FC<Props> = ({ frontCanvas, backCanvas }) => {
     texture.flipY = false;
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
+    // Scale and offset properties
+    // texture.repeat.set(1, 1.05);
+    // texture.offset = new THREE.Vector2(0, 0.905);
     texture.needsUpdate = true;
     return texture;
   }, [backCanvas]);

@@ -74,6 +74,7 @@ export const Materials = () => {
       .then(() => {
         displayNotification("Material added successfully", "success");
         setMaterialName("");
+        setErrors({ name: "", updateName: "" });
         triggerRefetch();
       })
       .catch((err) => {
@@ -94,6 +95,7 @@ export const Materials = () => {
         displayNotification("Material updated successfully", "success");
         setIsEdit(false);
         setSelectedMaterial(null);
+        setErrors({ name: "", updateName: "" });
         triggerRefetch();
       })
       .catch((err) => {

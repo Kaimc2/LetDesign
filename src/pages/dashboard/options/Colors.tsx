@@ -102,6 +102,7 @@ export const Colors = () => {
       .then(() => {
         displayNotification("Color added successfully", "success");
         setFormData({ name: "", hexCode: "#000000" });
+        setErrors({ name: "", updateName: "" });
         triggerRefetch();
       })
       .catch((err) => {
@@ -125,6 +126,7 @@ export const Colors = () => {
         displayNotification("Color added successfully", "success");
         setIsEdit(false);
         setFormData({ name: "", hexCode: "#000000" });
+        setErrors({ name: "", updateName: "" });
         triggerRefetch();
       })
       .catch((err) => {
@@ -182,6 +184,9 @@ export const Colors = () => {
               placeholder="Name"
               value={formData.name}
               onChange={(e) => handleFormDataChange("name", e)}
+              onKeyDown={(e) => {
+                if (formData.name && e.key === "Enter") handleSubmit();
+              }}
             />
             {errors.name && (
               <span className="text-error text-sm ml-2 mt-1">

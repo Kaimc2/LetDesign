@@ -310,9 +310,6 @@ export const UpdateEditor = () => {
       status: "draft",
     };
 
-    // TODO:
-    // If commission of this exact design exist should just redirect to the commission page
-    // Could check design_id of commissions with the id params
     api
       .put(
         `designs/${id}`,

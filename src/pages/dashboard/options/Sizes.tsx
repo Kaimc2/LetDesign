@@ -76,6 +76,7 @@ export const Sizes = () => {
       .then(() => {
         displayNotification("Size added successfully", "success");
         setSizeName("");
+        setErrors({ name: "", updateName: "" });
         triggerRefetch();
       })
       .catch((err) => {
@@ -96,6 +97,7 @@ export const Sizes = () => {
         displayNotification("Size updated successfully", "success");
         setIsEdit(false);
         setSelectedSize(null);
+        setErrors({ name: "", updateName: "" });
         triggerRefetch();
       })
       .catch((err) => {
