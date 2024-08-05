@@ -50,6 +50,11 @@ export const formatDate = (date: string) => {
   return d.toDateString();
 };
 
+export const validatePhoneNumber = (phoneNumber: string) => {
+  const phoneRegex = /^0(1|6|7|8|9)\d{7,8}$/;
+  return phoneRegex.test(phoneNumber);
+};
+
 export const evaluatePasswordStrength = (password: string) => {
   let strength = 0;
   if (password.length >= 8) strength += 1;

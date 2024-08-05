@@ -46,6 +46,27 @@ export const Editor = () => {
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const navigate = useNavigate();
 
+  // Load guest design
+  useEffect(() => {
+    const guestDesign = localStorage.getItem("guestDesign");
+    if (guestDesign) {
+      setTimeout(() => {
+        const parseData = JSON.parse(guestDesign);
+        const backContent = JSON.parse(parseData.back_content);
+        fb.loadCanvas(fabricFrontCanvasRef.current, parseData.front_content);
+        if (backContent.objects.length >= 1) {
+          fb.loadCanvas(fabricBackCanvasRef.current, parseData.back_content);
+        }
+        setDesignName(parseData.name);
+        const canvas = fabricFrontCanvasRef.current;
+        if (canvas) {
+          initializeCanvasObjects(canvas);
+        }
+        localStorage.removeItem("guestDesign");
+      }, 500);
+    }
+  }, []);
+
   // Apply styles to canvas wrappers
   useEffect(() => {
     const frontCanvas = fabricFrontCanvasRef.current;
@@ -244,7 +265,28 @@ export const Editor = () => {
     }
   };
 
+  const handleGuestAction = async () => {
+    if (!isAuthenticated) {
+      const design = {
+        name: designName,
+        front_content: JSON.stringify(
+          await fb.saveCanvas(fabricFrontCanvasRef.current, 0.5)
+        ),
+        back_content: JSON.stringify(
+          await fb.saveCanvas(fabricBackCanvasRef.current, 0.5)
+        ),
+      };
+      setTimeout(() => {
+        localStorage.setItem("guestDesign", JSON.stringify(design));
+      }, 1000);
+      navigate("/login");
+      return true;
+    }
+    return false;
+  };
+
   const handleSave = async () => {
+    if (await handleGuestAction()) return;
     const inputs: DesignInput = {
       name: designName,
       user_id: String(user?.id),
@@ -282,7 +324,7 @@ export const Editor = () => {
           { headers: { Authorization: `Bearer ${user?.accessToken}` } }
         )
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           setIsSaved(true);
           setDesignId(res.data.data.id);
           displayNotification("Design save successfully", "success");
@@ -295,6 +337,7 @@ export const Editor = () => {
   };
 
   const handleSend = async () => {
+    if (await handleGuestAction()) return;
     const inputs: DesignInput = {
       name: designName,
       user_id: String(user?.id),

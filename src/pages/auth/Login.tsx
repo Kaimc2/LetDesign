@@ -7,7 +7,7 @@ import {
   faEyeSlash,
   faKey,
 } from "@fortawesome/free-solid-svg-icons";
-import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
+// import googleLogo from "../../assets/images/icons/GoogleLogo.svg";
 import { AuthContext } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -152,7 +152,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
               </Link>
             </p>
           </div>
-          <div className="flex items-center mt-2">
+          {/* <div className="flex items-center mt-2">
             <hr className="w-full h-px bg-gray-200 border-1 dark:bg-gray-500 mr-2" />
             <span className="font-regular">Or</span>
             <hr className="w-full h-px bg-gray-200 border-1 dark:bg-gray-500 ml-2" />
@@ -168,7 +168,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
               className="absolute left-4 w-5 h-5"
             />
             <span className="w-full text-center">Sign in with Google</span>
-          </button>
+          </button> */}
         </form>
       </div>
     </div>
