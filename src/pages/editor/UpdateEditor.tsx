@@ -48,9 +48,7 @@ export const UpdateEditor = () => {
   useEffect(() => {
     if (id) {
       api
-        .get(`designs/${id}`, {
-          headers: { Authorization: `Bearer ${user?.accessToken}` },
-        })
+        .get(`designs/${id}`)
         .then((res) => {
           const designData = res.data.data;
           fb.loadCanvas(fabricFrontCanvasRef.current, designData.front_content);
@@ -59,11 +57,17 @@ export const UpdateEditor = () => {
           const canvas = fabricFrontCanvasRef.current;
           if (canvas) initializeCanvasObjects(canvas);
         })
-        .catch(() => {
-          displayNotification("Failed to load design", "error");
+        .catch((err) => {
+          console.error(err.response.data.status);
+          if (err.response.data.status === "error") {
+            navigate("/dashboard/designs");
+            displayNotification("Design not found", "error");
+          } else {
+            displayNotification("Failed to load design", "error");
+          }
         });
     }
-  }, [id, isAuthenticated, navigate, user?.accessToken]);
+  }, [id, navigate]);
 
   // Apply styles to canvas wrappers
   useEffect(() => {

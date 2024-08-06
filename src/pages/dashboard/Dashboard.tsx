@@ -5,12 +5,29 @@ import { Design } from "../../types/design.types";
 import { CommissionType } from "../../types/commission.types";
 import { LayoutLoader } from "../../core/common/Loader";
 import { CommissionTable } from "./commission/componenets/CommissionTable";
+import useFetchRole from "../../hooks/useFetchRole";
+import { DashboardStats } from "../../types/common.types";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register necessary components
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export const Dashboard = () => {
   const [designs, setDesigns] = useState<Design[]>([]);
   const [commissions, setCommissions] = useState<CommissionType[]>([]);
+  const [stats, setStats] = useState<DashboardStats>();
   const [refetch, setRefetch] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { role, loadingRole } = useFetchRole();
 
   // Fetch recent designs
   useEffect(() => {
@@ -42,7 +59,54 @@ export const Dashboard = () => {
       });
   }, [refetch]);
 
+  // Fetch dashboard stats
+  useEffect(() => {
+    if (!loadingRole) {
+      if (role === "admin") {
+        api
+          .get("dashboard/stats")
+          .then((res) => {
+            const fetchData: DashboardStats = res.data;
+            setStats(fetchData);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      }
+    }
+  }, [loadingRole, role]);
+
   if (loading) return <LayoutLoader />;
+
+  const data = {
+    labels: ["Daily", "Weekly", "Monthly"],
+    datasets: [
+      {
+        label: "Designs",
+        data: stats
+          ? [stats.daily.designs, stats.weekly.designs, stats.monthly.designs]
+          : [],
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+      {
+        label: "Commissions",
+        data: stats
+          ? [
+              stats.daily.commissions,
+              stats.weekly.commissions,
+              stats.monthly.commissions,
+            ]
+          : [],
+        backgroundColor: "rgba(255, 159, 64, 0.2)",
+        borderColor: "rgba(255, 159, 64, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
     <div className="md:ml-4">
@@ -52,6 +116,12 @@ export const Dashboard = () => {
 
       {/* Recent Designs */}
       <div className="p-8 flex flex-col gap-6 md:max-w-[calc(100vw-330px)] md:max-h-[calc(100vh-120px)] overflow-auto">
+        {stats && (
+          <div className="w-[600px] h-[300px]">
+            <Bar data={data} width={600} height={300} />
+          </div>
+        )}
+
         <h1 className="font-bold">Recent Designs</h1>
         <div className="w-full h-auto flex flex-wrap gap-11 justify-center md:justify-normal">
           {designs?.length ? (
