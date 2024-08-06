@@ -61,9 +61,9 @@ export const FirstStep: FC<{
         <div
           onClick={() => setCommissionType("individual")}
           className={`flex gap-4 px-3 py-4 items-center border rounded-md select-none hover:cursor-pointer
-                 hover:border-black ${
+                 hover:border-accent ${
                    commissionType === "individual"
-                     ? "border-black"
+                     ? "border-accent"
                      : "border-gray-400"
                  }`}
         >
@@ -79,9 +79,9 @@ export const FirstStep: FC<{
         <div
           onClick={() => setCommissionType("team")}
           className={`flex gap-4 px-3 py-4 items-center border rounded-md select-none hover:cursor-pointer
-                 hover:border-black ${
+                 hover:border-accent ${
                    commissionType === "team"
-                     ? "border-black"
+                     ? "border-accent"
                      : "border-gray-400"
                  }`}
         >
