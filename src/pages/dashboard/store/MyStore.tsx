@@ -6,6 +6,8 @@ import { LayoutLoader } from "../../../core/common/Loader";
 import { StoreShow } from "./Show";
 import { StoreUpdate } from "./Update";
 import { StoreCreate } from "./Create";
+import useFetchRole from "../../../hooks/useFetchRole";
+import { useNavigate } from "react-router-dom";
 
 export const MyStore = () => {
   const { user } = useContext(AuthContext);
@@ -16,6 +18,8 @@ export const MyStore = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refetch, setRefetch] = useState(0);
+  const { role, loadingRole } = useFetchRole();
+  const navigate = useNavigate();
 
   const fetchStore = useCallback(() => {
     api
@@ -66,8 +70,14 @@ export const MyStore = () => {
   };
 
   useEffect(() => {
-    fetchStore();
-  }, [fetchStore, refetch]);
+    if (!loadingRole) {
+      if (role === "designer") {
+        navigate("/unauthorized");
+      } else {
+        fetchStore();
+      }
+    }
+  }, [fetchStore, loadingRole, navigate, refetch, role]);
 
   if (loading) return <LayoutLoader />;
 

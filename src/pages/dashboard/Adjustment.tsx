@@ -7,6 +7,8 @@ import { formatDate } from "../../utils/helper";
 import { PageMeta, DefaultPageMeta } from "../../types/common.types";
 import { Paginator } from "../../core/common/Paginator";
 import { LayoutLoader } from "../../core/common/Loader";
+import useFetchRole from "../../hooks/useFetchRole";
+import { useNavigate } from "react-router-dom";
 
 export const Adjustment = () => {
   const [search, setSearch] = useState("");
@@ -14,27 +16,35 @@ export const Adjustment = () => {
   const [loading, setLoading] = useState(true);
   const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
   const [pageNumber, setPageNumber] = useState(1);
+  const { role, loadingRole } = useFetchRole();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    api
-      .get("adjustments", { params: { search: search, page: pageNumber } })
-      .then((res) => {
-        const fetchData = res.data.data.data;
-        setPageInfo({
-          currentPage: res.data.data.current_page,
-          from: res.data.data.from,
-          lastPage: res.data.data.last_page,
-          perPage: res.data.data.per_page,
-          to: res.data.data.to,
-          total: res.data.data.total,
-        });
-        setAdjustments(fetchData);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [pageNumber, search]);
+    if (!loadingRole) {
+      if (role !== "admin") {
+        navigate("/unauthorized");
+      } else {
+        api
+          .get("adjustments", { params: { search: search, page: pageNumber } })
+          .then((res) => {
+            const fetchData = res.data.data.data;
+            setPageInfo({
+              currentPage: res.data.data.current_page,
+              from: res.data.data.from,
+              lastPage: res.data.data.last_page,
+              perPage: res.data.data.per_page,
+              to: res.data.data.to,
+              total: res.data.data.total,
+            });
+            setAdjustments(fetchData);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    }
+  }, [loadingRole, navigate, pageNumber, role, search]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);

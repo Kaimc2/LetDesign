@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Page403 } from "../core/error/Page403";
-import { Page404 } from "../core/error/Page404";
+import { Page404, Page404Alt } from "../core/error/Page404";
 import { DashboardLayout } from "../core/layout/DashboardLayout";
 import { EditorLayout } from "../core/layout/EditorLayout";
 import HomeLayout from "../core/layout/HomeLayout";
@@ -43,8 +43,9 @@ export const router = createBrowserRouter([
       { path: "unauthorized", element: <Page403 /> },
       { path: "*", element: <Page404 /> },
     ],
+    errorElement: <Page404Alt />,
   },
-  { path: "/design", element: <Editor /> },
+  { path: "/design", element: <Editor />, errorElement: <Page404Alt /> },
   {
     path: "/design",
     element: <EditorLayout />,
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
         element: <CreateCommission />,
       },
     ],
+    errorElement: <Page404Alt />,
   },
   {
     path: "/dashboard",
@@ -71,6 +73,11 @@ export const router = createBrowserRouter([
       { path: "adjustment", element: <Adjustment /> },
       { path: "settings", element: <Settings /> },
     ],
+    errorElement: <Page404Alt />,
   },
-  { path: "/dashboard/commissions/:id", element: <Preview /> },
+  {
+    path: "/dashboard/commissions/:id",
+    element: <Preview />,
+    errorElement: <Page404Alt />,
+  },
 ]);

@@ -20,9 +20,9 @@ export const CommissionTable: FC<Props> = ({
   refetch,
   setRefetch,
 }) => {
-  const { role, loading } = useFetchRole();
+  const { role, loadingRole } = useFetchRole();
 
-  if (loading) return <SectionLoader />;
+  if (loadingRole) return <SectionLoader />;
 
   return (
     <table className="shadow-md border table-fixed overflow-x-auto border-gray-200 rounded-md">

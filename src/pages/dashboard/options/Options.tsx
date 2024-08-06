@@ -1,12 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Materials } from "./Materials";
 import { Colors } from "./Colors";
 import { Sizes } from "./Sizes";
+import { useNavigate } from "react-router-dom";
+import useFetchRole from "../../../hooks/useFetchRole";
+import { LayoutLoader } from "../../../core/common/Loader";
 
 export const Options = () => {
   const [activeTab, setActiveTab] = useState<"materials" | "colors" | "sizes">(
     "materials"
   );
+  const { role, loadingRole } = useFetchRole();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loadingRole) {
+      if (role !== "admin") {
+        navigate("/unauthorized");
+      }
+    }
+  }, [loadingRole, navigate, role]);
+
+  if (loadingRole) return <LayoutLoader />;
 
   return (
     <div className="ml-4">
