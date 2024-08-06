@@ -5,7 +5,7 @@ import api from "../utils/api";
 const useFetchRole = () => {
   const { user } = useContext(AuthContext);
   const [role, setRole] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loadingRole, setLoadingRole] = useState(true);
 
   const getRole = useMemo(
     () => async () => {
@@ -15,7 +15,7 @@ const useFetchRole = () => {
         })
         .then((res) => {
           setRole(res.data.roles[0]);
-          setLoading(false);
+          setLoadingRole(false);
         })
         .catch((err) => console.error(err));
     },
@@ -26,7 +26,7 @@ const useFetchRole = () => {
     getRole();
   }, [getRole]);
 
-  return { role, loading };
+  return { role, loadingRole };
 };
 
 export default useFetchRole;

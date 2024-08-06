@@ -1,4 +1,4 @@
-import { faSearch, faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUserPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import api from "../../utils/api";
@@ -7,6 +7,8 @@ import { LayoutLoader } from "../../core/common/Loader";
 import { displayNotification } from "../../utils/helper";
 import { Paginator } from "../../core/common/Paginator";
 import { PageMeta, DefaultPageMeta } from "../../types/common.types";
+import useFetchRole from "../../hooks/useFetchRole";
+import { useNavigate } from "react-router-dom";
 
 export const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -14,6 +16,8 @@ export const Users = () => {
   const [search, setSearch] = useState("");
   const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
   const [pageNumber, setPageNumber] = useState(1);
+  const { role, loadingRole } = useFetchRole();
+  const navigate = useNavigate();
 
   const fetchUsers = useMemo(
     () => async () => {
@@ -37,14 +41,31 @@ export const Users = () => {
   );
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
-  if (loading) return <LayoutLoader />;
+    if (!loadingRole) {
+      if (role !== "admin") {
+        navigate("/unauthorized");
+      } else {
+        fetchUsers();
+      }
+    }
+  }, [fetchUsers, loadingRole, navigate, role]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
+
+  const assignNewRole = (id: string, role: string) => {
+    api
+      .post(`role/${id}`, { role: role })
+      .then((res) => {
+        displayNotification(res.data.message, "success");
+      })
+      .catch(() => {
+        displayNotification("Failed to update role", "error");
+      });
+  };
+
+  if (loading) return <LayoutLoader />;
 
   return (
     <div className="ml-4">
@@ -88,9 +109,7 @@ export const Users = () => {
                     <td className="flex items-center gap-4 py-4 pl-8">
                       <img
                         className="w-10 h-10 rounded-md"
-                        src={
-                          user.profilePicture ?? "/placeholder/pf.png"
-                        }
+                        src={user.profilePicture ?? "/placeholder/pf.png"}
                         alt="profile_picture"
                       />
                       <p>{user.name}</p>
@@ -107,7 +126,12 @@ export const Users = () => {
                       </p>
                     </td>
                     <td className="hover:cursor-pointer">
-                      <FontAwesomeIcon icon={faEllipsis} />
+                      <FontAwesomeIcon
+                        className="hover:text-success"
+                        onClick={() => assignNewRole(user.id, "tailor")}
+                        icon={faUserPen}
+                        title="Assign as tailor"
+                      />
                     </td>
                   </tr>
                 );

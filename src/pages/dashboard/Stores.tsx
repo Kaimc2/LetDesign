@@ -1,4 +1,4 @@
-import { faEllipsis, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useMemo, useEffect, ChangeEvent } from "react";
 import { LayoutLoader } from "../../core/common/Loader";
@@ -7,6 +7,8 @@ import { displayNotification } from "../../utils/helper";
 import { Store } from "../../types/store.types";
 import { Paginator } from "../../core/common/Paginator";
 import { PageMeta, DefaultPageMeta } from "../../types/common.types";
+import useFetchRole from "../../hooks/useFetchRole";
+import { useNavigate } from "react-router-dom";
 
 export const Stores = () => {
   const [stores, setStores] = useState<Store[]>([]);
@@ -14,6 +16,8 @@ export const Stores = () => {
   const [search, setSearch] = useState("");
   const [pageInfo, setPageInfo] = useState<PageMeta>(DefaultPageMeta);
   const [pageNumber, setPageNumber] = useState(1);
+  const { role, loadingRole } = useFetchRole();
+  const navigate = useNavigate();
 
   const fetchStores = useMemo(
     () => async () => {
@@ -37,8 +41,14 @@ export const Stores = () => {
   );
 
   useEffect(() => {
-    fetchStores();
-  }, [fetchStores]);
+    if (!loadingRole) {
+      if (role !== "admin") {
+        navigate("/unauthorized");
+      } else {
+        fetchStores();
+      }
+    }
+  }, [fetchStores, loadingRole, navigate, role]);
 
   if (loading) return <LayoutLoader />;
 
@@ -76,8 +86,7 @@ export const Stores = () => {
               <th className="py-5">Description</th>
               <th className="py-5">Email</th>
               <th className="py-5">Phone Number</th>
-              <th className="py-5">Owner</th>
-              <th className="py-5">Action</th>
+              <th className="py-5 pr-8">Owner</th>
             </tr>
           </thead>
 
@@ -101,10 +110,7 @@ export const Stores = () => {
                     <td className="py-4">{store.description}</td>
                     <td className="py-4">{store.email}</td>
                     <td className="py-4">{store.phoneNumber}</td>
-                    <td className="py-4">{store.ownerName}</td>
-                    <td className="hover:cursor-pointer">
-                      <FontAwesomeIcon icon={faEllipsis} />
-                    </td>
+                    <td className="py-4 pr-8">{store.ownerName}</td>
                   </tr>
                 );
               })
