@@ -39,3 +39,18 @@ export const DefaultPageMeta = {
   to: 1,
   total: 1,
 };
+
+export interface DashboardStats {
+  daily: {
+    designs: number;
+    commissions: number;
+  };
+  weekly: {
+    designs: number;
+    commissions: number;
+  };
+  monthly: {
+    designs: number;
+    commissions: number;
+  };
+}

@@ -57,7 +57,7 @@ export const Commission = () => {
         <h1 className="text-2xl">Commissions</h1>
       </div>
 
-      <div className="p-8 w-full md:max-w-[calc(100vw-330px)] max-h-[calc(100vh-120px)] overflow-y-auto flex flex-col flex-wrap gap-4">
+      <div className="p-8 w-full md:max-w-[calc(100vw-330px)] h-fit md:max-h-[calc(100vh-120px)] overflow-y-auto flex flex-col flex-wrap gap-4">
         <div className="relative">
           <FontAwesomeIcon
             className="absolute text-gray-400 left-4 translate-y-[calc(50%+4px)]"
