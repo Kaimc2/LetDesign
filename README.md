@@ -16,7 +16,7 @@ Let Design is a custom clothing design platform that empowers users to create, c
 
 ## Getting Started
 
-Link to Backend Server: [Link](https://github.com/Kaimc2/CapstoneII-Backend)
+Link to Backend: [Link](https://github.com/Kaimc2/CapstoneII-Backend)
 
 ### Prerequisites
 
